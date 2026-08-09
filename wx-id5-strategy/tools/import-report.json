@@ -1,0 +1,26 @@
+﻿[
+    {
+        "Route":  "hard",
+        "Pkg":  "pkg-hard",
+        "Count":  25,
+        "Bytes":  1485825
+    },
+    {
+        "Route":  "normal",
+        "Pkg":  "pkg-normal",
+        "Count":  15,
+        "Bytes":  1890064
+    },
+    {
+        "Route":  "easy",
+        "Pkg":  "pkg-easy",
+        "Count":  15,
+        "Bytes":  1691830
+    },
+    {
+        "Route":  "newbie",
+        "Pkg":  "pkg-newbie",
+        "Count":  1,
+        "Bytes":  125646
+    }
+]

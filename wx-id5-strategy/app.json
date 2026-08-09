@@ -1,0 +1,34 @@
+{
+"pages": [
+    "pages/index/index",
+    "pages/category/category",
+    "pages/route/route",
+    "pages/inventory/inventory",
+    "pages/feedback/feedback",
+    "pages/about/about"
+  ],
+  "subPackages": [
+    { "root": "pkg-hard", "pages": ["pages/detail/detail"] },
+    { "root": "pkg-normal", "pages": ["pages/detail/detail"] },
+    { "root": "pkg-easy", "pages": ["pages/detail/detail"] },
+    { "root": "pkg-newbie", "pages": ["pages/detail/detail"] }
+  ],
+  "window": {
+    "navigationBarBackgroundColor": "#1c1d22",
+    "navigationBarTitleText": "加页手记攻略",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#1c1d22",
+    "backgroundTextStyle": "light"
+  },
+  "tabBar": {
+    "color": "#888",
+    "selectedColor": "#ff9c00",
+    "backgroundColor": "#1c1d22",
+    "borderStyle": "black",
+    "list": [
+      { "pagePath": "pages/index/index", "text": "首页", "iconPath": "images/tab-home.png", "selectedIconPath": "images/tab-home-active.png" },
+      { "pagePath": "pages/category/category", "text": "地图", "iconPath": "images/tab-map.png", "selectedIconPath": "images/tab-map-active.png" },
+      { "pagePath": "pages/inventory/inventory", "text": "图鉴", "iconPath": "images/tab-inventory.png", "selectedIconPath": "images/tab-inventory-active.png" }
+    ]
+  }
+}

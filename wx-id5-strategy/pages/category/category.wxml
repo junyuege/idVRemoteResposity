@@ -1,0 +1,15 @@
+<view class="page-wrap category-page">
+  <view class="category-title">选择地图</view>
+
+  <view class="map-card">
+    <view class="map-icon-wrap">
+      <view class="map-icon-star glow">✦</view>
+    </view>
+    <view class="map-name">厄梦之女</view>
+    <view class="mode-tabs">
+      <view class="mode-tab {{currentMode === 'simple' ? 'active' : ''}}" data-mode="simple" bindtap="onModeTap">简单模式</view>
+      <view class="mode-tab {{currentMode === 'hard' ? 'active' : ''}}" data-mode="hard" bindtap="onModeTap">困难模式</view>
+      <view class="mode-tab {{currentMode === 'nightmare' ? 'active' : ''}}" data-mode="nightmare" bindtap="onModeTap">全棺模式</view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,9 @@
+{
+  "name": "getStrategies",
+  "version": "1.0.0",
+  "description": "获取攻略列表",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "latest"
+  }
+}

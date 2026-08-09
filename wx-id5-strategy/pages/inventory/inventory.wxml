@@ -1,0 +1,15 @@
+<view class="page-wrap">
+  <view class="search-box">
+    <text class="search-icon">⌕</text>
+    <input class="search-input" placeholder="搜索物品名称" placeholder-class="search-placeholder" bindinput="onSearch" bindconfirm="onSearch" />
+    <text wx:if="{{keyword}}" class="search-clear" bindtap="clearSearch">×</text>
+  </view>
+  <view wx:if="{{items.length > 0}}" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
+    <view wx:for="{{items}}" wx:key="id" class="panel" style="padding:10px;text-align:center;" data-id="{{item.id}}" bindtap="onItemTap">
+      <image src="{{item.image}}" mode="aspectFill" style="width:100%;height:80px;border-radius:6px;background:#333;" />
+      <view style="margin-top:6px;font-size:12px;font-weight:600;color:{{item.rarity === 'purple' ? '#c07af0' : item.rarity === 'orange' ? '#f0b07a' : item.rarity === 'blue' ? '#7ab8f0' : item.rarity === 'green' ? '#7ed8a8' : '#ccc'}}">{{item.name}}</view>
+      <view style="font-size:11px;color:#999;margin-top:2px;">{{item.price}} 线索</view>
+    </view>
+  </view>
+  <view wx:else class="empty-wrap"><text>没有找到匹配的物品</text></view>
+</view>

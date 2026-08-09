@@ -1,0 +1,53 @@
+page {
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  background-color: #1c1d22;
+  color: #e8e4e0;
+  box-sizing: border-box;
+  font-size: 14px;
+}
+view, text, image, scroll-view, input, textarea, button { box-sizing: border-box; }
+.page-wrap { padding: 14px 14px 30px; min-height: 100vh; }
+.panel {
+  background: #2a2b32;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+.tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-size: 11px;
+  margin-right: 5px;
+  margin-bottom: 4px;
+}
+.tag-easy { background: #2a3d39; color: #7ed8a8; }
+.tag-normal { background: #3d3a2a; color: #f0c85a; }
+.tag-hard { background: #3d2a2a; color: #f07a5a; }
+.tag-nightmare { background: #2d1a3d; color: #d48af0; }
+.tag-all { background: #3d2a4a; color: #c88af0; }
+.tag-blue { background: #1e3a5f; color: #7ab8f0; }
+.tag-purple { background: #3a1e5f; color: #c07af0; }
+.tag-orange { background: #5f3a1e; color: #f0b07a; }
+.loading-wrap { padding: 50px 0; text-align: center; color: #aaa; font-size: 13px; }
+.empty-wrap { padding: 60px 0; text-align: center; color: #888; font-size: 13px; }
+.float-btn {
+  position: fixed; right: 18px; bottom: 100px; z-index: 999;
+  width: 50px; height: 50px; border-radius: 50%;
+  background: linear-gradient(135deg, #ff9c00, #ff7a00);
+  color: #fff; font-size: 12px; font-weight: 600;
+  text-align: center; line-height: 50px;
+  box-shadow: 0 6px 20px rgba(255, 156, 0, 0.35);
+}
+.search-box {
+  display: flex; align-items: center; height: 44px; padding: 0 14px;
+  margin-bottom: 16px; border: 1px solid #4a4a52; border-radius: 8px; background: #2a2b32;
+}
+.search-icon { color: #999; font-size: 18px; margin-right: 8px; }
+.search-input { flex: 1; height: 100%; color: #fff; font-size: 14px; background: transparent; }
+.search-placeholder { color: #777; }
+.search-clear { width: 24px; height: 24px; color: #aaa; font-size: 20px; text-align: center; line-height: 22px; }
+/* 按钮重置 */
+button { padding: 0; margin: 0; background: transparent; border: none; border-radius: 0; line-height: 1; }
+button::after { border: none; }

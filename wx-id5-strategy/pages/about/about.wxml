@@ -1,0 +1,16 @@
+<view class="page-wrap">
+  <view class="panel" style="display:flex;flex-direction:column;align-items:center;padding:30px 20px;margin-bottom:16px;">
+    <view style="font-size:56px;margin-bottom:12px;">📖</view>
+    <view style="font-size:18px;font-weight:700;color:#fff;">第五人格 · 加页手记攻略</view>
+    <view style="font-size:13px;color:#888;margin-top:6px;">版本 1.0.0</view>
+  </view>
+  <view class="panel" style="padding:18px;margin-bottom:12px;">
+    <view style="font-size:15px;font-weight:600;color:#ff9c00;margin-bottom:10px;">免责声明</view>
+    <view style="font-size:13px;line-height:1.8;color:#ccc;">本小程序为玩家自制攻略工具，非官方出品。所有攻略内容仅供参考，不构成任何游戏建议。图片及数据来源于玩家社区，如有侵权请联系删除。使用本工具所产生的一切后果由用户自行承担。</view>
+  </view>
+  <view class="panel" style="padding:18px;margin-bottom:12px;">
+    <view style="font-size:15px;font-weight:600;color:#ff9c00;margin-bottom:10px;">关于我们</view>
+    <view style="font-size:13px;line-height:1.8;color:#ccc;">本工具由第五人格玩家社区爱好者制作，旨在为玩家提供便捷的加页手记攻略查询服务。如果你有任何建议或问题，欢迎通过"反馈"页面联系我们。</view>
+  </view>
+  <view style="text-align:center;font-size:12px;color:#666;margin-top:20px;padding-bottom:30px;">© 2026 加页手记攻略组</view>
+</view>

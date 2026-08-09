@@ -1,0 +1,11 @@
+{
+  "desc": "第五人格加页手记攻略查询 - 提供地图路线、物资点位、通关技巧查询",
+  "rules": [
+    {
+      "action": "allow",
+      "page": "*",
+      "params": [],
+      "matching": "exact"
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+<view class="page-wrap">
+  <view wx:if="{{loading}}" class="loading-wrap"><text>加载中...</text></view>
+  <view wx:elif="{{strategy}}">
+    <view style="margin-bottom:16px;">
+      <view style="font-size:22px;font-weight:700;color:#fff;line-height:1.4;">{{strategy.title}}</view>
+      <view style="display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap;">
+        <text class="tag {{strategy.difficultyTagClass}}">{{strategy.difficultyTag}}</text>
+        <text style="font-size:12px;color:#ff9c00;">{{strategy.mapName}}</text>
+        <text style="font-size:12px;color:#999;">{{strategy.author}}</text>
+      </view>
+    </view>
+    <!-- 简介 -->
+    <view wx:if="{{strategy.summary}}" class="panel" style="padding:12px 16px;margin-bottom:12px;">
+      <text style="font-size:13px;color:#aaa;line-height:1.6;">{{strategy.summary}}</text>
+    </view>
+    <!-- 详细内容 -->
+    <view class="panel" style="padding:16px;">
+      <view style="font-size:14px;line-height:1.8;color:#e0dcd8;white-space:pre-wrap;">{{strategy.content}}</view>
+      <view wx:if="{{strategy.images && strategy.images.length}}" style="margin-top:16px;">
+        <image wx:for="{{strategy.images}}" wx:key="this" src="{{item}}" mode="widthFix" style="width:100%;border-radius:8px;margin-bottom:10px;background:#333;" data-index="{{index}}" bindtap="previewImage" />
+      </view>
+    </view>
+  </view>
+  <view wx:elif="{{!loading}}" class="empty-wrap"><text>攻略不存在</text></view>
+</view>
