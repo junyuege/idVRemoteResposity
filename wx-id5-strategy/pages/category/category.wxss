@@ -42,6 +42,11 @@
   color: #fff;
   font-size: 18px;
   font-weight: 600;
+  margin-bottom: 4px;
+}
+.map-diff {
+  color: #999;
+  font-size: 12px;
   margin-bottom: 20px;
 }
 .mode-tabs {

@@ -1,28 +1,40 @@
-// 本地占位图（替换真实素材时，把此处改为 /images/items/xxx.png 或云存储 URL）
-const PLACEHOLDER_ITEM = '/images/placeholder/item.png';
+const api = require('../../data/api.js');
+
+// 难度 -> 样式类映射（复用既有 wxss 类名，不新增样式）
+const TAG_CLASS = {
+  hard: 'tag-hard',
+  normal: 'tag-normal',
+  easy: 'tag-easy',
+  newbie: 'tag-nightmare'
+};
 
 Page({
   data: { items: [], keyword: '' },
+
   onLoad() { this.loadItems(); },
-  loadItems() {
-    this.setData({
-      items: [
-        { id: 'i1', name: '远古遗物', rarity: 'purple', rarityClass: 'rarity-purple', price: 2800, image: PLACEHOLDER_ITEM },
-        { id: 'i2', name: '金色怀表', rarity: 'orange', rarityClass: 'rarity-orange', price: 1500, image: PLACEHOLDER_ITEM },
-        { id: 'i3', name: '精致瓷器', rarity: 'blue', rarityClass: 'rarity-blue', price: 800, image: PLACEHOLDER_ITEM },
-        { id: 'i4', name: '古老铜币', rarity: 'green', rarityClass: 'rarity-green', price: 300, image: PLACEHOLDER_ITEM },
-        { id: 'i5', name: '碎布片', rarity: 'white', rarityClass: 'rarity-white', price: 50, image: PLACEHOLDER_ITEM },
-        { id: 'i6', name: '神秘符文', rarity: 'purple', rarityClass: 'rarity-purple', price: 3200, image: PLACEHOLDER_ITEM },
-      ]
-    });
+
+  // 图鉴条目 = 地图 × 难度下的每个形状（侧门入口），数据全部来自 SSOT 索引
+loadItems() {
+    // 图鉴内容暂未开放：保持空白
+    this.setData({ allItems: [], items: [] });
   },
+
   onSearch(e) {
     const kw = (e.detail.value || '').trim().toLowerCase();
     this.setData({ keyword: kw });
-    if (!kw) { this.loadItems(); return; }
-    const all = JSON.parse(JSON.stringify(this.data.items));
-    this.setData({ items: all.filter(i => i.name.toLowerCase().includes(kw)) });
   },
-  clearSearch() { this.setData({ keyword: '' }); this.loadItems(); },
-  onItemTap() { wx.showToast({ title: '详情开发中', icon: 'none' }); }
+
+  clearSearch() {
+    this.setData({ keyword: '' });
+  },
+
+  onItemTap(e) {
+    const item = this.data.items[e.currentTarget.dataset.index];
+    if (!item) return;
+    // 跳转对应难度的详情分包页
+    wx.navigateTo({
+      url: '/pkg-' + item.routeId + '/pages/detail/detail?mapId=' + item.mapId +
+           '&routeId=' + item.routeId + '&shapeId=' + encodeURIComponent(item.shapeId)
+    });
+  }
 });
