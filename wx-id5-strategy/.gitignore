@@ -1,0 +1,6 @@
+node_modules/
+tools/node_modules/
+tools/.env.local
+tools/.env
+tools/asset-cache/
+tools/upload-report.json

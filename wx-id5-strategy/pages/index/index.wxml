@@ -10,34 +10,38 @@
   </view>
 
   <view style="font-size:18px;font-weight:700;color:#ff9c00;margin:0 0 12px 2px;">攻略分类</view>
-  <view wx:for="{{strategies}}" wx:key="_id" class="panel" style="display:flex;min-height:100px;margin-bottom:12px;" data-id="{{item._id}}" bindtap="onStrategyTap">
-    <image src="{{item.coverImage}}" mode="aspectFill" style="width:120px;min-width:120px;height:100px;background:#333;" />
-    <view style="flex:1;padding:12px 14px;min-width:0;">
-      <view style="font-size:15px;font-weight:600;color:#fff;line-clamp:2;overflow:hidden;">{{item.title}}</view>
-      <view style="display:flex;align-items:center;margin-top:8px;gap:8px;">
-        <text style="font-size:11px;color:#999;">{{item.author}}</text>
-        <text class="tag {{item.difficultyTagClass}}">{{item.difficultyTag}}</text>
+  <view wx:for="{{strategies}}" wx:key="_id" class="card panel" data-id="{{item._id}}" bindtap="onStrategyTap">
+    <view class="left-content">
+      <view class="map-icon-wrap">
+        <view class="map-icon-star">✦</view>
       </view>
-      <view style="font-size:12px;color:#bbb;margin-top:6px;line-clamp:2;overflow:hidden;">{{item.summary}}</view>
+      <view class="map-title">{{item.title}}</view>
+      <view class="map-sub">{{item.difficulty}}</view>
     </view>
-  </view>
-
-  <view style="font-size:18px;font-weight:700;color:#ff9c00;margin:12px 0 12px 2px;">更多功能</view>
-  <view class="panel" style="display:flex;align-items:center;padding:14px;margin-bottom:10px;" bindtap="goToInventory">
-    <view style="width:44px;height:44px;border-radius:8px;background:#33343d;display:flex;align-items:center;justify-content:center;font-size:22px;margin-right:12px;">📦</view>
-    <view style="flex:1;">
-      <view style="font-size:15px;font-weight:600;color:#fff;">回收图鉴</view>
-      <view style="font-size:11px;color:#999;margin-top:3px;">查看所有可回收物品及价格</view>
+    <view class="right-content">
+      <view class="pillar-row">
+        <view
+          wx:for="{{item.shortRoutes}}"
+          wx:for-item="route"
+          wx:key="id"
+          class="pill {{currentMode === route.id || (currentMode === '' && route.id === 'normal') ? 'active' : ''}}"
+          data-mode="{{route.id}}"
+          data-mapId="{{item._id}}"
+          catchtap="onSelectMode"
+        >{{route.label}}</view>
+      </view>
+      <view wx:if="{{item.longRoutes.length}}" class="pillar-row">
+        <view
+          wx:for="{{item.longRoutes}}"
+          wx:for-item="route"
+          wx:key="id"
+          class="pill {{currentMode === route.id || (currentMode === '' && route.id === 'normal') ? 'active' : ''}}"
+          data-mode="{{route.id}}"
+          data-mapId="{{item._id}}"
+          catchtap="onSelectMode"
+        >{{route.label}}</view>
+      </view>
     </view>
-    <text style="font-size:24px;color:#ff9c00;">›</text>
-  </view>
-  <view class="panel" style="display:flex;align-items:center;padding:14px;margin-bottom:10px;" bindtap="goToInventory">
-    <view style="width:44px;height:44px;border-radius:8px;background:#33343d;display:flex;align-items:center;justify-content:center;font-size:22px;margin-right:12px;">🎒</view>
-    <view style="flex:1;">
-      <view style="font-size:15px;font-weight:600;color:#fff;">物品图鉴</view>
-      <view style="font-size:11px;color:#999;margin-top:3px;">道具、材料、装备一览</view>
-    </view>
-    <text style="font-size:24px;color:#ff9c00;">›</text>
   </view>
 
   <button class="float-btn" open-type="share">分享</button>

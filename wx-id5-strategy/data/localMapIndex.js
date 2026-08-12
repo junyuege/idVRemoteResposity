@@ -1,48 +1,869 @@
 // data/localMapIndex.js (SSOT)
-// 由 F:/d5 物理目录扫描生成 v2.0；v2.1 分包化：assetBase 指向子包内相对 pics
 module.exports = {
-  version: "2.1",
-  maps: [
+  "version": "2.1",
+  // 图鉴扩展条目：异象（anomaly）& 回收物资（material）
+  // 数据与图标均来自 B 站 wiki（加页手记·异象 / 加页手记·道具）
+  "inventoryData": [
     {
-      id: "e_yun_zhi_nv",
-      displayName: "厄运之女",
-      difficulty: "核心攻略",
-      coverImage: "/images/placeholder/cover.png",
-      sourceAnchor: "F:/d5/第五人格加页手记（超清4k，宝藏房 ）/厄运之女（展十版）/",
-      assetBase: "../../assets/",
-      routes: [
+      "category": "anomaly",
+      "id": "negligent_guard_hard",
+      "name": "失职的看守-强化",
+      "icon": "https://patchwiki.biligame.com/images/dwrg/8/88/euzu715385t2orxld394h31rsxm9i2h.png",
+      "description": "兼具远程威胁和追击能力的难缠敌人。同时，面对玩家的攻击，它能够遁入黑暗以进行有效的规避。",
+      "counter": "当看见他开始挥舞锁链时，要注意横向移动或者蹲下来规避攻击，否则将被拉到他面前承受更大的威胁，你可能需要一些耐心来面对这个可怜的家伙。",
+      "maps": ["困难"]
+    },
+    {
+      "category": "anomaly",
+      "id": "doom_stand_in",
+      "name": "厄运替身",
+      "icon": "https://patchwiki.biligame.com/images/dwrg/f/fb/sj5j6wyw7qfg1vrbwnah2ujyrzoosvl.png",
+      "description": "厄运替身的攻击势大力沉，而且还会在远处对玩家发起冲锋。且蓄力冲锋命中玩家时，还会将玩家击飞。",
+      "counter": "厄运替身作战请一定和它保持好距离。打不过的话也可以选择逃走。",
+      "maps": ["新手", "简单", "普通", "困难"]
+    },
+    {
+      "category": "anomaly",
+      "id": "greedy_bandit_hard",
+      "name": "贪婪的盗匪-强化",
+      "icon": "https://patchwiki.biligame.com/images/dwrg/8/8d/4oekjcm02pp80c1d78kd7vme37rtlf5.png",
+      "description": "高高跃起，重击地面。对前方大范围地面区域造成范围伤害。蓄力时跃击还会将玩家击倒。",
+      "counter": "尝试让自己的角色像异象那样高高跃起。或者尝试快速离开异象的攻击范围。",
+      "maps": ["普通", "困难"]
+    },
+    {
+      "category": "anomaly",
+      "id": "silent_gentleman",
+      "name": "缄默的绅士",
+      "icon": "https://patchwiki.biligame.com/images/dwrg/1/15/qgxh1if3vgsfmy485b59rwghz2x9bap.png",
+      "description": "你可以和变身前的绅士交换一件物品，但是记住别吵到他。变身后的绅士会疯狂的追击玩家，并尝试用武器将玩家撕开。",
+      "counter": "轻手轻脚，别吵到他。如果异象已经被激怒，请尝试逃走，或者呼叫支援。",
+      "maps": ["简单", "普通", "困难"]
+    },
+    {
+      "category": "anomaly",
+      "id": "negligent_guard",
+      "name": "失职的看守",
+      "icon": "https://patchwiki.biligame.com/images/dwrg/a/a0/kc8fbso19c9api088q1k7qew421s89f.png",
+      "description": "兼具远程威胁和追击能力的难缠敌人。同时，面对玩家的攻击，它能够遁入黑暗以进行有效的规避。",
+      "counter": "当看见他开始挥舞锁链时，要注意横向移动或者蹲下来规避攻击，否则将被拉到他面前承受更大的威胁，你可能需要一些耐心来面对这个可怜的家伙。",
+      "maps": ["普通", "困难"]
+    },
+    {
+      "category": "anomaly",
+      "id": "mirror_memory",
+      "name": "镜中回忆",
+      "icon": "https://patchwiki.biligame.com/images/dwrg/7/7f/su6f4tnpdnxjf9ju23zrxxeligoazse.png",
+      "description": "镜子会孵化伴生渡鸦追击玩家。只要镜子没有被消灭，被击倒的渡鸦会再次复活。",
+      "counter": "观察伴生渡鸦落下的羽毛，尝试找到并摧毁镜子。",
+      "maps": ["简单", "普通", "困难"]
+    },
+    {
+      "category": "anomaly",
+      "id": "greedy_bandit",
+      "name": "贪婪的盗匪",
+      "icon": "https://patchwiki.biligame.com/images/dwrg/f/f3/en44ox7nelhp6mqew7nrk4gqmj1wchg.png",
+      "description": "高高跃起，重击地面。对前方大范围地面区域造成范围伤害。",
+      "counter": "尝试让自己的角色像异象那样高高跃起。或者尝试快速离开异象的攻击范围。",
+      "maps": ["简单", "普通", "困难"]
+    },
+    {
+      "category": "anomaly",
+      "id": "sigh_ball_hard",
+      "name": "叹息球-强化",
+      "icon": "https://patchwiki.biligame.com/images/dwrg/e/e5/kehn330la0yuetxeedj0p4w2k3dxdit.png",
+      "description": "通过附身玩家来造成伤害，多只气球附身时将对玩家产生控制效果。要小心它死亡之前会自爆来造成伤害。",
+      "counter": "优先清理，单只叹息球并没有威胁能力，但要小心其成群出现，需要留意身旁每一个叹息球的位置。",
+      "maps": ["新手", "简单", "普通", "困难"]
+    },
+    {
+      "category": "anomaly",
+      "id": "paper_pile",
+      "name": "故纸堆",
+      "icon": "https://patchwiki.biligame.com/images/dwrg/1/14/4goyuvjkqfkycmvtnt3d76qg83apr9j.png",
+      "description": "故纸堆会指引玩家找到埋藏的辞章，但它会攻击不听从指引的玩家。",
+      "counter": "当故纸堆在指引你时，注意不要离它太远。",
+      "maps": ["简单", "普通", "困难"]
+    },
+    {
+      "category": "anomaly",
+      "id": "sigh_ball",
+      "name": "叹息球",
+      "icon": "https://patchwiki.biligame.com/images/dwrg/2/2f/rta2ckyhwuv7b5kywl2u5tw5o01ojlr.png",
+      "description": "通过附身玩家来造成伤害，多只气球附身时将对玩家产生控制效果。要小心它死亡之前会自爆来造成伤害。",
+      "counter": "优先清理，单只叹息球并没有威胁能力，但要小心其成群出现，需要留意身旁每一个叹息球的位置。",
+      "maps": ["新手", "简单", "普通", "困难"]
+    },
+    {
+      "category": "anomaly",
+      "id": "clumsy_bandit",
+      "name": "笨拙的盗匪",
+      "icon": "https://patchwiki.biligame.com/images/dwrg/2/21/bc076s9cdx4lysjmpp5myxhkv0uyehx.png",
+      "description": "寻常的新手盗贼，会挥动简易的木板攻击玩家。",
+      "counter": "记得带把武器防身，毕竟他手上有块木板。",
+      "maps": ["新手", "简单", "普通", "困难"]
+    },
+    {
+      "category": "anomaly",
+      "id": "nameless_doll",
+      "name": "无名布偶",
+      "icon": "https://patchwiki.biligame.com/images/dwrg/0/01/hd476bd2nyodmt6f5sby6sz52mds2kg.png",
+      "description": "无名布偶发现你后会尝试一直跟在你身边。无名布偶需要安抚，长时间被无视会变身成为厄运替身。",
+      "counter": "安抚无名布偶。或者找一个机会提前解决这个潜在的隐患。",
+      "maps": ["新手", "简单", "普通", "困难"]
+    },
+    {
+      "category": "material",
+      "id": "loaded_shotgun",
+      "name": "上膛的猎枪",
+      "icon": "https://patchwiki.biligame.com/images/dwrg/8/83/cp41bx9ui3fx9hu2wl7j9x5wlfo22nz.png",
+      "quality": "稀世",
+      "type": "进攻",
+      "value": 50000,
+      "weight": "3kg",
+      "durability": "24/24",
+      "description": "可以发射出若干弹丸进行攻击，伤害随距离的增加而衰减。"
+    },
+    {
+      "category": "material",
+      "id": "rest_seal",
+      "name": "小憩闲章",
+      "icon": "https://patchwiki.biligame.com/images/dwrg/4/44/33gy5hz5ce4wnlk6u6nz2qw9z5jn32r.png",
+      "quality": "稀世",
+      "type": "探索",
+      "value": 50000,
+      "weight": "1kg",
+      "durability": "无耐久",
+      "description": "使用小憩闲章后，可以将自己传送返回整备大厅。"
+    },
+    {
+      "category": "material",
+      "id": "burning_resentment",
+      "name": "燃烧的怨恨",
+      "icon": "https://patchwiki.biligame.com/images/dwrg/a/a9/is27stwixi577ev387pmsobr4er9ytm.png",
+      "quality": "稀世",
+      "type": "进攻",
+      "value": 25000,
+      "weight": "3kg",
+      "durability": "100/100",
+      "description": "可以持续发射火焰灼烧目标并造成伤害，持续灼烧会赋予目标燃烧状态，处于燃烧状态下的目标血量将持续降低。额外效果：可发射一道强焰对灼烧目标造成爆燃效果。"
+    },
+    {
+      "category": "material",
+      "id": "eye_of_lies",
+      "name": "谎言之眼",
+      "icon": "https://patchwiki.biligame.com/images/dwrg/3/3e/jbhkoxcc05ho8tsor0y98xcvad409ge.png",
+      "quality": "稀世",
+      "type": "探索",
+      "value": 25000,
+      "weight": "3kg",
+      "durability": "100/100",
+      "description": "使用谎言之眼后，可以获得强化视野，在黑暗中辨清前路。"
+    },
+    {
+      "category": "material",
+      "id": "forgotten_faith",
+      "name": "被遗忘的信仰",
+      "icon": "https://patchwiki.biligame.com/images/dwrg/0/06/kvdkk499daacw7nan7oh1n6buudg7ru.png",
+      "quality": "奇珍",
+      "type": "进攻",
+      "value": 20000,
+      "weight": "3kg",
+      "durability": "无耐久",
+      "description": "可以挥动进行横扫攻击，也可以消耗体力蓄力进行突刺攻击。额外效果：使用被遗忘的信仰招架攻击，招架成功后自动发起一次攻击并恢复一定体力。"
+    },
+    {
+      "category": "material",
+      "id": "guardian_staff",
+      "name": "庇护者之杖",
+      "icon": "https://patchwiki.biligame.com/images/dwrg/7/7e/ic901s6lmjbrt9568d7zmrw0zk2jd3w.png",
+      "quality": "奇珍",
+      "type": "进攻",
+      "value": 15000,
+      "weight": "3kg",
+      "durability": "无耐久",
+      "description": "可以挥动或蓄力向前方进行攻击。额外效果：将庇护者之杖向前方掷出，对范围内的异象造成伤害，并降低其移动与转向速度。"
+    },
+    {
+      "category": "material",
+      "id": "sniff_box",
+      "name": "提神嗅盒",
+      "icon": "https://patchwiki.biligame.com/images/dwrg/0/02/5xhqf1wg8dlc9c9jvwggrz70rw46cjj.png",
+      "quality": "奇珍",
+      "type": "探索",
+      "value": 8000,
+      "weight": "1kg",
+      "durability": "100/100",
+      "description": "使用提神嗅盒后，可以进入警醒状态。在状态持续期间，可获得一定速度的加成，并降低体力消耗。"
+    },
+    {
+      "category": "material",
+      "id": "blessing_bell",
+      "name": "祝祷铃",
+      "icon": "https://patchwiki.biligame.com/images/dwrg/b/b7/enjo9k41iufpjlvslzpqkzyq82ys1i2.png",
+      "quality": "奇珍",
+      "type": "辅助",
+      "value": 6000,
+      "weight": "1kg",
+      "durability": "100/100",
+      "description": "使用祝祷铃后，可以使坠入故事深处的队友重新返回探索。"
+    },
+    {
+      "category": "material",
+      "id": "incense_stove",
+      "name": "祝祷烟炉",
+      "icon": "https://patchwiki.biligame.com/images/dwrg/f/f4/szp2pz8w8512oac9yi3mi9mci7uf40p.png",
+      "quality": "独特",
+      "type": "辅助",
+      "value": 4000,
+      "weight": "1kg",
+      "durability": "无耐久",
+      "description": "携带祝祷烟炉时，可以在危机时刻抵挡一次致命伤害。"
+    },
+    {
+      "category": "material",
+      "id": "first_aid_needle",
+      "name": "急救针",
+      "icon": "https://patchwiki.biligame.com/images/dwrg/6/6a/ba0x4s4ff1ylr0kaxwspd3lrdd3jrgj.png",
+      "quality": "独特",
+      "type": "辅助",
+      "value": 4000,
+      "weight": "1kg",
+      "durability": "100/100",
+      "description": "携带急救针时，可以在受伤状态下治疗自己，治疗成功即可恢复一定生命值。"
+    },
+    {
+      "category": "material",
+      "id": "lantern",
+      "name": "提灯",
+      "icon": "https://patchwiki.biligame.com/images/dwrg/9/98/2j4j4t4qnpeszolhe1znmynpe8mcmp3.png",
+      "quality": "独特",
+      "type": "探索",
+      "value": 4000,
+      "weight": "1kg",
+      "durability": "100/100",
+      "description": "使用提灯后，可以照亮前方一片区域，持续揭示附近的黑暗。"
+    },
+    {
+      "category": "material",
+      "id": "dancing_taunt",
+      "name": "跃动的嘲弄",
+      "icon": "https://patchwiki.biligame.com/images/dwrg/7/78/f1l4dyogpxxjfjsqugn9yw2fm3mhg0o.png",
+      "quality": "独特",
+      "type": "辅助",
+      "value": 3500,
+      "weight": "1kg",
+      "durability": "无耐久",
+      "description": "投掷出跃动的嘲弄后，可以在投掷点生成幻影。幻影将持续挑衅，吸引异象攻击，直至幻影被击败或持续时间结束。此时幻影将被引爆，减速范围内异象。"
+    }
+  ],
+  // 图鉴扩展条目：辞章（chapter），来源 B 站 wiki（加页手记辞章），含常规/联动两组
+  "chapterData": [
+    { "category": "chapter", "id": "beizuzhou_de_lanshibao", "name": "被诅咒的蓝宝石", "quality": "华彩", "group": "常规辞章", "icon": "https://patchwiki.biligame.com/images/dwrg/2/25/k820b6lwvve46w40goaipyyg2ivvh8n.png", "weight": "1", "price": 600000, "map": "厄运之女", "description": "一条璀璨到异常的蓝宝石项链，吊坠背面用稍显稚嫩的笔触刻写下奇怪的谜题。\n我始于深渊\nI start in the deep\n我藏于花蕊\nI hide in the bloom\n我终于瑰宝\nI end in the gem\n我是谁\nwho am I" },
+    { "category": "chapter", "id": "jinbei", "name": "金杯", "quality": "稀世", "group": "常规辞章", "icon": "https://patchwiki.biligame.com/images/dwrg/3/39/bhyd4334u88ele83q7qez2t1035gwom.png", "weight": "25", "price": 200000, "map": "厄运之女", "description": "繁复的花纹终将褪去，表面的镀金也被时光风蚀。唯有杯中盛放的金币仍旧闪耀，四叶草的花纹仍旧熠熠生辉。" },
+    { "category": "chapter", "id": "hongshanhu", "name": "红珊瑚", "quality": "稀世", "group": "常规辞章", "icon": "https://patchwiki.biligame.com/images/dwrg/6/62/bndcz7yyvvfwp2xqwji2wpfj9941zpq.png", "weight": "10", "price": 150000, "map": "厄运之女", "description": "它被从水中捞出，镶嵌上同一艘捕捞船带回港口的珍珠。流动的银包裹残缺的身体，珊瑚自此不曾嗅过海风。" },
+    { "category": "chapter", "id": "huangjin_canye", "name": "黄金残页", "quality": "稀世", "group": "常规辞章", "icon": "https://patchwiki.biligame.com/images/dwrg/9/99/pu08o3ut767b6xtz40r0mb1cwb8b5r3.png", "weight": "25", "price": 100000, "map": "厄运之女", "description": "一卷沉甸甸的黄金卷轴，页面上錾刻着繁复的花纹与无人能辨识的符文。" },
+    { "category": "chapter", "id": "yinzhi_de_teerpuxikerui_de_diaoxiang", "name": "银质的忒耳普西科瑞的雕像", "quality": "稀世", "group": "常规辞章", "icon": "https://patchwiki.biligame.com/images/dwrg/8/8f/c7gwur8434lt68hu1qq5tkhzz7bekpl.png", "weight": "24", "price": 40000, "map": "厄运之女", "description": "忒耳普西科瑞演奏着她的七弦琴，缪斯已然降临。" },
+    { "category": "chapter", "id": "yinzhi_de_yeying_zhutai", "name": "银质的夜莺烛台", "quality": "稀世", "group": "常规辞章", "icon": "https://patchwiki.biligame.com/images/dwrg/a/a0/3hzifkikfecaxf3mg7oxipl91zksm1g.png", "weight": "20", "price": 20000, "map": "厄运之女", "description": "白色的蜡烛仍在燃烧，将银质的烛台照得纤毫毕现。夜莺，夜莺，你将为谁而歌唱？" },
+    { "category": "chapter", "id": "henda_de_youhua", "name": "很大的油画", "quality": "奇珍", "group": "常规辞章", "icon": "https://patchwiki.biligame.com/images/dwrg/d/de/gr11th666ry243t16wl2qfkvha8102w.png", "weight": "20", "price": 15000, "map": "厄运之女", "description": "富丽堂皇的鎏金画框，这类大幅尺寸的油画常常被作为艺术品收藏，没人知道它到底价值几何。" },
+    { "category": "chapter", "id": "youling_shuijing", "name": "幽灵水晶", "quality": "奇珍", "group": "常规辞章", "icon": "https://patchwiki.biligame.com/images/dwrg/5/59/hkm3mce7n6l6cucevttkqxfv6rob8qh.png", "weight": "15", "price": 14000, "map": "厄运之女", "description": "千万年前造地运动的产物，那团白色的幽灵始终如影随形。" },
+    { "category": "chapter", "id": "guiwawa", "name": "鬼娃娃", "quality": "奇珍", "group": "常规辞章", "icon": "https://patchwiki.biligame.com/images/dwrg/f/fc/37882msmfx9v00k6ybobnav24gtp08o.png", "weight": "10", "price": 12000, "map": "厄运之女", "description": "蜂蜜色的卷发，白色的蕾丝裙。这一切是如此熟悉，她看着你，却无法告诉你，她到底是谁。" },
+    { "category": "chapter", "id": "miusi_de_mimi", "name": "缪斯的秘密", "quality": "奇珍", "group": "常规辞章", "icon": "https://patchwiki.biligame.com/images/dwrg/6/64/cb207idz541izxhxh1bwqt8ug1up3td.png", "weight": "20", "price": 10000, "map": "厄运之女", "description": "空荡荡的木龛，顶部雕刻着一只栖息在枝叶上的夜莺。交还属于它的秘密，让夜莺开始歌唱吧。" },
+    { "category": "chapter", "id": "tianye", "name": "添页", "quality": "奇珍", "group": "常规辞章", "icon": "https://patchwiki.biligame.com/images/dwrg/b/b7/tdxp7zps956b22qtw9sq2zqm410lo2l.png", "weight": "7", "price": 10000, "map": "厄运之女", "description": "手记中抽离出的单独一页，边缘略有残缺，纸面上的塞壬之歌符号是一份坦荡的自我陈词。它并不隶属任何故事，只负责呈现一种全新的视角。（可用于进入加页手记监管者模式）" },
+    { "category": "chapter", "id": "jintangshao", "name": "金汤勺", "quality": "奇珍", "group": "常规辞章", "icon": "https://patchwiki.biligame.com/images/dwrg/f/f2/g984m43p93c47y4b5qg2k13h3ajly34.png", "weight": "4", "price": 8000, "map": "厄运之女", "description": "一只金质的汤勺，勺柄末端花纹舒展。光洁如新，甚至可以照出人影。" },
+    { "category": "chapter", "id": "zibaoshi_jiezhi", "name": "紫宝石戒指", "quality": "奇珍", "group": "常规辞章", "icon": "https://patchwiki.biligame.com/images/dwrg/f/ff/7umo81u0z2r7q84aeyg3vxmzkybjatb.png", "weight": "1", "price": 8000, "map": "厄运之女", "description": "一枚古典简洁的戒指，镶嵌着足够分量的紫色宝石。曾经用于象征身份与地位，不再是了。" },
+    { "category": "chapter", "id": "shuiguopan", "name": "水果盘", "quality": "奇珍", "group": "常规辞章", "icon": "https://patchwiki.biligame.com/images/dwrg/d/d6/6g1a8n9rwv0we8oo2gadbybd8t09rax.png", "weight": "8", "price": 7000, "map": "厄运之女", "description": "时间同等公平地倾轧着水果盘与水果。金属尚能抵挡锈蚀的困扰，果实却早已腐烂殆尽。" },
+    { "category": "chapter", "id": "shoushihe", "name": "首饰盒", "quality": "奇珍", "group": "常规辞章", "icon": "https://patchwiki.biligame.com/images/dwrg/b/b6/32n7cjs3b9nr7h2uz4vlalmhsw87jvz.png", "weight": "8", "price": 5000, "map": "厄运之女", "description": "精美华贵的银色首饰盒，微微张开布满灰尘与蛛网的嘴，盒里早已空空如也。" },
+    { "category": "chapter", "id": "huguang", "name": "弧光", "quality": "奇珍", "group": "常规辞章", "icon": "https://patchwiki.biligame.com/images/dwrg/0/0d/0wh73me292cy66pwpg5pgszm9pyq2cr.png", "weight": "1", "price": 5000, "map": "厄运之女", "description": "一支金色羽毛笔，翎羽有些凌乱。黄铜笔杆上刻一朵最常见的鸢尾，银质笔尖锋锐。它仿佛从未蘸过墨水，又仿佛刚刚写完了什么。（可用于加页手记武器洗练）" },
+    { "category": "chapter", "id": "gubao_zhuangshi_kaijia_toukui", "name": "古堡装饰铠甲头盔", "quality": "独特", "group": "常规辞章", "icon": "https://patchwiki.biligame.com/images/dwrg/a/a8/b80twqn0cqonezwbi47cjvw5wfeudxf.png", "weight": "15", "price": 5000, "map": "厄运之女", "description": "装饰用的骑士头盔，面罩上镂空雕刻着繁复的纹饰。它早已锈迹斑斑，却依旧有着沉重的威严。" },
+    { "category": "chapter", "id": "menpai", "name": "门牌", "quality": "独特", "group": "常规辞章", "icon": "https://patchwiki.biligame.com/images/dwrg/f/fa/a0nhv2auz9ipyfjcmhjf64oxduwlyxa.png", "weight": "10", "price": 4200, "map": "厄运之女", "description": "小猫正等着主人归来。它不知道门牌上的号码与回家的方向都早已模糊。" },
+    { "category": "chapter", "id": "xiangkuang", "name": "相框", "quality": "独特", "group": "常规辞章", "icon": "https://patchwiki.biligame.com/images/dwrg/e/ef/q4eh9tmfszblv3sc2s583damrfdunml.png", "weight": "3", "price": 3000, "map": "厄运之女", "description": "鎏金相框里有一张看不清面目的照片。那是谁，承载着谁的回忆？" },
+    { "category": "chapter", "id": "fugu_de_zhongbiao", "name": "复古的钟表", "quality": "独特", "group": "常规辞章", "icon": "https://patchwiki.biligame.com/images/dwrg/5/5b/2pdtxvhpd386sq0kd30e9sd9acjqoev.png", "weight": "8", "price": 2700, "map": "厄运之女", "description": "有些磨损的木质钟表，表盘碎裂在那一刻——仿佛时间也停驻。" },
+    { "category": "chapter", "id": "polie_muban", "name": "破裂木板", "quality": "独特", "group": "常规辞章", "icon": "https://patchwiki.biligame.com/images/dwrg/f/fb/b115y9i8szvj3gwc71xj7l62484noj9.png", "weight": "5", "price": 2000, "map": "厄运之女", "description": "你抢走了他的最后一块木板！可惜，没能顺手拿到这块木板的使用秘诀。" },
+    { "category": "chapter", "id": "laoshi_meiyoudeng", "name": "老式煤油灯", "quality": "独特", "group": "常规辞章", "icon": "https://patchwiki.biligame.com/images/dwrg/9/90/5mn32i22o2u4rpbigbyqmeh75y5e56k.png", "weight": "6", "price": 1600, "map": "厄运之女", "description": "煤油熏黑了它的脸颊，幸好碎裂的玻璃外罩漏出了更多的灯火。" },
+    { "category": "chapter", "id": "tangguoguan", "name": "糖果罐", "quality": "独特", "group": "常规辞章", "icon": "https://patchwiki.biligame.com/images/dwrg/8/8d/byf3vqfve6bd0nro4a7fn8u1iio5mnf.png", "weight": "6", "price": 1600, "map": "厄运之女", "description": "透明的糖果罐里藏着曾经甜蜜的时光，灰尘和霉菌爬满透明身躯，它再不会被打开了。" },
+    { "category": "chapter", "id": "jiuyijia", "name": "旧衣架", "quality": "独特", "group": "常规辞章", "icon": "https://patchwiki.biligame.com/images/dwrg/1/13/doqw8s84e6hl1l6z9hijn9afbf6cnmj.png", "weight": "5", "price": 1200, "map": "厄运之女", "description": "被遗忘在房间角落的空衣架，从未被挂过衣物，所以它一直认为自己是根插在地上的长矛。" },
+    { "category": "chapter", "id": "xiaoshuzhuangjing", "name": "小梳妆镜", "quality": "独特", "group": "常规辞章", "icon": "https://patchwiki.biligame.com/images/dwrg/7/73/7s1og7u3sgngopqdsjz7s6bn0af6j60.png", "weight": "8", "price": 1000, "map": "厄运之女", "description": "椭圆形的小梳妆镜，碎裂的镜面扭曲着任何倒影。" },
+    { "category": "chapter", "id": "xinzhidui", "name": "信纸堆", "quality": "独特", "group": "常规辞章", "icon": "https://patchwiki.biligame.com/images/dwrg/b/b5/jintln5rk7cagqmu1kn15c6qd69w5s8.png", "weight": "3", "price": 800, "map": "厄运之女", "description": "寄往各地的信件被规整收拢在一起，绳索陷入松软的牛皮纸边沿，落款字迹无法辨认。" },
+    { "category": "chapter", "id": "shalou", "name": "沙漏", "quality": "独特", "group": "常规辞章", "icon": "https://patchwiki.biligame.com/images/dwrg/5/56/ax8b4hss99kfy3jckgdabtf30xxd66d.png", "weight": "3", "price": 600, "map": "厄运之女", "description": "装有砂砾的木质沙漏，满是污渍的碎裂玻璃中，暗黄色的沙子静滞在那段时光。" },
+    { "category": "chapter", "id": "ganhua", "name": "干花", "quality": "独特", "group": "常规辞章", "icon": "https://patchwiki.biligame.com/images/dwrg/f/fe/9dxfa7111e1775jii1rnr7cbckwlxmx.png", "weight": "1", "price": 300, "map": "厄运之女", "description": "一束干枯的花，枯萎的叶片托举着尚未凋零的花瓣，包裹它们的报纸字迹模糊不清。" },
+    { "category": "chapter", "id": "guixi", "name": "鬼玺", "quality": "稀世", "group": "联动辞章", "icon": "https://patchwiki.biligame.com/images/dwrg/c/cd/3l9o7dl78e2ffnk9u0qeovk71ptqb3o.png", "weight": "25", "price": 500000, "map": "厄运之女", "description": "一方古朴厚重的青玉古玺，表面雕刻着繁复的纹样。雕工精细，出神入化，数只小鬼栩栩如生，扭转攀爬间，似乎组合成了神兽的轮廓。但若是将玉玺再换个角度端详，那钮上的形状就又变了个模样。" },
+    { "category": "chapter", "id": "shemei_tongyu", "name": "蛇眉铜鱼", "quality": "稀世", "group": "联动辞章", "icon": "https://patchwiki.biligame.com/images/dwrg/8/89/j47lqte5b2uq3oeiakpshy8ptjzylv6.png", "weight": "15", "price": 250000, "map": "厄运之女", "description": "三条造型各异的蛇眉铜鱼，构成了一只首尾相连的环。" }
+  ],
+  "maps": [
+    {
+      "id": "e_yun_zhi_nv",
+      "displayName": "厄运之女",
+      "difficulty": "核心攻略",
+      "coverImage": "/images/placeholder/cover.png",
+      "sourceAnchor": "F:/d5/第五人格加页手记（超清4k，宝藏房 ）/厄运之女（展十版）/",
+      "routes": [
         {
-          id: "hard",
-          name: "\u56f0\u96be \u00b7 \u5168\u68fa\u724812.8",
-          shapeDir: "\u5384\u8fd0\u56f0\u96be\uff08\u8d85\u6e054k\uff0c\u5b9d\u85cf\u623f\uff0c\u5c55\u5341\u7248\uff09\u5168\u68fa\u724812.8",
-          shapes: ["┏", "┗", "┣", "┳", "▁┃━", "▃▃", "▌", "横Y"],
-          shapeDetails: {"┏": {"doors": [{"door": "侧门在下", "files": ["右路.jpg"]}, {"door": "侧门在右", "files": ["上路下路 下┓.jpg", "上路下路 下▃▃.jpg"]}]}, "┗": {"doors": [{"door": "侧门在上", "files": ["右路 右▍.jpg", "右路.jpg", "左路右路.jpg"]}]}, "┣": {"doors": []}, "┳": {"doors": []}, "▁┃━": {"doors": []}, "▃▃": {"doors": [{"door": "侧门在右", "files": ["上路下路.jpg", "下路左路.jpg", "左路.jpg"]}, {"door": "侧门在左", "files": ["上路右路（下可能随机刷新宝藏房）.jpg", "右路  右丨2.jpg", "右路  右丨（上可能随机刷新宝藏房）.jpg", "右路 右▃▃.jpg", "右路 右丨3.jpg", "右路 右丨4.jpg", "右路3 右▌（左下楼梯间，右红房间）.jpg", "右路4 右凹.jpg"]}]}, "▌": {"doors": [{"door": "侧门在上", "files": ["下路.jpg", "下路2.jpg", "左路右路下路.jpg"]}, {"door": "侧门在下", "files": ["左路上路.jpg", "左路右路2.jpg", "左路右路上路.jpg"]}]}, "横Y": {"doors": [{"door": "侧门在斜左上", "files": ["斜左下路右路 右┣.jpg", "斜左下路右路 右■.jpg"]}]}},
-          rootFiles: []
+          "id": "hard",
+          "name": "困难 · 全棺版12.8",
+          "shapeDir": "厄运困难（超清4k，宝藏房，展十版）全棺版12.8",
+          "shapes": [
+            "┏",
+            "┗",
+            "┣",
+            "┳",
+            "▁┃━",
+            "▃▃",
+            "▌",
+            "横Y"
+          ],
+          "shapeDetails": {
+            "┏": {
+              "doors": [
+                {
+                  "door": "侧门在下",
+                  "files": [
+                    "右路.jpg"
+                  ]
+                },
+                {
+                  "door": "侧门在右",
+                  "files": [
+                    "上路下路 下┓.jpg",
+                    "上路下路 下▃▃.jpg"
+                  ]
+                }
+              ]
+            },
+            "┗": {
+              "doors": [
+                {
+                  "door": "侧门在上",
+                  "files": [
+                    "右路 右▍.jpg",
+                    "右路.jpg",
+                    "左路右路.jpg"
+                  ]
+                }
+              ]
+            },
+            "┣": {
+              "doors": [
+                {
+                  "door": "侧门在下",
+                  "files": [
+                    "侧门在下   左路右路.jpg"
+                  ]
+                }
+              ]
+            },
+            "┳": {
+              "doors": [
+                {
+                  "door": "侧门在上",
+                  "files": [
+                    "侧门在上.jpg"
+                  ]
+                }
+              ]
+            },
+            "▁┃━": {
+              "doors": [
+                {
+                  "door": "侧门在上",
+                  "files": [
+                    "侧门在上   左路右路下路.jpg"
+                  ]
+                }
+              ]
+            },
+            "▃▃": {
+              "doors": [
+                {
+                  "door": "侧门在右",
+                  "files": [
+                    "上路下路.jpg",
+                    "下路左路.jpg",
+                    "左路.jpg"
+                  ]
+                },
+                {
+                  "door": "侧门在左",
+                  "files": [
+                    "上路右路（下可能随机刷新宝藏房）.jpg",
+                    "右路  右丨2.jpg",
+                    "右路  右丨（上可能随机刷新宝藏房）.jpg",
+                    "右路 右▃▃.jpg",
+                    "右路 右丨3.jpg",
+                    "右路 右丨4.jpg",
+                    "右路3 右▌（左下楼梯间，右红房间）.jpg",
+                    "右路4 右凹.jpg"
+                  ]
+                }
+              ]
+            },
+            "▌": {
+              "doors": [
+                {
+                  "door": "侧门在上",
+                  "files": [
+                    "下路.jpg",
+                    "下路2.jpg",
+                    "左路右路下路.jpg"
+                  ]
+                },
+                {
+                  "door": "侧门在下",
+                  "files": [
+                    "左路上路.jpg",
+                    "左路右路2.jpg",
+                    "左路右路上路.jpg"
+                  ]
+                }
+              ]
+            },
+            "横Y": {
+              "doors": [
+                {
+                  "door": "侧门在斜左上",
+                  "files": [
+                    "斜左下路右路 右┣.jpg",
+                    "斜左下路右路 右■.jpg"
+                  ]
+                }
+              ]
+            }
+          },
+          "rootFiles": []
         },
         {
-          id: "normal",
-          name: "\u666e\u901a \u00b7 7.5",
-          shapeDir: "\u5384\u8fd0\u666e\u901a\uff08\u8d85\u6e054k\uff0c\u5b9d\u85cf\u623f\uff0c\u5c55\u5341\u7248\uff097.5",
-          shapes: ["┏", "┓", "┗", "┳", "▁┃━", "▃▃", "▄█▀", "▌", "十", "横Y"],
-          shapeDetails: {"┏": {"doors": [{"door": "侧门在下", "files": ["右路.jpg", "右路2（左┗）.jpg"]}]}, "┓": {"doors": [{"door": "侧门在左", "files": ["下路.jpg"]}]}, "┗": {"doors": [{"door": "侧门在上", "files": ["左路右路.jpg"]}, {"door": "侧门在右", "files": ["上路.jpg"]}]}, "┳": {"doors": []}, "▁┃━": {"doors": [{"door": "侧门在上", "files": ["左路右路.jpg"]}, {"door": "侧门在左", "files": ["上路下路.jpg"]}]}, "▃▃": {"doors": [{"door": "侧门在上", "files": []}, {"door": "侧门在右", "files": ["左路.jpg", "左路2.jpg"]}, {"door": "侧门在左", "files": ["右路2（右[）.jpg", "右路下路.jpg", "右路（右┍）.jpg", "右路（右▃▃）.jpg"]}]}, "▄█▀": {"doors": [{"door": "侧门在左", "files": ["右路.jpg"]}]}, "▌": {"doors": []}, "十": {"doors": []}, "横Y": {"doors": [{"door": "侧门在左斜上", "files": ["左斜下路右路.jpg"]}]}},
-          rootFiles: []
+          "id": "hard_fast",
+          "name": "困难 · 速刷版12.7",
+          "shapeDir": "厄运困难（超清4k，宝藏房，展十版）速刷版12.7",
+          "shapes": [
+            "┏",
+            "┗",
+            "┣",
+            "┳",
+            "▁┃━",
+            "▃▃",
+            "▌",
+            "横Y"
+          ],
+          "shapeDetails": {
+            "┏": {
+              "doors": [
+                {
+                  "door": "侧门在下",
+                  "files": [
+                    "右路.jpg"
+                  ]
+                },
+                {
+                  "door": "侧门在右",
+                  "files": [
+                    "上路下路 下┓.jpg",
+                    "上路下路 下▃▃.jpg"
+                  ]
+                }
+              ]
+            },
+            "┗": {
+              "doors": [
+                {
+                  "door": "侧门在上",
+                  "files": [
+                    "右路 右▍.jpg",
+                    "右路.jpg",
+                    "左路右路.jpg"
+                  ]
+                }
+              ],
+              "rootFiles": [
+                "侧门在右.jpg",
+                "侧门在中.png"
+              ]
+            },
+            "┣": {
+              "doors": [
+                {
+                  "door": "侧门在下",
+                  "files": [
+                    "左路右路.png"
+                  ]
+                }
+              ]
+            },
+            "┳": {
+              "doors": [],
+              "rootFiles": [
+                "侧门在上.jpg"
+              ]
+            },
+            "▁┃━": {
+              "doors": [
+                {
+                  "door": "侧门在上",
+                  "files": [
+                    "左路右路下路.png"
+                  ]
+                }
+              ]
+            },
+            "▃▃": {
+              "doors": [
+                {
+                  "door": "侧门在右",
+                  "files": [
+                    "上路下路.png",
+                    "下路左路.jpg",
+                    "左路.jpg"
+                  ]
+                },
+                {
+                  "door": "侧门在左",
+                  "files": [
+                    "上路右路（下可能随机刷新宝藏房）.jpg",
+                    "右路  右丨（上可能随机刷新宝藏房）.jpg",
+                    "右路  右丨2.jpg",
+                    "右路 右▃▃.jpg",
+                    "右路 右丨3.jpg",
+                    "右路 右丨4.jpg",
+                    "右路3 右▌（右红房间）.png",
+                    "右路4 右凹.png"
+                  ]
+                }
+              ]
+            },
+            "▌": {
+              "doors": [
+                {
+                  "door": "侧门在上",
+                  "files": [
+                    "下路.png",
+                    "下路2.jpg",
+                    "左路右路下路.PNG"
+                  ]
+                },
+                {
+                  "door": "侧门在下",
+                  "files": [
+                    "左路上路.jpg",
+                    "左路右路2.jpg",
+                    "左路右路上路.png"
+                  ]
+                }
+              ]
+            },
+            "横Y": {
+              "doors": [
+                {
+                  "door": "侧门在斜左上",
+                  "files": [
+                    "斜左下路右路 右┣.jpg",
+                    "斜左下路右路 右■.jpg"
+                  ]
+                }
+              ]
+            }
+          },
+          "rootFiles": []
         },
         {
-          id: "easy",
-          name: "\u7b80\u5355 \u00b7 7.5",
-          shapeDir: "\u5384\u8fd0\u7b80\u5355\uff08\u8d85\u6e054k\uff0c\u5b9d\u85cf\u623f\uff0c\u5c55\u5341\u7248\uff097.5",
-          shapes: ["┏", "┓", "┗", "┛", "▁┃━", "▃▃", "▄█▀", "▌", "十", "横Y"],
-          shapeDetails: {"┏": {"doors": [{"door": "侧门在右", "files": ["左路下路.jpg"]}]}, "┓": {"doors": [{"door": "侧门在上中", "files": ["左路下路.jpg"]}, {"door": "侧门在左", "files": ["下路.jpg", "下路2.jpg"]}]}, "┗": {"doors": [{"door": "侧门在上", "files": ["左路右路.jpg"]}, {"door": "侧门在右", "files": ["上路.jpg"]}]}, "┛": {"doors": [{"door": "侧门在上", "files": ["左路.jpg"]}]}, "▁┃━": {"doors": []}, "▃▃": {"doors": [{"door": "侧门在右", "files": ["左路2（左匚）.jpg", "左路3（左┫）.jpg", "左路下路.jpg", "左路（左▌）.jpg"]}, {"door": "侧门在左", "files": ["右路（右白）.jpg", "右路（右红）（上下可能刷新宝藏房）.jpg"]}]}, "▄█▀": {"doors": [{"door": "侧门在左", "files": ["下路右路.jpg"]}]}, "▌": {"doors": []}, "十": {"doors": []}, "横Y": {"doors": [{"door": "侧门在左斜上", "files": ["左斜下路右路.jpg"]}]}},
-          rootFiles: []
+          "id": "normal",
+          "name": "普通 · 7.5",
+          "shapeDir": "厄运普通（超清4k，宝藏房，展十版）7.5",
+          "shapes": [
+            "┏",
+            "┓",
+            "┗",
+            "┳",
+            "▁┃━",
+            "▃▃",
+            "▄█▀",
+            "▌",
+            "十",
+            "横Y"
+          ],
+          "shapeDetails": {
+            "┏": {
+              "doors": [
+                {
+                  "door": "侧门在下",
+                  "files": [
+                    "右路.jpg",
+                    "右路2（左┗）.jpg"
+                  ]
+                }
+              ]
+            },
+            "┓": {
+              "doors": [
+                {
+                  "door": "侧门在左",
+                  "files": [
+                    "下路.jpg"
+                  ]
+                }
+              ]
+            },
+            "┗": {
+              "doors": [
+                {
+                  "door": "侧门在上",
+                  "files": [
+                    "左路右路.jpg"
+                  ]
+                },
+                {
+                  "door": "侧门在右",
+                  "files": [
+                    "上路.jpg"
+                  ]
+                }
+              ]
+            },
+            "┳": {
+              "doors": [
+                {
+                  "door": "左路右路",
+                  "files": [
+                    "左路右路.jpg"
+                  ]
+                }
+              ]
+            },
+            "▁┃━": {
+              "doors": [
+                {
+                  "door": "侧门在上",
+                  "files": [
+                    "左路右路.jpg"
+                  ]
+                },
+                {
+                  "door": "侧门在左",
+                  "files": [
+                    "上路下路.jpg"
+                  ]
+                }
+              ]
+            },
+            "▃▃": {
+              "doors": [
+                {
+                  "door": "侧门在上",
+                  "files": []
+                },
+                {
+                  "door": "侧门在右",
+                  "files": [
+                    "左路.jpg",
+                    "左路2.jpg"
+                  ]
+                },
+                {
+                  "door": "侧门在左",
+                  "files": [
+                    "右路2（右[）.jpg",
+                    "右路下路.jpg",
+                    "右路（右┍）.jpg",
+                    "右路（右▃▃）.jpg"
+                  ]
+                }
+              ]
+            },
+            "▄█▀": {
+              "doors": [
+                {
+                  "door": "侧门在左",
+                  "files": [
+                    "右路.jpg"
+                  ]
+                }
+              ]
+            },
+            "▌": {
+              "doors": [
+                {
+                  "door": "左路右路下路",
+                  "files": [
+                    "左路右路下路.jpg"
+                  ]
+                }
+              ]
+            },
+            "十": {
+              "doors": [
+                {
+                  "door": "上路下路右路",
+                  "files": [
+                    "上路下路右路.jpg"
+                  ]
+                }
+              ]
+            },
+            "横Y": {
+              "doors": [
+                {
+                  "door": "侧门在左斜上",
+                  "files": [
+                    "左斜下路右路.jpg"
+                  ]
+                }
+              ]
+            }
+          },
+          "rootFiles": []
         },
         {
-          id: "newbie",
-          name: "\u65b0\u624b \u00b7 6.18",
-          shapeDir: "\u5384\u8fd0\u65b0\u624b\uff08\u8d85\u6e054k\uff0c\u5b9d\u85cf\u623f\uff0c\u5c55\u5341\u7248\uff096.18",
-          shapes: [],
-          shapeDetails: {},
-          rootFiles: ["目前全部只有一张.JPG"]
+          "id": "easy",
+          "name": "简单 · 7.5",
+          "shapeDir": "厄运简单（超清4k，宝藏房，展十版）7.5",
+          "shapes": [
+            "┏",
+            "┓",
+            "┗",
+            "┛",
+            "▁┃━",
+            "▃▃",
+            "▄█▀",
+            "▌",
+            "十",
+            "横Y"
+          ],
+          "shapeDetails": {
+            "┏": {
+              "doors": [
+                {
+                  "door": "侧门在右",
+                  "files": [
+                    "左路下路.jpg"
+                  ]
+                }
+              ]
+            },
+            "┓": {
+              "doors": [
+                {
+                  "door": "侧门在上中",
+                  "files": [
+                    "左路下路.jpg"
+                  ]
+                },
+                {
+                  "door": "侧门在左",
+                  "files": [
+                    "下路.jpg",
+                    "下路2.jpg"
+                  ]
+                }
+              ]
+            },
+            "┗": {
+              "doors": [
+                {
+                  "door": "侧门在上",
+                  "files": [
+                    "左路右路.jpg"
+                  ]
+                },
+                {
+                  "door": "侧门在右",
+                  "files": [
+                    "上路.jpg"
+                  ]
+                }
+              ]
+            },
+            "┛": {
+              "doors": [
+                {
+                  "door": "侧门在上",
+                  "files": [
+                    "左路.jpg"
+                  ]
+                }
+              ]
+            },
+            "▁┃━": {
+              "doors": [
+                {
+                  "door": "左路右路",
+                  "files": [
+                    "左路右路.jpg"
+                  ]
+                }
+              ]
+            },
+            "▃▃": {
+              "doors": [
+                {
+                  "door": "侧门在右",
+                  "files": [
+                    "左路2（左匚）.jpg",
+                    "左路3（左┫）.jpg",
+                    "左路下路.jpg",
+                    "左路（左▌）.jpg"
+                  ]
+                },
+                {
+                  "door": "侧门在左",
+                  "files": [
+                    "右路（右白）.jpg",
+                    "右路（右红）（上下可能刷新宝藏房）.jpg"
+                  ]
+                }
+              ]
+            },
+            "▄█▀": {
+              "doors": [
+                {
+                  "door": "侧门在左",
+                  "files": [
+                    "下路右路.jpg"
+                  ]
+                }
+              ]
+            },
+            "▌": {
+              "doors": [
+                {
+                  "door": "左路右路下路",
+                  "files": [
+                    "左路右路下路.jpg"
+                  ]
+                }
+              ]
+            },
+            "十": {
+              "doors": [
+                {
+                  "door": "上路下路",
+                  "files": [
+                    "上路下路.jpg"
+                  ]
+                }
+              ]
+            },
+            "横Y": {
+              "doors": [
+                {
+                  "door": "侧门在左斜上",
+                  "files": [
+                    "左斜下路右路.jpg"
+                  ]
+                }
+              ]
+            }
+          },
+          "rootFiles": []
         },
+        {
+          "id": "newbie",
+          "name": "新手 · 6.18",
+          "shapeDir": "厄运新手（超清4k，宝藏房，展十版）6.18",
+          "shapes": [],
+          "shapeDetails": {},
+          "rootFiles": [
+            "目前全部只有一张.JPG"
+          ]
+        }
       ]
     }
   ]

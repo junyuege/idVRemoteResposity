@@ -1,0 +1,10 @@
+.loading-wrap, .empty-wrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  min-height: 200px;
+  color: #888;
+  font-size: 14px;
+}

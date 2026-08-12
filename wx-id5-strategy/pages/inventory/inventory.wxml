@@ -1,20 +1,62 @@
 <view class="page-wrap">
   <view class="search-box">
     <text class="search-icon">⌕</text>
-    <input class="search-input" placeholder="搜索形状或难度" placeholder-class="search-placeholder" bindinput="onSearch" bindconfirm="onSearch" />
+    <input class="search-input" placeholder="搜索异象、道具或辞章" placeholder-class="search-placeholder" bindinput="onSearch" bindconfirm="onSearch" />
     <text wx:if="{{keyword}}" class="search-clear" bindtap="clearSearch">×</text>
   </view>
-  <view wx:if="{{items.length > 0}}" style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;">
-    <view wx:for="{{items}}" wx:key="id" class="panel" style="padding:12px;" data-index="{{index}}" bindtap="onItemTap">
-      <view style="display:flex;align-items:baseline;justify-content:space-between">
-        <text style="font-size:14px;font-weight:600;color:#fff;">{{item.name}}</text>
-      </view>
-      <view style="margin-top:6px;font-size:12px;color:#aaa;">{{item.desc}}</view>
-      <view style="font-size:11px;color:#999;margin-top:4px;display:flex;align-items:center;">
-        <text class="tag {{item.rarityClass}}" style="margin-right:6px;">{{item.rarity}}</text>
-        <text>{{item.price}} · 点击查看</text>
+
+  <view class="seg-wrap">
+    <view
+      wx:for="{{tabs}}"
+      wx:key="tab"
+      wx:for-item="tab"
+      class="seg-item {{currentTab === tab.tab ? 'seg-active' : ''}}"
+      data-tab="{{tab.tab}}"
+      bindtap="onTabTap">{{tab.label}}</view>
+  </view>
+
+  <view wx:if="{{items.length > 0}}" class="grid">
+    <view
+      wx:for="{{items}}"
+      wx:key="id"
+      wx:for-item="it"
+      class="card {{it.borderCls}}"
+      data-index="{{index}}"
+      bindtap="onItemTap">
+      <image class="card-icon" src="{{it.icon}}" mode="aspectFill" />
+      <view class="card-body">
+        <view class="card-line">
+          <text class="card-name">{{it.name}}</text>
+          <text wx:if="{{it.chipCls}}" class="tag card-badge {{it.chipCls}}">{{it.chipLabel}}</text>
+        </view>
+        <text class="card-desc">{{it.desc}}</text>
+        <view class="card-meta"><text>{{it.metaText}} · 点击查看</text></view>
       </view>
     </view>
   </view>
-  <view wx:else class="empty-wrap"><text>没有找到匹配的路线</text></view>
+  <view wx:elif="{{error}}" class="empty-wrap"><text>{{error}}</text></view>
+  <view wx:else class="empty-wrap"><text>没有找到匹配的条目</text></view>
+
+  <view wx:if="{{showDetail}}" class="mask" bindtap="closeDetail"></view>
+  <view wx:if="{{showDetail}}" class="sheet">
+    <view class="sheet-handle"></view>
+    <text class="sheet-close" bindtap="closeDetail">×</text>
+    <image class="sheet-icon" src="{{detail.icon}}" mode="aspectFill" />
+    <view class="sheet-title-row">
+      <text class="sheet-name">{{detail.name}}</text>
+      <text wx:if="{{detail.chipCls}}" class="tag {{detail.chipCls}}">{{detail.chipLabel}}</text>
+      <text class="tag {{detail.categoryCls}}">{{detail.categoryLabel}}</text>
+    </view>
+    <text class="sheet-desc">{{detail.desc}}</text>
+    <view class="sheet-meta">
+      <view
+        wx:for="{{detail.meta}}"
+        wx:key="label"
+        wx:for-item="m"
+        class="sheet-meta-row">
+        <text class="sheet-meta-label">{{m.label}}</text>
+        <text class="sheet-meta-value">{{m.value}}</text>
+      </view>
+    </view>
+  </view>
 </view>

@@ -1,0 +1,36 @@
+<view class="page-wrap">
+  <view class="page-header">
+    <view class="header-title">{{title}}</view>
+    <view class="header-sub">选择侧门方向查看对应路线图</view>
+  </view>
+
+  <view wx:if="{{loading}}" class="loading-wrap"><text>加载中...</text></view>
+
+  <view wx:elif="{{error}}" class="empty-wrap">
+    <text>{{error}}</text>
+    <view bindtap="onRetry" style="margin-top:14px;padding:8px 26px;background:rgba(255,156,0,0.12);border:1px solid rgba(255,156,0,0.4);border-radius:20px;color:#ff9c00;font-size:13px;">重新加载</view>
+  </view>
+
+  <view wx:elif="{{doors.length === 0}}" class="empty-wrap">
+    <text>暂无侧门数据</text>
+  </view>
+
+  <view wx:else class="door-list">
+    <view
+      class="door-card panel"
+      wx:for="{{doors}}"
+      wx:key="door"
+      data-index="{{index}}"
+      bindtap="onDoorTap"
+    >
+      <view class="door-icon-wrap">
+        <text class="door-icon">{{item.icon}}</text>
+      </view>
+      <view class="door-body">
+        <text class="door-name">{{item.door}}</text>
+        <text class="door-desc">{{item.desc}}</text>
+      </view>
+      <text class="door-arrow">›</text>
+    </view>
+  </view>
+</view>

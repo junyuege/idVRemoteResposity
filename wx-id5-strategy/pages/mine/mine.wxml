@@ -1,0 +1,35 @@
+<view class="page-wrap">
+  <!-- 头部名片 -->
+  <view class="profile panel">
+    <view class="avatar">📖</view>
+    <view class="profile-body">
+      <view class="profile-title">第五人格 · 加页手记攻略</view>
+      <view class="profile-sub">地图路线 · 异象 · 道具 · 辞章 一站式查询</view>
+    </view>
+  </view>
+
+  <!-- 功能列表 -->
+  <view class="menu panel">
+    <view class="menu-item" bindtap="goToTutorial">
+      <text class="menu-icon">📚</text>
+      <text class="menu-label">小抄教学</text>
+      <text class="menu-arrow">›</text>
+    </view>
+    <view class="menu-divider"></view>
+    <view class="menu-item" bindtap="goToFeedback">
+      <text class="menu-icon">💬</text>
+      <text class="menu-label">意见反馈</text>
+      <text class="menu-arrow">›</text>
+    </view>
+    <view class="menu-divider"></view>
+    <view class="menu-item" bindtap="goToAbout">
+      <text class="menu-icon">ℹ️</text>
+      <text class="menu-label">关于我们</text>
+      <text class="menu-arrow">›</text>
+    </view>
+  </view>
+
+  <button class="share-btn" open-type="share">分享小程序</button>
+
+  <view class="footer">v{{version}} · 数据来源：第五人格 BWIKI 玩家社区</view>
+</view>

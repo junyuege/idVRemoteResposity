@@ -1,0 +1,9 @@
+{
+  "name": "addFeedback",
+  "version": "1.0.0",
+  "description": "提交用户反馈：写入 feedback 集合（内容+图片 fileID+openid+时间）",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "latest"
+  }
+}

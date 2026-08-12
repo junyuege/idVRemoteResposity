@@ -2,7 +2,7 @@
   <view class="panel" style="display:flex;flex-direction:column;align-items:center;padding:30px 20px;margin-bottom:16px;">
     <view style="font-size:56px;margin-bottom:12px;">📖</view>
     <view style="font-size:18px;font-weight:700;color:#fff;">第五人格 · 加页手记攻略</view>
-    <view style="font-size:13px;color:#888;margin-top:6px;">版本 1.0.0</view>
+    <view style="font-size:13px;color:#888;margin-top:6px;">版本 {{version}}</view>
   </view>
   <view class="panel" style="padding:18px;margin-bottom:12px;">
     <view style="font-size:15px;font-weight:600;color:#ff9c00;margin-bottom:10px;">免责声明</view>

@@ -1,0 +1,12 @@
+<view class="page-wrap">
+  <view class="page-header">
+    <view class="header-title">新版小抄看法教学</view>
+    <view class="header-sub">点击图片可全屏放大，配合双指缩放查看细节</view>
+  </view>
+
+  <view wx:if="{{loading}}" class="loading-wrap"><text>加载中...</text></view>
+
+  <view wx:else class="img-wrap" bindtap="onPreview">
+    <image class="tutorial-img" src="{{image}}" mode="widthFix" lazy-load="true" show-menu-by-longpress="true" />
+  </view>
+</view>
