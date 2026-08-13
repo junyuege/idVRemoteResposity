@@ -1,6 +1,16 @@
 ﻿[
   {
-    "Pkg": "pkg-easy",
+    "Pkg": "pkg-lianghapi-v0710",
+    "Count": 28,
+    "Bytes": 1788745,
+    "Missing": [],
+    "Extra": [],
+    "MissingCount": 0,
+    "ExtraCount": 0,
+    "Pruned": 0
+  },
+  {
+    "Pkg": "pkg-zhanshi-easy",
     "Count": 18,
     "Bytes": 1432487,
     "Missing": [],
@@ -10,9 +20,9 @@
     "Pruned": 0
   },
   {
-    "Pkg": "pkg-hard",
-    "Count": 39,
-    "Bytes": 1875844,
+    "Pkg": "pkg-zhanshi-hard-fast",
+    "Count": 30,
+    "Bytes": 1790246,
     "Missing": [],
     "Extra": [],
     "MissingCount": 0,
@@ -20,7 +30,17 @@
     "Pruned": 0
   },
   {
-    "Pkg": "pkg-newbie",
+    "Pkg": "pkg-zhanshi-hard-full",
+    "Count": 28,
+    "Bytes": 1643286,
+    "Missing": [],
+    "Extra": [],
+    "MissingCount": 0,
+    "ExtraCount": 0,
+    "Pruned": 0
+  },
+  {
+    "Pkg": "pkg-zhanshi-newbie",
     "Count": 1,
     "Bytes": 125646,
     "Missing": [],
@@ -30,7 +50,7 @@
     "Pruned": 0
   },
   {
-    "Pkg": "pkg-normal",
+    "Pkg": "pkg-zhanshi-normal",
     "Count": 18,
     "Bytes": 1685055,
     "Missing": [],

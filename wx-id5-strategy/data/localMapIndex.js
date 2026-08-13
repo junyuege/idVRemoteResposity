@@ -1,4 +1,4 @@
-// data/localMapIndex.js (SSOT)
+﻿// data/localMapIndex.js (SSOT)
 module.exports = {
   "version": "2.1",
   // 图鉴扩展条目：异象（anomaly）& 回收物资（material）
@@ -297,10 +297,20 @@ module.exports = {
       "difficulty": "核心攻略",
       "coverImage": "/images/placeholder/cover.png",
       "sourceAnchor": "F:/d5/第五人格加页手记（超清4k，宝藏房 ）/厄运之女（展十版）/",
+      "authors": [
+        { "id": "zhanshi", "name": "展十版" },
+        { "id": "lianghapi", "name": "凉哈皮版" }
+      ],
       "routes": [
         {
-          "id": "hard",
-          "name": "困难 · 全棺版12.8",
+          "id": "zhanshi-hard-full",
+          "legacyIds": ["hard"],
+          "difficulty": "hard",
+          "variant": "full",
+          "authorId": "zhanshi",
+          "name": "困难 · 全棺版12.8","author": "展十版",
+          "packageRoot": "pkg-zhanshi-hard-full",
+          "assetNamespace": "maps/e_yun_zhi_nv/zhanshi/hard-full",
           "shapeDir": "厄运困难（超清4k，宝藏房，展十版）全棺版12.8",
           "shapes": [
             "┏",
@@ -432,8 +442,14 @@ module.exports = {
           "rootFiles": []
         },
         {
-          "id": "hard_fast",
-          "name": "困难 · 速刷版12.7",
+          "id": "zhanshi-hard-fast",
+          "legacyIds": ["hard_fast"],
+          "difficulty": "hard",
+          "variant": "fast",
+          "authorId": "zhanshi",
+          "name": "困难 · 速刷版12.7","author": "展十版",
+          "packageRoot": "pkg-zhanshi-hard-fast",
+          "assetNamespace": "maps/e_yun_zhi_nv/zhanshi/hard-fast",
           "shapeDir": "厄运困难（超清4k，宝藏房，展十版）速刷版12.7",
           "shapes": [
             "┏",
@@ -565,8 +581,14 @@ module.exports = {
           "rootFiles": []
         },
         {
-          "id": "normal",
-          "name": "普通 · 7.5",
+          "id": "zhanshi-normal",
+          "legacyIds": ["normal"],
+          "difficulty": "normal",
+          "authorId": "zhanshi",
+          "name": "普通 · 7.5","author": "展十版",
+          "packageRoot": "pkg-zhanshi-normal",
+          "legacyCloudPackage": "pkg-normal",
+          "assetNamespace": "maps/e_yun_zhi_nv/zhanshi/normal",
           "shapeDir": "厄运普通（超清4k，宝藏房，展十版）7.5",
           "shapes": [
             "┏",
@@ -712,8 +734,14 @@ module.exports = {
           "rootFiles": []
         },
         {
-          "id": "easy",
-          "name": "简单 · 7.5",
+          "id": "zhanshi-easy",
+          "legacyIds": ["easy"],
+          "difficulty": "easy",
+          "authorId": "zhanshi",
+          "name": "简单 · 7.5","author": "展十版",
+          "packageRoot": "pkg-zhanshi-easy",
+          "legacyCloudPackage": "pkg-easy",
+          "assetNamespace": "maps/e_yun_zhi_nv/zhanshi/easy",
           "shapeDir": "厄运简单（超清4k，宝藏房，展十版）7.5",
           "shapes": [
             "┏",
@@ -855,14 +883,94 @@ module.exports = {
           "rootFiles": []
         },
         {
-          "id": "newbie",
-          "name": "新手 · 6.18",
+          "id": "zhanshi-newbie",
+          "legacyIds": ["newbie"],
+          "difficulty": "newbie",
+          "authorId": "zhanshi",
+          "name": "新手 · 6.18","author": "展十版",
+          "packageRoot": "pkg-zhanshi-newbie",
+          "legacyCloudPackage": "pkg-newbie",
+          "assetNamespace": "maps/e_yun_zhi_nv/zhanshi/newbie",
           "shapeDir": "厄运新手（超清4k，宝藏房，展十版）6.18",
           "shapes": [],
           "shapeDetails": {},
           "rootFiles": [
-            "目前全部只有一张.JPG"
+            "目前全部只有一张.jpg"
           ]
+        },
+{
+          "id": "lianghapi-v0710",
+          "legacyIds": ["v0710"],
+          "difficulty": "special",
+          "variant": "v0710",
+          "authorId": "lianghapi",
+          "name": "7.10 新版",
+          "author": "凉哈皮版",
+          "packageRoot": "pkg-lianghapi-v0710",
+          "legacyCloudPackage": "pkg-v0710",
+          "assetNamespace": "maps/e_yun_zhi_nv/lianghapi/v0710",
+          "entryMode": "fileIcons",
+          "iconPackageRoot": "pkg-lianghapi-icons",
+          "iconNamespace": "maps/e_yun_zhi_nv/lianghapi/v0710/icons",
+          "sourceAnchor": "F:/d5/加页手记地图（07.10更新）",
+          "shapeDir": "",
+          "shapes": [
+            "北",
+            "南",
+            "左",
+            "右"
+          ],
+          "shapeDetails": {
+            "北": {
+              "doors": [],
+              "rootFiles": [
+                "北-1门.jpg",
+                "北-1沙发门（新增）.png",
+                "北-4安全门（新增）.png",
+                "北-4门.jpg",
+                "北-凹门.jpg",
+                "北-红对角门.jpg",
+                "北-红门.jpg",
+                "北-T门.jpg"
+              ]
+            },
+            "南": {
+              "doors": [],
+              "rootFiles": [
+                "南-红门.png",
+                "南-三缺一门.jpg",
+                "南-十字门.jpg",
+                "南-L门.jpg",
+                "南-orz门（新增）.png"
+              ]
+            },
+            "左": {
+              "doors": [],
+              "rootFiles": [
+                "左-锤灯笼门（新增）.png",
+                "左-锤子门.jpg",
+                "左-倒T门.jpg",
+                "左-对角门.png",
+                "左-对T门.png",
+                "左-罐子门.png",
+                "左-音叉门.jpg",
+                "左-Y门.jpg",
+                "左-Y青蛙房（新增）.png"
+              ]
+            },
+            "右": {
+              "doors": [],
+              "rootFiles": [
+                "右-锤子门.jpg",
+                "右-骑士门.png",
+                "右-三L门（新增）.png",
+                "右-双L门.jpg",
+                "右-左上右下门.jpg",
+                "右-L门.png"
+              ]
+            }
+          },
+          "rootFiles": []
         }
       ]
     }

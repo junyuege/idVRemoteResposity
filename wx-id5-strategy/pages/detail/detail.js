@@ -10,7 +10,7 @@ const TAG_CLASS = {
 };
 
 Page({
-  data: { strategy: null, loading: true, error: '', strategyId: "" },
+  data: { strategy: null, loading: true, error: '', strategyId: '' },
 
   onLoad(options) {
     this._lastOptions = options || {};
@@ -21,6 +21,7 @@ Page({
       const routeId = options.routeId || '';
       const shapeId = decodeURIComponent(options.shapeId || '');
       const door = options.door ? decodeURIComponent(options.door) : '';
+      const file = options.file ? decodeURIComponent(options.file) : '';
 
       if (!mapId || !routeId) {
         this.showError('缺少必要的参数，无法加载攻略');
@@ -49,36 +50,56 @@ Page({
         return;
       }
 
-      // 指定了侧门（或散图）-> 仅展示该入口的图片
+      // 指定了识别图 -> 仅展示对应单张
       let images = shapeImages;
-      if (door) {
+      if (file) {
+        if (!hasShape) {
+          this.showError('识别图需要对应路线形状');
+          return;
+        }
+        const fileIndex = shapeRootFiles.findIndex(f => String(f).toLowerCase() === String(file).toLowerCase());
+        if (fileIndex < 0) {
+          this.showError('未找到对应的识别图');
+          return;
+        }
+        const rootUrls = api.getShapeRootImageUrls(mapId, routeId, shapeId);
+        images = [rootUrls[fileIndex]];
+      } else if (door) {
         if (door === '散图') {
           images = hasShape ? api.getShapeRootImageUrls(mapId, routeId, shapeId) : rootImages;
         } else {
           const doorDetail = (doors || []).find(d => d.door === door);
-          images = doorDetail && hasShape
-            ? (doorDetail.files || []).map(f => api.buildImageUrl(mapId, routeId, shapeId, door, f))
-            : [];
+          if (!doorDetail || !hasShape) {
+            this.showError('未找到对应的侧门入口');
+            return;
+          }
+          images = (doorDetail.files || []).map(f => api.buildImageUrl(mapId, routeId, shapeId, door, f));
         }
       }
-      if (!images.length && rootImages.length) {
+      if (!hasShape && !images.length && rootImages.length) {
         images = rootImages;
       }
 
       this._lastDoor = door;
+      this._lastFile = file;
       this._lastMapId = mapId;
+      // 旧分享链接可以用 legacyIds 解析，后续再次分享时统一输出新的唯一 ID。
+      this._lastRouteId = route.id;
+      this._lastShapeId = hasShape ? shapeId : '__root__';
       this._rootImages = rootImages;
 
       const summaryParts = [];
-      if (door) {
+      if (file) {
+        summaryParts.push('识别图「' + file + '」· ' + images.length + ' 张');
+      } else if (door) {
         summaryParts.push('入口「' + door + '」· ' + images.length + ' 张');
       } else {
         if (doors.length) summaryParts.push(doors.map(d => d.door).join(' / ') + ' 共 ' + doors.length + ' 个入口');
         if (shapeRootFiles.length) summaryParts.push('散图 ' + shapeRootFiles.length + ' 张');
       }
 
-      // 云 fileID -> https 临时链接（带缓存；失败回退原值，不阻塞渲染）
-      api.resolveImageUrls(images).then(resolved => {
+      // 先准备本地分包，再解析云链接；任一来源失败都不会中断页面。
+      api.loadRoutePackage(routeId).then(() => api.resolveImageUrls(images)).then(resolved => {
         this.render(resolved, map, hasShape, shapeId, route, doors, shapeRootFiles, summaryParts);
       });
     } catch (err) {
@@ -94,7 +115,9 @@ Page({
     contentLines.push('地图：' + (map.displayName || ''));
     contentLines.push('难度：' + (route.name || ''));
     contentLines.push('');
-    if (this._lastDoor) {
+    if (this._lastFile) {
+      contentLines.push('识别图「' + this._lastFile + '」：' + images.length + ' 张路线图');
+    } else if (this._lastDoor) {
       contentLines.push('侧门入口「' + this._lastDoor + '」：' + images.length + ' 张路线图');
     } else if (doors.length) {
       doors.forEach(d => {
@@ -111,22 +134,22 @@ Page({
         contentLines.push('该形状暂无图片素材，仅有编号信息');
       }
     }
-    contentLines.push('');
-    contentLines.push('提示：点击图片可全屏预览');
+    const imageItems = images.map((url, index) => ({ url, index: index + 1, failed: false }));
 
     this.setData({
       strategy: {
         title: (map ? map.displayName : '') + ' · ' + (hasShape ? (shapeId + ' 型路线') : '完整路线图'),
         mapName: (map && map.displayName) || '',
         difficultyTag: (route && route.name) || '',
-        difficultyTagClass: TAG_CLASS[route.id] || 'tag-normal',
-        author: '宝藏房攻略组',
+        difficultyTagClass: TAG_CLASS[route.difficulty || route.id] || 'tag-normal',
+        author: (route && route.author) || '展十版',
         summary: summaryParts.length ? summaryParts.join(' · ') : '进入查看全图路线',
         content: contentLines.join('\n'),
         coverImage: (map && map.coverImage) || '/images/placeholder/cover.png',
-        images: images
+        images: images,
+        imageItems: imageItems
       },
-      strategyId: this._lastMapId + '/' + route.id + '/' + (hasShape ? shapeId : '__root__'),
+        strategyId: this._lastMapId + '/' + (route.authorId || 'other') + '/' + route.id + '/' + (hasShape ? shapeId : '__root__'),
       error: '',
       loading: false
     });
@@ -146,13 +169,14 @@ Page({
   onShareAppMessage() {
     const s = this.data.strategy;
     if (s) {
-      const parts = this.data.strategyId.split('/');
+      const doorParam = this._lastDoor ? '&door=' + encodeURIComponent(this._lastDoor) : '';
+      const fileParam = this._lastFile ? '&file=' + encodeURIComponent(this._lastFile) : '';
       return {
         title: s.title + " - 加页手记攻略",
         desc: "加页手记·厄运之女路线图",
-        path: "/pages/detail/detail?mapId=" + parts[0] +
-              "&routeId=" + parts[1] +
-              "&shapeId=" + encodeURIComponent(parts[2])
+        path: "/pages/detail/detail?mapId=" + encodeURIComponent(this._lastMapId) +
+              "&routeId=" + encodeURIComponent(this._lastRouteId) +
+              "&shapeId=" + encodeURIComponent(this._lastShapeId) + doorParam + fileParam
       };
     }
     return {
@@ -162,13 +186,23 @@ Page({
   },
 
   onImageError(e) {
+    const index = Number(e.currentTarget.dataset.index);
     const src = e.currentTarget.dataset.src || '';
     console.error('[detail] 图片加载失败:', src, e.detail && e.detail.errMsg);
+    if (!isNaN(index)) {
+      this.setData({ ['strategy.imageItems[' + index + '].failed']: true });
+    }
+  },
+
+  onImageRetry(e) {
+    const index = Number(e.currentTarget.dataset.index);
+    if (isNaN(index)) return;
+    this.setData({ ['strategy.imageItems[' + index + '].failed']: false });
   },
 
   previewImage(e) {
     const idx = e.currentTarget.dataset.index;
-    const imgs = this.data.strategy.images;
+    const imgs = this.data.strategy && this.data.strategy.images;
     if (!imgs || !imgs[idx]) return;
     wx.previewImage({ current: imgs[idx], urls: imgs });
   }

@@ -1,25 +1,23 @@
-.page-wrap { padding: 16px 18px 30px; }
-.page-header { margin-bottom: 16px; }
-.header-title {
-  font-size: 20px;
-  font-weight: 700;
-  color: #ff9c00;
-  line-height: 1.3;
-}
-.header-sub {
-  font-size: 13px;
-  color: #888;
-  margin-top: 4px;
-}
-.loading-wrap { padding: 50px 0; text-align: center; color: #aaa; font-size: 13px; }
-.img-wrap {
-  background: #2a2b32;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 10px;
+.tutorial-page { padding-top: 16px; }
+
+.tutorial-frame {
   overflow: hidden;
+  background: #22242a;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 7px;
 }
-.tutorial-img {
-  width: 100%;
-  display: block;
-  background: #333;
+
+.tutorial-frame:active { border-color: rgba(216, 155, 60, 0.36); }
+.tutorial-img { display: block; width: 100%; min-height: 200px; background: #fff; }
+
+.image-footer {
+  display: flex;
+  height: 48px;
+  padding: 0 13px;
+  align-items: center;
+  justify-content: space-between;
+  color: #d9d6d1;
+  font-size: 13px;
 }
+
+.image-action { color: #dda34a; font-size: 12px; }

@@ -17,16 +17,76 @@
 const mapIndex = require('./localMapIndex.js');
 
 /**
- * 云存储资产映射 { key: fileID }，由 tools/upload-assets.js 生成。
+ * 云存储资产映射 { key: fileID }，由 tools/gen-cloud-assets.js 生成。
  * 图片地址解析顺序：云 fileID（真机/预览，无关分包下载）> 本地分包绝对路径（开发兜底）
  */
 let cloudMap = null;
+let cloudFallbackMap = null;
+let cloudKeyMap = null;
 function getCloudMap() {
   if (cloudMap === null) {
     try { cloudMap = require('./cloudAssets.js'); }
     catch (e) { cloudMap = {}; }
   }
   return cloudMap;
+}
+
+function getCloudAsset(key) {
+  const assets = getCloudMap();
+  if (assets[key]) return assets[key];
+  if (cloudKeyMap === null) {
+    cloudKeyMap = {};
+    Object.keys(assets).forEach(assetKey => { cloudKeyMap[assetKey.toLowerCase()] = assets[assetKey]; });
+  }
+  return cloudKeyMap[String(key || '').toLowerCase()] || '';
+}
+
+function getAllRoutes() {
+  return getMaps().reduce((routes, map) => routes.concat(Array.isArray(map.routes) ? map.routes : []), []);
+}
+
+function matchesAuthor(route, author) {
+  if (!author) return true;
+  return route && (route.authorId === author || route.author === author);
+}
+
+function matchesRouteId(route, routeId) {
+  return route && (route.id === routeId || (Array.isArray(route.legacyIds) && route.legacyIds.indexOf(routeId) >= 0));
+}
+
+function getRouteAssetPaths(route) {
+  const paths = [];
+  (route.rootFiles || []).forEach(file => paths.push(file));
+  (route.shapes || []).forEach(shape => {
+    const detail = (route.shapeDetails || {})[shape] || {};
+    (detail.rootFiles || []).forEach(file => paths.push(shape + '/' + file));
+    (detail.doors || []).forEach(door => {
+      (door.files || []).forEach(file => paths.push(shape + '/' + door.door + '/' + file));
+    });
+  });
+  return paths;
+}
+
+function getLocalFallback(fileId) {
+  if (cloudFallbackMap === null) {
+    cloudFallbackMap = {};
+    const assets = getCloudMap();
+    Object.keys(assets).forEach(key => {
+      const slash = key.indexOf('/');
+      if (slash < 0) return;
+      const localUrl = '/' + key.slice(0, slash) + '/assets/' + key.slice(slash + 1);
+      cloudFallbackMap[assets[key]] = localUrl;
+    });
+    getAllRoutes().forEach(route => {
+      const namespace = route.assetNamespace;
+      getRouteAssetPaths(route).forEach(relPath => {
+        const fileId = (namespace && getCloudAsset(namespace + '/' + relPath)) ||
+          (route.legacyCloudPackage && getCloudAsset(route.legacyCloudPackage + '/' + relPath));
+        if (fileId) cloudFallbackMap[fileId] = '/' + getPackageRoot(route) + '/assets/' + relPath;
+      });
+    });
+  }
+  return cloudFallbackMap[fileId] || fileId;
 }
 
 /**
@@ -56,7 +116,28 @@ function getChapterData() {
  */
 function getMapById(mapId) {
   const maps = getMaps();
-  return maps.find(m => m && m.id === mapId) || maps[0] || null;
+  return maps.find(m => m && m.id === mapId) || null;
+}
+
+function getAuthorsByMapId(mapId) {
+  const map = getMapById(mapId);
+  if (!map) return [];
+  const visibleRoutes = getRoutesByMapId(mapId);
+  const configured = Array.isArray(map.authors) ? map.authors : [];
+  const authors = [];
+  const seen = {};
+  configured.forEach(author => {
+    if (!author || !author.id || !visibleRoutes.some(route => matchesAuthor(route, author.id))) return;
+    authors.push({ id: author.id, name: author.name || author.id });
+    seen[author.id] = true;
+  });
+  visibleRoutes.forEach(route => {
+    const id = route.authorId || route.author || 'other';
+    if (seen[id]) return;
+    authors.push({ id, name: route.author || id });
+    seen[id] = true;
+  });
+  return authors;
 }
 
 /**
@@ -65,14 +146,18 @@ function getMapById(mapId) {
  */
 function getRoutesByMapId(mapId) {
   const map = getMapById(mapId);
-  return map && Array.isArray(map.routes) ? map.routes : [];
+  const routes = map && Array.isArray(map.routes) ? map.routes : [];
+  // 隐藏路线（hidden: true）不出现在任何列表，但数据与资源保留
+  return routes.filter(r => !r.hidden);
 }
 
 /**
  * 按路线 id（难度）获取路线详情
  */
-function getRoute(mapId, routeId) {
-  return getRoutesByMapId(mapId).find(r => r && r.id === routeId) || null;
+function getRoute(mapId, routeId, author) {
+  const routes = getRoutesByMapId(mapId).filter(route => matchesAuthor(route, author));
+  return routes.find(route => route && route.id === routeId) ||
+    routes.find(route => matchesRouteId(route, routeId)) || null;
 }
 
 /**
@@ -115,7 +200,7 @@ function getRootImages(mapId, routeId) {
 function resolveBase(map, route) {
   const m = map || {};
   if (m.assetBase) return m.assetBase;
-  if (route) return '/' + getPackageRoot(route.id) + '/assets/';
+  if (route) return '/' + getPackageRoot(route) + '/assets/';
   return '';
 }
 
@@ -123,17 +208,26 @@ function resolveBase(map, route) {
  * 构建形状下某张图片的路径
  * 规则：云存储 fileID（cloud://...）优先；未上传时回退 resolveBase + shape + "/" + door + "/" + fileName
  */
-function cloudUrl(pkg, relPath) {
-  return getCloudMap()[pkg + '/' + relPath] || '';
+function cloudUrl(route, relPath) {
+  try {
+    const app = getApp();
+    if (!app || !app.globalData || !app.globalData.cloudReady) return '';
+  } catch (e) {
+    return '';
+  }
+  const assets = getCloudMap();
+  const namespace = route && route.assetNamespace;
+  const legacyPackage = route && route.legacyCloudPackage;
+  return (namespace && getCloudAsset(namespace + '/' + relPath)) ||
+    (legacyPackage && getCloudAsset(legacyPackage + '/' + relPath)) || '';
 }
 
 function buildImageUrl(mapId, routeId, shape, door, fileName) {
   const map = getMapById(mapId);
   const route = getRoute(mapId, routeId);
   if (!map || !route || !shape || !door || !fileName) return '';
-  const pkg = getPackageRoot(routeId);
   const relPath = shape + '/' + door + '/' + fileName;
-  return cloudUrl(pkg, relPath) || resolveBase(map, route) + relPath;
+  return cloudUrl(route, relPath) || resolveBase(map, route) + relPath;
 }
 
 /**
@@ -144,9 +238,21 @@ function getShapeRootImageUrls(mapId, routeId, shape) {
   const route = getRoute(mapId, routeId);
   if (!map || !route || !shape) return [];
   const detail = getShapeDetails(mapId, routeId, shape);
-  const pkg = getPackageRoot(routeId);
   const base = resolveBase(map, route);
-  return ((detail && detail.rootFiles) || []).map(f => cloudUrl(pkg, shape + '/' + f) || base + shape + '/' + f);
+  return ((detail && detail.rootFiles) || []).map(f => cloudUrl(route, shape + '/' + f) || base + shape + '/' + f);
+}
+
+/**
+ * 获取某个形状下识别图标的本地/云端地址。
+ * 图标路径规则：iconPackageRoot/assets/{shape}/{fileName}。
+ */
+function getShapeIconUrl(mapId, routeId, shape, fileName) {
+  const route = getRoute(mapId, routeId);
+  if (!route || !route.iconPackageRoot || !shape || !fileName) return '';
+  const relPath = shape + '/' + fileName;
+  const cloudFileId = route.iconNamespace ? getCloudAsset(route.iconNamespace + '/' + relPath) : '';
+  if (cloudFileId) return cloudFileId;
+  return '/' + route.iconPackageRoot + '/assets/' + relPath;
 }
 
 /**
@@ -172,20 +278,20 @@ function getRootImageUrls(mapId, routeId) {
   const map = getMapById(mapId);
   if (!map || !route) return [];
   const base = resolveBase(map, route);
-  const pkg = getPackageRoot(routeId);
-  return (route.rootFiles || []).map(f => cloudUrl(pkg, f) || base + f);
+  return (route.rootFiles || []).map(f => cloudUrl(route, f) || base + f);
 }
 
 /**
  * 路线难度 -> 分包根目录映射（subPackage root）
  * 新路线可映射到任意已有分包；未知难度回退 pkg-{routeId}
  */
-const ROUTE_PACKAGE = {
+const LEGACY_ROUTE_PACKAGE = {
   hard: 'pkg-hard',
   hard_fast: 'pkg-hard',
   normal: 'pkg-normal',
   easy: 'pkg-easy',
-  newbie: 'pkg-newbie'
+  newbie: 'pkg-newbie',
+  v0710: 'pkg-v0710'
 };
 
 const FILEURL_CACHE_KEY = 'id5_fileurl_v1';
@@ -195,11 +301,15 @@ const FILEURL_TTL = 90 * 60 * 1000; // 临时链接有效期约 2 小时，缓�
  * 把 cloud:// fileID 批量解析为 https 临时链接（wx.cloud.getTempFileURL）
  * - 非 cloud:// 的 URL（CDN 图/本地路径）原样透传
  * - 带本地缓存（storage），缓存命中不发请求
- * - 失败时回退原 fileID（真机可能仍可渲染），不阻塞页面
+ * - 单条或整体失败时回退对应本地分包路径，不阻塞页面
  */
 function resolveImageUrls(fileIds) {
-  const list = fileIds.filter(id => typeof id === 'string' && id.indexOf('cloud://') === 0);
-  if (!list.length) return Promise.resolve(fileIds);
+  const source = Array.isArray(fileIds) ? fileIds : [];
+  const list = source.filter(id => typeof id === 'string' && id.indexOf('cloud://') === 0);
+  if (!list.length) return Promise.resolve(source);
+  if (!wx.cloud || !wx.cloud.getTempFileURL) {
+    return Promise.resolve(source.map(getLocalFallback));
+  }
   let cache = {};
   try { cache = wx.getStorageSync(FILEURL_CACHE_KEY) || {}; } catch (e) { cache = {}; }
   const now = Date.now();
@@ -210,8 +320,10 @@ function resolveImageUrls(fileIds) {
     if (hit && hit.url && now - hit.ts < FILEURL_TTL) urlMap[fid] = hit.url;
     else need.push(fid);
   });
-  const apply = () => fileIds.map(fid =>
-    (typeof fid === 'string' && fid.indexOf('cloud://') === 0) ? (urlMap[fid] || fid) : fid
+  const apply = () => source.map(fid =>
+    (typeof fid === 'string' && fid.indexOf('cloud://') === 0)
+      ? (urlMap[fid] || getLocalFallback(fid))
+      : fid
   );
   if (!need.length) return Promise.resolve(apply());
   return wx.cloud.getTempFileURL({ fileList: need }).then(res => {
@@ -234,8 +346,31 @@ function resolveImageUrls(fileIds) {
 /**
  * 获取某难度路线对应的分包根目录（如 'pkg-hard'）
  */
-function getPackageRoot(routeId) {
-  return ROUTE_PACKAGE[routeId] || 'pkg-' + routeId;
+function getPackageRoot(routeOrId) {
+  if (routeOrId && typeof routeOrId === 'object') {
+    return routeOrId.packageRoot || LEGACY_ROUTE_PACKAGE[routeOrId.id] || 'pkg-' + routeOrId.id;
+  }
+  const routeId = routeOrId || '';
+  const route = getAllRoutes().find(item => item.id === routeId) || getAllRoutes().find(item => matchesRouteId(item, routeId));
+  return (route && route.packageRoot) || LEGACY_ROUTE_PACKAGE[routeId] || 'pkg-' + routeId;
+}
+
+/**
+ * 确保路线对应的图片分包已经加载。
+ * 云图片解析失败或分享直达详情页时，本地素材回退依赖该分包。
+ */
+function loadRoutePackage(routeId) {
+  if (!routeId || !wx.loadSubpackage) return Promise.resolve();
+  return new Promise(resolve => {
+    wx.loadSubpackage({
+      name: getPackageRoot(routeId),
+      success: resolve,
+      fail(err) {
+        console.warn('[api] 图片分包加载失败，将继续尝试云素材', err && err.errMsg || err);
+        resolve();
+      }
+    });
+  });
 }
 
 module.exports = {
@@ -243,6 +378,7 @@ module.exports = {
   getInventoryData,
   getChapterData,
   getMapById,
+  getAuthorsByMapId,
   getRoutesByMapId,
   getRoute,
   getShapes,
@@ -250,7 +386,9 @@ module.exports = {
   getRootImages,
   getRootImageUrls,
   getShapeRootImageUrls,
+  getShapeIconUrl,
   getPackageRoot,
+  loadRoutePackage,
   buildImageUrl,
   getImagesForShape,
   resolveImageUrls

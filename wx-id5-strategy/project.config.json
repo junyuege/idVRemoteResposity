@@ -1,7 +1,40 @@
 {
   "description": "第五人格·加页手记攻略查询",
   "packOptions": {
-    "ignore": [],
+    "ignore": [
+      {
+        "type": "folder",
+        "value": "tools"
+      },
+      {
+        "type": "file",
+        "value": "PROJECT_PLAN.md"
+      },
+      {
+        "type": "file",
+        "value": "CLOUD_STORAGE_GUIDE.md"
+      },
+      {
+        "type": "folder",
+        "value": "pkg-hard"
+      },
+      {
+        "type": "folder",
+        "value": "pkg-normal"
+      },
+      {
+        "type": "folder",
+        "value": "pkg-easy"
+      },
+      {
+        "type": "folder",
+        "value": "pkg-newbie"
+      },
+      {
+        "type": "folder",
+        "value": "pkg-v0710"
+      }
+    ],
     "include": []
   },
   "setting": {

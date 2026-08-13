@@ -1,16 +1,44 @@
-<view class="page-wrap">
-  <view style="font-size:20px;font-weight:700;color:#ff9c00;margin:6px 0 18px;">意见反馈</view>
-  <textarea value="{{content}}" bindinput="onContentInput" placeholder="请描述你的问题或建议（最多500字）" maxlength="500" style="width:100%;min-height:160px;padding:14px;background:#2a2b32;border:1px solid #4a4a52;border-radius:8px;color:#fff;font-size:14px;" />
-  <view style="text-align:right;font-size:12px;color:#888;margin-top:6px;">{{contentLength}}/500</view>
-  <view style="margin-top:20px;">
-    <view style="font-size:14px;color:#ccc;margin-bottom:10px;">上传截图（选填，最多8张）</view>
-    <view style="display:flex;flex-wrap:wrap;gap:10px;">
-      <view wx:for="{{images}}" wx:key="this" style="position:relative;width:80px;height:80px;border-radius:6px;overflow:hidden;background:#333;">
-        <image src="{{item}}" mode="aspectFill" style="width:100%;height:100%;" />
-        <view data-index="{{index}}" bindtap="removeImage" style="position:absolute;top:0;right:0;width:18px;height:18px;background:rgba(0,0,0,0.6);color:#fff;font-size:12px;line-height:18px;text-align:center;">×</view>
-      </view>
-      <view wx:if="{{images.length < 8}}" bindtap="chooseImage" style="width:80px;height:80px;border-radius:6px;border:2px dashed #555;display:flex;align-items:center;justify-content:center;font-size:28px;color:#888;">+</view>
-    </view>
+<view class="page-wrap feedback-page">
+  <view class="page-header">
+    <text class="header-kicker">FEEDBACK</text>
+    <view class="header-title">意见反馈</view>
+    <text class="header-sub">问题描述越具体，越容易定位处理</text>
   </view>
-  <button bindtap="submitFeedback" style="width:100%;margin-top:30px;padding:14px;background:#ff9c00;color:#1c1d22;font-size:16px;font-weight:600;border-radius:8px;text-align:center;">提交反馈</button>
+
+  <view class="field-head">
+    <text class="field-label">反馈内容</text>
+    <text class="field-count">{{contentLength}} / 500</text>
+  </view>
+  <textarea
+    class="feedback-input"
+    value="{{content}}"
+    bindinput="onContentInput"
+    placeholder="请描述出现问题的页面、操作和结果"
+    placeholder-class="feedback-placeholder"
+    maxlength="500"
+    disabled="{{submitting}}"
+  />
+
+  <view class="field-head image-field-head">
+    <view>
+      <text class="field-label">相关截图</text>
+      <text class="field-optional">选填，最多 8 张</text>
+    </view>
+    <text class="field-count">{{images.length}} / 8</text>
+  </view>
+  <view class="upload-grid">
+    <view wx:for="{{images}}" wx:key="this" class="upload-item">
+      <image src="{{item}}" mode="aspectFill" class="upload-image" />
+      <button data-index="{{index}}" bindtap="removeImage" class="remove-image" aria-label="移除截图">×</button>
+    </view>
+    <button wx:if="{{images.length < 8}}" bindtap="chooseImage" class="add-image" disabled="{{submitting}}">
+      <text class="add-symbol">＋</text>
+      <text class="add-label">添加截图</text>
+    </button>
+  </view>
+
+  <button class="submit-btn {{submitting ? 'submit-disabled' : ''}}" bindtap="submitFeedback" disabled="{{submitting}}">
+    {{submitting ? '正在提交...' : '提交反馈'}}
+  </button>
+  <text class="draft-note">提交失败时，文字与截图路径会暂存为本地草稿</text>
 </view>

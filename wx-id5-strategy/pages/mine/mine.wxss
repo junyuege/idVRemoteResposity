@@ -1,74 +1,48 @@
-.page-wrap { padding: 16px 18px 30px; }
+.mine-page { padding-top: 18px; }
 
 .profile {
   display: flex;
+  padding: 18px 16px;
   align-items: center;
-  padding: 20px 16px;
-  margin-bottom: 14px;
+  background: #22242a;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
 }
-.avatar {
+
+.brand-mark {
+  display: flex;
   width: 52px;
   height: 52px;
-  border-radius: 12px;
-  background: rgba(255, 156, 0, 0.14);
-  display: flex;
+  margin-right: 13px;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  font-size: 26px;
-  margin-right: 14px;
-  flex-shrink: 0;
-}
-.profile-body { flex: 1; min-width: 0; }
-.profile-title {
-  font-size: 16px;
-  font-weight: 700;
-  color: #fff;
-}
-.profile-sub {
-  font-size: 12px;
-  color: #999;
-  margin-top: 5px;
+  background: #3a3021;
+  border: 1px solid rgba(216, 155, 60, 0.35);
+  border-radius: 7px;
+  color: #ecb45c;
+  font-size: 20px;
+  font-weight: 800;
 }
 
-.menu { padding: 0 14px; }
-.menu-item {
-  display: flex;
-  align-items: center;
-  padding: 15px 0;
-}
-.menu-icon {
-  font-size: 18px;
-  margin-right: 12px;
-}
-.menu-label {
-  flex: 1;
-  font-size: 14px;
-  color: #fff;
-}
-.menu-arrow {
-  font-size: 22px;
-  color: #ff9c00;
-}
-.menu-divider {
-  height: 1px;
-  background: rgba(255, 255, 255, 0.05);
-}
+.profile-body { min-width: 0; flex: 1; }
+.profile-title { display: block; color: #f7f5f1; font-size: 17px; font-weight: 750; }
+.profile-sub { display: block; margin-top: 5px; color: #898b93; font-size: 12px; }
+.version-badge { flex-shrink: 0; margin-left: 8px; color: #73757d; font-size: 11px; }
 
-.share-btn {
-  margin-top: 22px;
-  height: 46px;
-  line-height: 46px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, #ff9c00, #ff7a00);
-  color: #fff;
-  font-size: 15px;
-  font-weight: 600;
-  text-align: center;
-}
+.menu { overflow: hidden; background: #22242a; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; }
+.menu-item { display: flex; min-height: 72px; margin-left: 14px; padding: 12px 14px 12px 0; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.06); }
+.menu-item:last-child { border-bottom: none; }
+.menu-item:active { background: #292b31; }
 
-.footer {
-  margin-top: 24px;
-  text-align: center;
-  font-size: 11px;
-  color: #666;
-}
+.menu-mark { display: flex; width: 38px; height: 38px; margin-right: 12px; flex-shrink: 0; align-items: center; justify-content: center; border-radius: 6px; font-size: 13px; font-weight: 800; }
+.mark-guide { background: #3a3021; color: #e8b15b; }
+.mark-feedback { background: #26353d; color: #83b5d4; }
+.mark-about { background: #2e3037; color: #b1b2b8; }
+.menu-body { display: flex; min-width: 0; flex: 1; flex-direction: column; gap: 4px; }
+.menu-label { color: #f1efeb; font-size: 14px; font-weight: 650; }
+.menu-desc { color: #7f8189; font-size: 11px; }
+
+.share-btn { width: 100%; height: 44px; margin-top: 18px; background: #30323a; border: 1px solid rgba(255, 255, 255, 0.09); border-radius: 7px; color: #e4e1dc; font-size: 14px; font-weight: 600; line-height: 42px; }
+.share-btn:active { background: #383a43; }
+.footer { display: block; margin-top: 22px; color: #62646c; font-size: 10px; text-align: center; }

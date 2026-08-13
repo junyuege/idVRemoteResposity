@@ -58,8 +58,11 @@ Page({
   },
 
   onPullDownRefresh() {
-    this.loadItems();
-    wx.stopPullDownRefresh();
+    try {
+      this.loadItems();
+    } finally {
+      wx.stopPullDownRefresh();
+    }
   },
 
   // 全量条目 = 图鉴条目（异象 / 道具 / 辞章）
@@ -81,7 +84,7 @@ Page({
           chipCls: '',
           categoryLabel: category.label,
           categoryCls: category.cls,
-          metaText: '⚠️ 刷新：' + mapsSummary(it.maps),
+          metaText: '刷新：' + mapsSummary(it.maps),
           maps: (it.maps || []).join(' / '),
           counter: it.counter || ''
         };
@@ -100,7 +103,7 @@ Page({
         chipLabel: quality.label,
         categoryLabel: category.label,
         categoryCls: category.cls,
-        metaText: '💰 ' + formatMoney(it.value != null ? it.value : it.price),
+        metaText: '价值：' + formatMoney(it.value != null ? it.value : it.price),
         type: it.type || '',
         value: it.value != null ? it.value : it.price,
         weight: it.weight || '',
@@ -129,7 +132,7 @@ Page({
   },
 
   onSearch(e) {
-    this.setData({ keyword: (e.detail.value || '').trim() }, () => this.renderItems());
+    this.setData({ keyword: e.detail.value || '' }, () => this.renderItems());
   },
 
   clearSearch() {
@@ -147,7 +150,7 @@ Page({
     } else {
       if (item.group) meta.push({ label: '分组', value: item.group });
       if (item.type) meta.push({ label: '类型', value: item.type });
-      if (item.value != null) meta.push({ label: '价格', value: '💰 ' + formatMoney(item.value) });
+      if (item.value != null) meta.push({ label: '价格', value: formatMoney(item.value) });
       if (item.weight) meta.push({ label: '重量', value: item.weight });
       if (item.durability) meta.push({ label: '耐久', value: item.durability });
       if (item.map) meta.push({ label: '刷新地图', value: item.map });
@@ -157,5 +160,15 @@ Page({
 
   closeDetail() {
     this.setData({ showDetail: false, detail: null });
+  },
+
+  onIconError(e) {
+    const index = Number(e.currentTarget.dataset.index);
+    if (isNaN(index)) return;
+    this.setData({ ['items[' + index + '].icon']: PLACEHOLDER_ICON });
+  },
+
+  onDetailIconError() {
+    this.setData({ 'detail.icon': PLACEHOLDER_ICON });
   }
 });

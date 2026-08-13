@@ -32,22 +32,21 @@ function Compress-One {
     try {
         $scale = 1.0
         if ($img.Width -gt $Width) { $scale = [double]$Width / $img.Width }
-        if ($scale -ge 1.0) {
-            $img.Save($Dst, "image/jpeg")
-            return
-        }
-        $bmp = New-Object System.Drawing.Bitmap([int]($img.Width * $scale), [int]($img.Height * $scale))
-        try {
+        $bmp = $img
+        if ($scale -lt 1.0) {
+            $bmp = New-Object System.Drawing.Bitmap([int]($img.Width * $scale), [int]($img.Height * $scale))
             $g = [System.Drawing.Graphics]::FromImage($bmp)
             try {
                 $g.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
                 $g.DrawImage($img, 0, 0, $bmp.Width, $bmp.Height)
             } finally { $g.Dispose() }
+        }
+        try {
             $codec = [System.Drawing.Imaging.ImageCodecInfo]::GetImageEncoders() | Where-Object { $_.MimeType -eq "image/jpeg" }
             $ep = New-Object System.Drawing.Imaging.EncoderParameters(1)
             $ep.Param[0] = New-Object System.Drawing.Imaging.EncoderParameter([System.Drawing.Imaging.Encoder]::Quality, [long]$Quality)
             $bmp.Save($Dst, $codec, $ep)
-        } finally { $bmp.Dispose() }
+        } finally { if ($bmp -ne $img) { $bmp.Dispose() } }
     } finally { $img.Dispose() }
 }
 
@@ -56,12 +55,10 @@ $budgetBytes = [long]($PerPackageBudgetMB * 1MB)
 $widths = @(1280, 1024, 800, 640)
 $report = @()
 
-# 难度 -> 分包根目录映射（与 data/api.js ROUTE_PACKAGE 保持一致）
-# 多个难度可合并进同一分包（如 全棺版 hard 与 速刷版 hard_fast 共用 pkg-hard），
-# 同名文件路径以优先级高的路线为准：速刷版(hard_fast=4) 覆盖 全棺版(hard=3)
+# 旧索引兼容：新路线应直接声明 packageRoot，使地图、作者和路线彼此隔离。
 $RoutePackage = @{
     hard = 'pkg-hard'; hard_fast = 'pkg-hard'
-    normal = 'pkg-normal'; easy = 'pkg-easy'; newbie = 'pkg-newbie'
+    normal = 'pkg-normal'; easy = 'pkg-easy'; newbie = 'pkg-newbie'; v0710 = 'pkg-v0710'
 }
 $RoutePriority = @{ newbie = 0; easy = 1; normal = 2; hard = 3; hard_fast = 4 }
 
@@ -71,21 +68,27 @@ foreach ($map in $index.maps) {
     $anchor = $map.sourceAnchor -replace "/", "\"
     if (-not $anchor.EndsWith("\")) { $anchor += "\" }
     foreach ($route in $map.routes) {
-        $pkg = if ($RoutePackage.ContainsKey($route.id)) { $RoutePackage[$route.id] } else { "pkg-" + $route.id }
+        # 路线可声明独立源目录（如 7.10 新版来自另一个文件夹），缺省使用地图 anchor
+        $routeAnchor = $route.sourceAnchor
+        if ($routeAnchor) { $routeAnchor = $routeAnchor -replace "/", "\" } else { $routeAnchor = $anchor }
+        if (-not $routeAnchor.EndsWith("\")) { $routeAnchor += "\" }
+        $pkg = if ($route.packageRoot) { $route.packageRoot } elseif ($RoutePackage.ContainsKey($route.id)) { $RoutePackage[$route.id] } else { "pkg-" + $route.id }
         $priority = if ($RoutePriority.ContainsKey($route.id)) { $RoutePriority[$route.id] } else { 99 }
         if (-not $pkgPlans.ContainsKey($pkg)) { $pkgPlans[$pkg] = @{} }
         foreach ($shapeProp in $route.shapeDetails.PSObject.Properties) {
             foreach ($fn in $shapeProp.Value.rootFiles) {
-                # 形状根目录散图（不经过侧门子文件夹）
-                $src = $anchor + $route.shapeDir + "\" + $shapeProp.Name + "\" + $fn
+                # 形状根目录散图（不经过侧门子文件夹）；素材平铺时（shape 目录不存在）回退到路线根级
+                $cand1 = $routeAnchor + $route.shapeDir + "\" + $shapeProp.Name + "\" + $fn
+                $cand2 = $routeAnchor + $route.shapeDir + "\" + $fn
+                $src = if (Test-Path -LiteralPath $cand1) { $cand1 } else { $cand2 }
                 $rel = $shapeProp.Name + "/" + $fn
                 $pkgPlans[$pkg][$rel] = [PSCustomObject]@{ Src = $src; Priority = $priority }
             }
             foreach ($doorObj in $shapeProp.Value.doors) {
                 foreach ($fn in $doorObj.files) {
                     # 优先 shape/door/文件 三层；素材侧部分形状把图片直接放在 shape 根（门名在文件名里），回退到根级
-                    $cand1 = $anchor + $route.shapeDir + "\" + $shapeProp.Name + "\" + $doorObj.door + "\" + $fn
-                    $cand2 = $anchor + $route.shapeDir + "\" + $shapeProp.Name + "\" + $fn
+                    $cand1 = $routeAnchor + $route.shapeDir + "\" + $shapeProp.Name + "\" + $doorObj.door + "\" + $fn
+                    $cand2 = $routeAnchor + $route.shapeDir + "\" + $shapeProp.Name + "\" + $fn
                     $src = if (Test-Path -LiteralPath $cand1) { $cand1 } else { $cand2 }
                     $rel = $shapeProp.Name + "/" + $doorObj.door + "/" + $fn
                     $pkgPlans[$pkg][$rel] = [PSCustomObject]@{ Src = $src; Priority = $priority }
@@ -94,7 +97,7 @@ foreach ($map in $index.maps) {
         }
         foreach ($fn in $route.rootFiles) {
             $rel = $fn
-            $pkgPlans[$pkg][$rel] = [PSCustomObject]@{ Src = $anchor + $route.shapeDir + "\" + $fn; Priority = $priority }
+            $pkgPlans[$pkg][$rel] = [PSCustomObject]@{ Src = $routeAnchor + $route.shapeDir + "\" + $fn; Priority = $priority }
         }
     }
 }

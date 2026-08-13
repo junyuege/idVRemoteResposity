@@ -1,12 +1,20 @@
-<view class="page-wrap">
+<view class="page-wrap tutorial-page">
   <view class="page-header">
-    <view class="header-title">新版小抄看法教学</view>
-    <view class="header-sub">点击图片可全屏放大，配合双指缩放查看细节</view>
+    <text class="header-kicker">QUICK GUIDE</text>
+    <view class="header-title">新版小抄阅读示例</view>
+    <text class="header-sub">红线代表推荐路线，星标位置需要额外确认</text>
   </view>
 
-  <view wx:if="{{loading}}" class="loading-wrap"><text>加载中...</text></view>
+  <view wx:if="{{loading}}" class="loading-wrap">
+    <view class="loading-dot"></view>
+    <text>正在加载教学图...</text>
+  </view>
 
-  <view wx:else class="img-wrap" bindtap="onPreview">
+  <view wx:else class="tutorial-frame" bindtap="onPreview">
     <image class="tutorial-img" src="{{image}}" mode="widthFix" lazy-load="true" show-menu-by-longpress="true" />
+    <view class="image-footer">
+      <text>小抄阅读说明</text>
+      <text class="image-action">查看原图 ›</text>
+    </view>
   </view>
 </view>

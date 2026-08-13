@@ -1,48 +1,70 @@
-<view class="page-wrap">
-  <view class="panel" style="padding:24px 20px;margin-bottom:20px;background:linear-gradient(135deg,#2a2b32,#1c1d22);">
-    <view style="font-size:32px;font-weight:800;color:#ff9c00;">第五人格</view>
-    <view style="font-size:18px;font-weight:600;color:#fff;margin-top:4px;">加页手记攻略查询</view>
-    <view style="font-size:12px;color:#aaa;margin-top:8px;">地图路线、物资点位、通关技巧</view>
-    <view style="display:flex;margin-top:18px;gap:10px;">
-      <view bindtap="goToCategory" style="padding:10px 22px;border-radius:6px;font-size:13px;font-weight:600;background:#ff9c00;color:#1c1d22;">小抄教学</view>
-      <view bindtap="goToInventory" style="padding:10px 22px;border-radius:6px;font-size:13px;font-weight:600;background:#3a3b44;color:#ddd;">全部小抄整理</view>
-    </view>
-  </view>
-
-  <view style="font-size:18px;font-weight:700;color:#ff9c00;margin:0 0 12px 2px;">攻略分类</view>
-  <view wx:for="{{strategies}}" wx:key="_id" class="card panel" data-id="{{item._id}}" bindtap="onStrategyTap">
-    <view class="left-content">
-      <view class="map-icon-wrap">
-        <view class="map-icon-star">✦</view>
-      </view>
-      <view class="map-title">{{item.title}}</view>
-      <view class="map-sub">{{item.difficulty}}</view>
-    </view>
-    <view class="right-content">
-      <view class="pillar-row">
-        <view
-          wx:for="{{item.shortRoutes}}"
-          wx:for-item="route"
-          wx:key="id"
-          class="pill {{currentMode === route.id || (currentMode === '' && route.id === 'normal') ? 'active' : ''}}"
-          data-mode="{{route.id}}"
-          data-mapId="{{item._id}}"
-          catchtap="onSelectMode"
-        >{{route.label}}</view>
-      </view>
-      <view wx:if="{{item.longRoutes.length}}" class="pillar-row">
-        <view
-          wx:for="{{item.longRoutes}}"
-          wx:for-item="route"
-          wx:key="id"
-          class="pill {{currentMode === route.id || (currentMode === '' && route.id === 'normal') ? 'active' : ''}}"
-          data-mode="{{route.id}}"
-          data-mapId="{{item._id}}"
-          catchtap="onSelectMode"
-        >{{route.label}}</view>
+<view class="page-wrap home-page">
+  <view class="hero">
+    <image class="hero-cover" src="/images/placeholder/cover.png" mode="aspectFill" />
+    <view class="hero-shade"></view>
+    <view class="hero-content">
+      <text class="hero-kicker">IDENTITY V STRATEGY</text>
+      <text class="hero-title">加页手记攻略</text>
+      <text class="hero-sub">路线、入口与物资信息集中查询</text>
+      <view class="hero-actions">
+        <button class="primary-btn hero-action" bindtap="goToCategory">查看教学</button>
+        <button class="secondary-btn hero-action" bindtap="goToInventory">打开图鉴</button>
       </view>
     </view>
   </view>
 
-  <button class="float-btn" open-type="share">分享</button>
+  <view class="section-title-row">
+    <text class="section-title">路线攻略</text>
+    <text class="section-meta">{{strategies.length}} 个攻略版本</text>
+  </view>
+
+  <view wx:if="{{loading}}" class="loading-wrap">
+    <view class="loading-dot"></view>
+    <text>正在整理攻略...</text>
+  </view>
+
+  <view wx:elif="{{strategies.length === 0}}" class="empty-wrap">
+    <text>暂时没有可用攻略</text>
+  </view>
+
+  <view wx:else class="strategy-list">
+    <view wx:for="{{strategies}}" wx:key="_id" class="strategy-card" data-id="{{item.mapId}}" data-authorid="{{item.authorId}}" bindtap="onStrategyTap">
+      <view class="strategy-head">
+        <image class="strategy-cover" src="{{item.coverImage}}" mode="aspectFill" />
+        <view class="strategy-title-wrap">
+          <text class="strategy-title">{{item.title}}</text>
+          <text class="strategy-sub">{{item.difficulty}} · {{item.routes.length}} 个难度</text>
+        </view>
+        <text class="list-arrow">›</text>
+      </view>
+      <view class="mode-groups">
+        <view class="mode-row">
+          <button
+            wx:for="{{item.shortRoutes}}"
+            wx:for-item="route"
+            wx:key="id"
+            class="mode-btn {{currentMode === route.id ? 'mode-active' : ''}}"
+            data-mode="{{route.id}}"
+            data-mapId="{{item.mapId}}"
+            data-authorid="{{item.authorId}}"
+            catchtap="onSelectMode"
+          >{{route.label}}</button>
+        </view>
+        <view wx:if="{{item.longRoutes.length}}" class="mode-row">
+          <button
+            wx:for="{{item.longRoutes}}"
+            wx:for-item="route"
+            wx:key="id"
+            class="mode-btn mode-wide {{currentMode === route.id ? 'mode-active' : ''}}"
+            data-mode="{{route.id}}"
+            data-mapId="{{item.mapId}}"
+            data-authorid="{{item.authorId}}"
+            catchtap="onSelectMode"
+          >{{route.label}}</button>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <button class="share-fab" open-type="share" aria-label="分享攻略">↗</button>
 </view>

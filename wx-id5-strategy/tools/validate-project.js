@@ -1,0 +1,379 @@
+const fs = require('fs');
+const path = require('path');
+
+const ROOT = path.resolve(__dirname, '..');
+const failures = [];
+let checks = 0;
+
+function check(condition, message) {
+  checks += 1;
+  if (!condition) failures.push(message);
+}
+
+function readJson(relativePath) {
+  return JSON.parse(fs.readFileSync(path.join(ROOT, relativePath), 'utf8'));
+}
+
+function requireFresh(relativePath) {
+  const absolutePath = path.join(ROOT, relativePath);
+  delete require.cache[require.resolve(absolutePath)];
+  return require(absolutePath);
+}
+
+function setByPath(target, key, value) {
+  const parts = key.replace(/\[(\d+)\]/g, '.$1').split('.');
+  let cursor = target;
+  for (let i = 0; i < parts.length - 1; i += 1) {
+    if (cursor[parts[i]] == null) cursor[parts[i]] = {};
+    cursor = cursor[parts[i]];
+  }
+  cursor[parts[parts.length - 1]] = value;
+}
+
+const storage = {};
+const loadedPackages = [];
+const navigationCalls = [];
+global.wx = {
+  cloud: {
+    getTempFileURL({ fileList }) {
+      return Promise.resolve({
+        fileList: fileList.map(fileID => ({
+          fileID,
+          status: 0,
+          tempFileURL: 'https://example.invalid/' + encodeURIComponent(fileID)
+        }))
+      });
+    }
+  },
+  getStorageSync(key) { return storage[key]; },
+  setStorageSync(key, value) { storage[key] = value; },
+  removeStorageSync(key) { delete storage[key]; },
+  setNavigationBarTitle() {},
+  loadSubpackage({ name, success }) {
+    loadedPackages.push(name);
+    if (success) success();
+  },
+  showToast() {},
+  stopPullDownRefresh() {},
+  navigateTo(options) { navigationCalls.push({ method: 'navigateTo', url: options.url }); },
+  redirectTo(options) { navigationCalls.push({ method: 'redirectTo', url: options.url }); },
+  switchTab() {},
+  previewImage() {}
+};
+global.getApp = () => ({ globalData: { appVersion: '1.0.0', cloudReady: false } });
+
+function loadPage(relativePath) {
+  let definition = null;
+  global.Page = config => { definition = config; };
+  requireFresh(relativePath);
+  check(definition && typeof definition === 'object', relativePath + ' did not register a Page');
+  if (!definition) return null;
+  const page = Object.assign({}, definition);
+  page.data = JSON.parse(JSON.stringify(definition.data || {}));
+  page.setData = function setData(patch, callback) {
+    Object.keys(patch).forEach(key => setByPath(this.data, key, patch[key]));
+    if (callback) callback();
+  };
+  return page;
+}
+
+function validateRegisteredPages(appConfig) {
+  const pages = appConfig.pages || [];
+  const subPages = (appConfig.subPackages || []).flatMap(pkg =>
+    (pkg.pages || []).map(page => path.posix.join(pkg.root, page))
+  );
+  pages.concat(subPages).forEach(page => {
+    ['js', 'json', 'wxml', 'wxss'].forEach(ext => {
+      check(fs.existsSync(path.join(ROOT, page + '.' + ext)), page + '.' + ext + ' is missing');
+    });
+  });
+
+  const tabPages = ((appConfig.tabBar && appConfig.tabBar.list) || []).map(item => item.pagePath);
+  tabPages.forEach(page => check(pages.includes(page), 'Tab page is not registered: ' + page));
+}
+
+function validatePackConfig() {
+  const projectConfig = readJson('project.config.json');
+  const ignoreRules = (projectConfig.packOptions && projectConfig.packOptions.ignore) || [];
+  check(ignoreRules.some(rule => rule.type === 'folder' && rule.value === 'tools'), 'Build should exclude the tools directory');
+}
+
+function validateBindings(appConfig) {
+  (appConfig.pages || []).forEach(pagePath => {
+    const page = loadPage(pagePath + '.js');
+    const wxml = fs.readFileSync(path.join(ROOT, pagePath + '.wxml'), 'utf8');
+    const eventPattern = /(?:bind|catch)(?:tap|input|confirm|error|change|load|submit)="([A-Za-z_$][\w$]*)"/g;
+    let match = eventPattern.exec(wxml);
+    while (match) {
+      check(page && typeof page[match[1]] === 'function', pagePath + ' is missing event handler ' + match[1]);
+      match = eventPattern.exec(wxml);
+    }
+  });
+}
+
+function validateWxmlStructure(appConfig) {
+  const voidTags = new Set(['image', 'input', 'textarea']);
+  (appConfig.pages || []).forEach(pagePath => {
+    const source = fs.readFileSync(path.join(ROOT, pagePath + '.wxml'), 'utf8')
+      .replace(/<!--[\s\S]*?-->/g, '')
+      .replace(/{{[\s\S]*?}}/g, 'EXPR');
+    const stack = [];
+    const tagPattern = /<\/?([A-Za-z][\w-]*)(?:\s[^<>]*?)?\s*\/?>/g;
+    let match = tagPattern.exec(source);
+    while (match) {
+      const token = match[0];
+      const tag = match[1];
+      if (token.startsWith('</')) {
+        const openingTag = stack.pop();
+        check(openingTag === tag, pagePath + ' has mismatched tag: expected ' + openingTag + ', found ' + tag);
+      } else if (!token.endsWith('/>') && !voidTags.has(tag)) {
+        stack.push(tag);
+      }
+      match = tagPattern.exec(source);
+    }
+    check(stack.length === 0, pagePath + ' has unclosed tags: ' + stack.join(', '));
+  });
+}
+
+function expectedAssetPaths(route) {
+  const paths = [];
+  (route.rootFiles || []).forEach(file => paths.push(file));
+  (route.shapes || []).forEach(shape => {
+    const detail = (route.shapeDetails || {})[shape] || {};
+    (detail.rootFiles || []).forEach(file => paths.push(path.posix.join(shape, file)));
+    (detail.doors || []).forEach(door => {
+      (door.files || []).forEach(file => paths.push(path.posix.join(shape, door.door, file)));
+    });
+  });
+  return paths;
+}
+
+async function validateDataFlow() {
+  const api = requireFresh('data/api.js');
+  const cloudAssets = requireFresh('data/cloudAssets.js');
+  const maps = api.getMaps();
+  check(maps.length > 0, 'No maps are available');
+
+  let routeCount = 0;
+  let shapeCount = 0;
+  let imageCount = 0;
+
+  maps.forEach(map => {
+    const routes = api.getRoutesByMapId(map.id);
+    check(routes.length > 0, 'No visible routes for map ' + map.id);
+    routes.forEach(route => {
+      routeCount += 1;
+      check(Boolean(route.authorId), 'Route is missing authorId: ' + route.id);
+      check(Boolean(route.difficulty), 'Route is missing difficulty: ' + route.id);
+      check(Boolean(route.packageRoot), 'Route is missing packageRoot: ' + route.id);
+      check(Boolean(route.assetNamespace), 'Route is missing assetNamespace: ' + route.id);
+      const packageRoot = api.getPackageRoot(route);
+      check(fs.existsSync(path.join(ROOT, packageRoot)), 'Missing package ' + packageRoot);
+
+      expectedAssetPaths(route).forEach(relativePath => {
+        imageCount += 1;
+        const normalizedPath = relativePath.replace(/\\/g, '/');
+        const cloudKey = route.assetNamespace + '/' + normalizedPath;
+        const legacyCloudKey = route.legacyCloudPackage ? route.legacyCloudPackage + '/' + normalizedPath : '';
+        const localPath = path.join(ROOT, packageRoot, 'assets', ...relativePath.split('/'));
+        const lowerCloudAssets = Object.keys(cloudAssets).reduce((lookup, key) => {
+          lookup[key.toLowerCase()] = cloudAssets[key];
+          return lookup;
+        }, {});
+        check(Boolean(cloudAssets[cloudKey]) || Boolean(lowerCloudAssets[cloudKey.toLowerCase()]) || Boolean(legacyCloudKey && (cloudAssets[legacyCloudKey] || lowerCloudAssets[legacyCloudKey.toLowerCase()])) || fs.existsSync(localPath), 'Missing image asset ' + cloudKey);
+        check(fs.existsSync(localPath), 'Missing local fallback image ' + localPath);
+      });
+
+      if (route.entryMode === 'fileIcons' && route.iconPackageRoot && route.iconNamespace) {
+        (route.shapes || []).forEach(shape => {
+          const detail = (route.shapeDetails || {})[shape] || {};
+          (detail.rootFiles || []).forEach(file => {
+            const iconPath = path.join(ROOT, route.iconPackageRoot, 'assets', shape, file);
+            check(fs.existsSync(iconPath), 'Missing icon fallback image ' + iconPath);
+          });
+        });
+      }
+
+      const shapes = api.getShapes(map.id, route.id);
+      shapeCount += shapes.length;
+      shapes.forEach(shape => {
+        const detail = api.getShapeDetails(map.id, route.id, shape);
+        check(Boolean(detail), 'Missing shape detail for ' + route.id + '/' + shape);
+      });
+    });
+  });
+
+  check(api.getMapById('__missing__') === null, 'Unknown map should not fall back to the first map');
+  check(api.getRoute(maps[0].id, '__missing__') === null, 'Unknown route should not fall back');
+
+  maps.forEach(map => {
+    const ids = api.getRoutesByMapId(map.id).map(route => route.id);
+    check(new Set(ids).size === ids.length, 'Route ids must be unique within map ' + map.id);
+    const authors = api.getAuthorsByMapId(map.id);
+    check(authors.length >= 2, 'Expected multiple visible authors for map ' + map.id);
+    api.getRoutesByMapId(map.id).forEach(route => {
+      (route.legacyIds || []).forEach(legacyId => {
+        check(api.getRoute(map.id, legacyId, route.authorId).id === route.id, 'Legacy route id did not resolve: ' + legacyId);
+      });
+    });
+  });
+
+  const firstCloudId = Object.values(cloudAssets)[0];
+  if (firstCloudId) {
+    const cloudApi = wx.cloud;
+    wx.cloud = null;
+    const fallbackUrl = (await api.resolveImageUrls([firstCloudId]))[0];
+    wx.cloud = cloudApi;
+    check(fallbackUrl.startsWith('/pkg-'), 'Cloud API absence should return a local package URL');
+    check(fs.existsSync(path.join(ROOT, ...fallbackUrl.slice(1).split('/'))), 'Cloud fallback URL should exist locally');
+  }
+
+  const firstMap = maps[0];
+  const firstRoute = api.getRoutesByMapId(firstMap.id)[0];
+  const firstShape = api.getShapes(firstMap.id, firstRoute.id)[0];
+  const firstDetail = api.getShapeDetails(firstMap.id, firstRoute.id, firstShape);
+  const firstDoor = firstDetail && firstDetail.doors && firstDetail.doors[0];
+
+  const indexPage = loadPage('pages/index/index.js');
+  indexPage.onLoad();
+  check(indexPage.data.strategies.length > 0, 'Home page did not render strategies');
+
+  const explorerPage = loadPage('pages/explorer/explorer.js');
+  explorerPage.onLoad({
+    mapId: firstMap.id,
+    author: encodeURIComponent(firstRoute.authorId || ''),
+    routeId: firstRoute.id
+  });
+  check(explorerPage.data.routeId === firstRoute.id, 'Explorer did not select the requested route');
+  check(explorerPage.data.shapes.length > 0, 'Explorer did not render route shapes');
+
+  const multiDoorShape = explorerPage.data.shapes.find(item => {
+    if (item.shapeId === '__root__') return false;
+    const detail = api.getShapeDetails(firstMap.id, firstRoute.id, item.shapeId);
+    return detail && ((detail.doors || []).length + ((detail.rootFiles || []).length ? 1 : 0)) > 1;
+  });
+  if (multiDoorShape) {
+    explorerPage.openShape(multiDoorShape);
+    check(explorerPage.data.showDoorSheet === true, 'Explorer did not open the entrance sheet');
+    check(explorerPage.data.doors.length > 1, 'Explorer entrance sheet did not contain multiple choices');
+    explorerPage.closeDoorSheet();
+    check(explorerPage.data.showDoorSheet === false, 'Explorer did not close the entrance sheet');
+  }
+
+  const routeIds = explorerPage.data.routes.map(route => route.id);
+  if (routeIds.length > 1) {
+    explorerPage.onRouteChange({ currentTarget: { dataset: { routeid: routeIds[1] } } });
+    check(explorerPage.data.routeId === routeIds[1], 'Explorer did not switch route in place');
+    check(explorerPage.data.showDoorSheet === false, 'Route switch should close the entrance sheet');
+  }
+
+  const authors = api.getAuthorsByMapId(firstMap.id);
+  if (authors.length > 1) {
+    const secondAuthor = authors[1];
+    explorerPage.onAuthorChange({ currentTarget: { dataset: { authorid: secondAuthor.id } } });
+    check(explorerPage.data.authorId === secondAuthor.id, 'Explorer did not switch author in place');
+    check(explorerPage.data.routes.every(route => route.authorId === secondAuthor.id), 'Explorer mixed routes from different authors');
+    const secondRoute = api.getRoutesByMapId(firstMap.id).find(route => route.authorId === secondAuthor.id);
+    check(Boolean(secondRoute), 'Second author has no visible route');
+    check(api.getRoute(firstMap.id, (secondRoute.legacyIds || [])[0], secondAuthor.id).id === secondRoute.id, 'Second author legacy route did not resolve');
+
+    const secondExplorerPage = loadPage('pages/explorer/explorer.js');
+    navigationCalls.length = 0;
+    secondExplorerPage.onLoad({ mapId: firstMap.id, author: secondAuthor.id, routeId: secondRoute.id });
+    check(secondExplorerPage.data.shapes.length > 0, 'Second author route did not render shapes');
+    secondExplorerPage.openShape(secondExplorerPage.data.shapes[0]);
+    check(secondExplorerPage.data.showDoorSheet === true, 'Second author route did not open the icon sheet');
+    const iconDoor = secondExplorerPage.data.doors.find(item => item.file);
+    check(Boolean(iconDoor && iconDoor.icon), 'Second author icon sheet is missing icon entries');
+    const iconIndex = secondExplorerPage.data.doors.indexOf(iconDoor);
+    navigationCalls.length = 0;
+    secondExplorerPage.onDoorTap({ currentTarget: { dataset: { index: iconIndex } } });
+    check(navigationCalls[0] && navigationCalls[0].url.indexOf('routeId=' + encodeURIComponent(secondRoute.id)) >= 0 && navigationCalls[0].url.indexOf('file=' + encodeURIComponent(iconDoor.file)) >= 0, 'Second author icon did not open detail with file param');
+
+    const secondDetailPage = loadPage('pages/detail/detail.js');
+    secondDetailPage.onLoad({ mapId: firstMap.id, routeId: secondRoute.id, shapeId: encodeURIComponent(secondExplorerPage.data.shapes[0].shapeId), file: encodeURIComponent(iconDoor.file) });
+    await new Promise(resolve => setImmediate(resolve));
+    check(secondDetailPage.data.strategy && secondDetailPage.data.strategy.images.length === 1, 'Second author detail did not render a single icon image');
+    check(secondDetailPage.data.strategy.author === secondRoute.author, 'Second author detail displayed the wrong author');
+  }
+
+  navigationCalls.length = 0;
+  check(indexPage.data.strategies.length >= 2, 'Home page did not render the second author');
+  indexPage.onStrategyTap({ currentTarget: { dataset: { id: firstMap.id, authorid: firstRoute.authorId } } });
+  check(navigationCalls[0] && navigationCalls[0].url.startsWith('/pages/explorer/explorer?'), 'Home card should open explorer');
+
+  const versionPage = loadPage('pages/version/version.js');
+  navigationCalls.length = 0;
+  versionPage.onLoad({ mapId: firstMap.id, author: encodeURIComponent(firstRoute.authorId || '') });
+  check(navigationCalls[0] && navigationCalls[0].method === 'redirectTo' && navigationCalls[0].url.startsWith('/pages/explorer/explorer?'), 'Legacy version page should redirect to explorer');
+
+  const routePage = loadPage('pages/route/route.js');
+  navigationCalls.length = 0;
+  routePage.onLoad({ mapId: firstMap.id, mode: firstRoute.id });
+  check(navigationCalls[0] && navigationCalls[0].url.indexOf('routeId=' + firstRoute.id) >= 0, 'Legacy route page should preserve route id');
+
+  const doorPage = loadPage('pages/door/door.js');
+  navigationCalls.length = 0;
+  doorPage.onLoad({ mapId: firstMap.id, routeId: firstRoute.id, shapeId: encodeURIComponent(firstShape) });
+  check(navigationCalls[0] && navigationCalls[0].url.indexOf('shapeId=' + encodeURIComponent(firstShape)) >= 0, 'Legacy door page should preserve shape id');
+
+  if (firstDoor) {
+    const detailPage = loadPage('pages/detail/detail.js');
+    detailPage.onLoad({
+      mapId: firstMap.id,
+      routeId: firstRoute.id,
+      shapeId: encodeURIComponent(firstShape),
+      door: encodeURIComponent(firstDoor.door)
+    });
+    await new Promise(resolve => setImmediate(resolve));
+    check(detailPage.data.strategy && detailPage.data.strategy.images.length > 0, 'Detail page did not render images');
+    check(loadedPackages.includes(api.getPackageRoot(firstRoute.id)), 'Detail page did not load its image package');
+  }
+
+  const rootRoute = api.getRoutesByMapId(firstMap.id).find(route =>
+    !(route.shapes || []).length && (route.rootFiles || []).length
+  );
+  if (rootRoute) {
+    const rootExplorerPage = loadPage('pages/explorer/explorer.js');
+    navigationCalls.length = 0;
+    rootExplorerPage.onLoad({ mapId: firstMap.id, routeId: rootRoute.id });
+    check(rootExplorerPage.data.shapes.length === 1 && rootExplorerPage.data.shapes[0].shapeId === '__root__', 'Root image route should expose one explorer item');
+    rootExplorerPage.openShape(rootExplorerPage.data.shapes[0]);
+    check(navigationCalls[0] && navigationCalls[0].url.indexOf('shapeId=__root__') >= 0, 'Root explorer item should open detail directly');
+
+    const rootDetailPage = loadPage('pages/detail/detail.js');
+    rootDetailPage.onLoad({ mapId: firstMap.id, routeId: rootRoute.id, shapeId: '__root__' });
+    await new Promise(resolve => setImmediate(resolve));
+    check(rootDetailPage.data.strategy && rootDetailPage.data.strategy.images.length > 0, 'Root detail did not render images');
+  }
+
+  const inventoryPage = loadPage('pages/inventory/inventory.js');
+  inventoryPage.onLoad();
+  check(inventoryPage.data.allItems.length > 0, 'Inventory page did not render entries');
+
+  return { maps: maps.length, routes: routeCount, shapes: shapeCount, images: imageCount };
+}
+
+async function main() {
+  const appConfig = readJson('app.json');
+  validatePackConfig();
+  validateRegisteredPages(appConfig);
+  validateBindings(appConfig);
+  validateWxmlStructure(appConfig);
+  const totals = await validateDataFlow();
+
+  if (failures.length) {
+    console.error('Validation failed:');
+    failures.forEach(message => console.error('- ' + message));
+    process.exitCode = 1;
+    return;
+  }
+
+  console.log('Validation passed: ' + checks + ' checks');
+  console.log('Data: ' + totals.maps + ' maps, ' + totals.routes + ' routes, ' + totals.shapes + ' shapes, ' + totals.images + ' images');
+}
+
+main().catch(error => {
+  console.error(error);
+  process.exitCode = 1;
+});

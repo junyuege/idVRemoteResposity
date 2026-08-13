@@ -1,41 +1,6 @@
-<view class="page-wrap">
-  <!-- 顶部标题 -->
-  <view class="page-header">
-    <view class="header-title">厄梦之女 · {{modeName}}</view>
-    <view class="header-sub">选择路线形状查看攻略</view>
-  </view>
-
-<!-- 加载中 -->
-  <view wx:if="{{loading}}" class="loading-wrap"><text>加载中...</text></view>
-
-  <!-- 错误兜底 -->
-  <view wx:elif="{{error}}" class="empty-wrap">
-    <text>{{error}}</text>
-    <view bindtap="onRetry" style="margin-top:14px;padding:8px 26px;background:rgba(255,156,0,0.12);border:1px solid rgba(255,156,0,0.4);border-radius:20px;color:#ff9c00;font-size:13px;">重新加载</view>
-  </view>
-
-  <!-- 空状态 -->
-  <view wx:elif="{{routes.length === 0}}" class="empty-wrap">
-    <text>暂无该模式下的路线数据</text>
-  </view>
-
-  <!-- 路线形状网格 -->
-  <view wx:else class="route-grid">
-    <view
-      class="route-card"
-      wx:for="{{routes}}"
-wx:key="id"
-      data-index="{{index}}"
-      bindtap="onRouteTap"
-    >
-      <view class="route-shape-wrap">
-        <text class="route-shape">{{item.shape}}</text>
-      </view>
-      <view class="route-info">
-        <text class="route-title">{{item.title}}</text>
-        <text class="route-desc">{{item.desc}}</text>
-      </view>
-      <view class="route-arrow">›</view>
-    </view>
+<view class="page-wrap legacy-page">
+  <view class="loading-wrap">
+    <view class="loading-dot"></view>
+    <text>正在打开路线查询...</text>
   </view>
 </view>

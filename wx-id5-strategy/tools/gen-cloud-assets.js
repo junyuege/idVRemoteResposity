@@ -1,6 +1,6 @@
-// 从本地 pkg-*/assets（或 tools/asset-cache/*/assets 备份）与云存储 fileID 规律生成 data/cloudAssets.js
-// 用法：把云存储任意一条记录的「云文件 ID」填到 CLOUD_PREFIX（示例见下），运行 node tools/gen-cloud-assets.js
-// 前提：云存储已按 pkg-*/assets 结构上传（路径 = {pkg}/assets/{rel}）
+// 按索引中的 assetNamespace 生成云存储映射。
+// 前提：已把每条路线的 assets 上传到 {assetNamespace}/{relPath}。
+// 本脚本只生成映射，不上传文件，也不处理视频。
 const fs = require('fs');
 const path = require('path');
 
@@ -18,28 +18,41 @@ function walk(dir) {
 }
 
 const ROOT = path.join(__dirname, '..');
-// 上传瘦身后的资产可能已移入 tools/asset-cache/{pkg}/assets，兼容两种位置
-function findAssets(pkg) {
-  const candidates = [
-    path.join(ROOT, pkg, 'assets'),
-    path.join(ROOT, 'tools', 'asset-cache', pkg, 'assets')
-  ];
-  return candidates.find(d => fs.existsSync(d)) || null;
-}
+const index = require(path.join(ROOT, 'data', 'localMapIndex.js'));
 
 const items = [];
-for (const pkg of fs.readdirSync(ROOT).filter(n => /^pkg-/.test(n))) {
-  const ad = findAssets(pkg);
-  if (!ad) { console.warn('未找到 ' + pkg + ' 的资产目录（先跑 tools/sync-assets.ps1）'); continue; }
-  for (const f of walk(ad)) {
-    const rel = f.slice(ad.length + 1).replace(/\\/g, '/');
-    items.push({ key: pkg + '/' + rel, fid: CLOUD_PREFIX + pkg + '/assets/' + rel });
+for (const map of index.maps || []) {
+  for (const route of map.routes || []) {
+    if (!route.packageRoot || !route.assetNamespace) {
+      throw new Error('路线缺少 packageRoot 或 assetNamespace: ' + (route.id || 'unknown'));
+    }
+    const assetsDir = path.join(ROOT, route.packageRoot, 'assets');
+    if (!fs.existsSync(assetsDir)) {
+      throw new Error('未找到 ' + route.packageRoot + '/assets（先运行 tools/sync-assets.ps1）');
+    }
+    for (const file of walk(assetsDir)) {
+      const rel = file.slice(assetsDir.length + 1).replace(/\\/g, '/');
+      const key = route.assetNamespace + '/' + rel;
+      items.push({ key, fid: CLOUD_PREFIX + key });
+    }
+
+    if (route.iconPackageRoot && route.iconNamespace) {
+      const iconDir = path.join(ROOT, route.iconPackageRoot, 'assets');
+      if (!fs.existsSync(iconDir)) {
+        throw new Error('未找到 ' + route.iconPackageRoot + '/assets（识别图标需要先生成本地分包）');
+      }
+      for (const file of walk(iconDir)) {
+        const rel = file.slice(iconDir.length + 1).replace(/\\/g, '/');
+        const key = route.iconNamespace + '/' + rel;
+        items.push({ key, fid: CLOUD_PREFIX + key });
+      }
+    }
   }
 }
 items.sort((a, b) => a.key.localeCompare(b.key, 'zh-Hans-CN'));
 
 const body = '// 云存储资产映射 { key: fileID }，由 tools/gen-cloud-assets.js 生成\n' +
-  '// key = 分包名/相对路径（如 "pkg-hard/┏/侧门在下/右路.jpg"）\n' +
+  '// key = assetNamespace/相对路径（如 "maps/e_yun_zhi_nv/zhanshi/hard-full/┏/侧门在下/右路.jpg"）\n' +
   '// data/api.js 优先取此表，缺省回退本地分包路径\n' +
   'module.exports = {\n' +
   items.map(i => '  ' + JSON.stringify(i.key) + ': ' + JSON.stringify(i.fid) + ',').join('\n') +

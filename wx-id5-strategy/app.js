@@ -8,9 +8,15 @@ App({
     cloudReady: false
   },
   onLaunch() {
-    if (CLOUD_ENV) {
-      wx.cloud.init({ env: CLOUD_ENV, traceUser: true });
-      this.globalData.cloudReady = true;
+    if (CLOUD_ENV && wx.cloud && wx.cloud.init) {
+      try {
+        wx.cloud.init({ env: CLOUD_ENV, traceUser: true });
+        this.globalData.cloudReady = true;
+      } catch (err) {
+        console.error('[app] 云开发初始化失败，将使用本地素材与反馈草稿', err);
+      }
+    } else if (CLOUD_ENV) {
+      console.warn('[app] 当前环境不支持云开发，反馈功能将使用本地草稿');
     }
   }
 });

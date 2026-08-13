@@ -1,35 +1,44 @@
-<view class="page-wrap">
-  <!-- 头部名片 -->
-  <view class="profile panel">
-    <view class="avatar">📖</view>
+<view class="page-wrap mine-page">
+  <view class="profile">
+    <view class="brand-mark">页</view>
     <view class="profile-body">
-      <view class="profile-title">第五人格 · 加页手记攻略</view>
-      <view class="profile-sub">地图路线 · 异象 · 道具 · 辞章 一站式查询</view>
+      <text class="profile-title">加页手记攻略</text>
+      <text class="profile-sub">第五人格玩家攻略查询工具</text>
     </view>
+    <text class="version-badge">v{{version}}</text>
   </view>
 
-  <!-- 功能列表 -->
-  <view class="menu panel">
+  <view class="section-title-row">
+    <text class="section-title">服务与帮助</text>
+  </view>
+
+  <view class="menu">
     <view class="menu-item" bindtap="goToTutorial">
-      <text class="menu-icon">📚</text>
-      <text class="menu-label">小抄教学</text>
-      <text class="menu-arrow">›</text>
+      <view class="menu-mark mark-guide">教</view>
+      <view class="menu-body">
+        <text class="menu-label">小抄教学</text>
+        <text class="menu-desc">查看路线图识别方法</text>
+      </view>
+      <text class="list-arrow">›</text>
     </view>
-    <view class="menu-divider"></view>
     <view class="menu-item" bindtap="goToFeedback">
-      <text class="menu-icon">💬</text>
-      <text class="menu-label">意见反馈</text>
-      <text class="menu-arrow">›</text>
+      <view class="menu-mark mark-feedback">议</view>
+      <view class="menu-body">
+        <text class="menu-label">意见反馈</text>
+        <text class="menu-desc">报告问题或提交建议</text>
+      </view>
+      <text class="list-arrow">›</text>
     </view>
-    <view class="menu-divider"></view>
     <view class="menu-item" bindtap="goToAbout">
-      <text class="menu-icon">ℹ️</text>
-      <text class="menu-label">关于我们</text>
-      <text class="menu-arrow">›</text>
+      <view class="menu-mark mark-about">关</view>
+      <view class="menu-body">
+        <text class="menu-label">关于项目</text>
+        <text class="menu-desc">版本、来源与免责声明</text>
+      </view>
+      <text class="list-arrow">›</text>
     </view>
   </view>
 
   <button class="share-btn" open-type="share">分享小程序</button>
-
-  <view class="footer">v{{version}} · 数据来源：第五人格 BWIKI 玩家社区</view>
+  <text class="footer">数据来源：第五人格 BWIKI 玩家社区</text>
 </view>

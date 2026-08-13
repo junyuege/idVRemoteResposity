@@ -1,29 +1,61 @@
-<view class="page-wrap">
-  <view wx:if="{{loading}}" class="loading-wrap"><text>加载中...</text></view>
+<view class="page-wrap detail-page">
+  <view wx:if="{{loading}}" class="loading-wrap">
+    <view class="loading-dot"></view>
+    <text>正在加载攻略图片...</text>
+  </view>
+
   <view wx:elif="{{error}}" class="empty-wrap">
     <text>{{error}}</text>
-    <view bindtap="onRetry" style="margin-top:14px;padding:8px 26px;background:rgba(255,156,0,0.12);border:1px solid rgba(255,156,0,0.4);border-radius:20px;color:#ff9c00;font-size:13px;">重新加载</view>
+    <button class="retry-btn" bindtap="onRetry">重新加载</button>
   </view>
+
   <view wx:elif="{{strategy}}">
-    <view style="margin-bottom:16px;">
-      <view style="font-size:22px;font-weight:700;color:#fff;line-height:1.4;">{{strategy.title}}</view>
-      <view style="display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap;">
+    <view class="detail-header">
+      <text class="header-kicker">{{strategy.mapName}}</text>
+      <view class="detail-title">{{strategy.title}}</view>
+      <view class="detail-tags">
         <text class="tag {{strategy.difficultyTagClass}}">{{strategy.difficultyTag}}</text>
-        <text style="font-size:12px;color:#ff9c00;">{{strategy.mapName}}</text>
-        <text style="font-size:12px;color:#999;">{{strategy.author}}</text>
+        <text class="detail-author">攻略：{{strategy.author}}</text>
       </view>
     </view>
-    <!-- 简介 -->
-    <view wx:if="{{strategy.summary}}" class="panel" style="padding:12px 16px;margin-bottom:12px;">
-      <text style="font-size:13px;color:#aaa;line-height:1.6;">{{strategy.summary}}</text>
+
+    <view class="summary-bar">
+      <text>{{strategy.summary}}</text>
     </view>
-    <!-- 详细内容 -->
-    <view class="panel" style="padding:16px;">
-      <view style="font-size:14px;line-height:1.8;color:#e0dcd8;white-space:pre-wrap;">{{strategy.content}}</view>
-      <view wx:if="{{strategy.images && strategy.images.length}}" style="margin-top:16px;">
-        <image wx:for="{{strategy.images}}" wx:key="this" src="{{item}}" data-src="{{item}}" mode="widthFix" lazy-load="true" style="width:100%;border-radius:8px;margin-bottom:10px;background:#333;" data-index="{{index}}" bindtap="previewImage" binderror="onImageError" />
+
+    <view class="detail-copy">
+      <text>{{strategy.content}}</text>
+    </view>
+
+    <view class="section-title-row image-heading">
+      <text class="section-title">路线图</text>
+      <text class="section-meta">{{strategy.images.length}} 张</text>
+    </view>
+
+    <view wx:if="{{strategy.imageItems.length}}" class="image-list">
+      <view wx:for="{{strategy.imageItems}}" wx:key="url" class="image-item">
+        <view class="image-index">{{item.index}}</view>
+        <image
+          wx:if="{{!item.failed}}"
+          class="strategy-image"
+          src="{{item.url}}"
+          data-src="{{item.url}}"
+          data-index="{{index}}"
+          mode="widthFix"
+          lazy-load="true"
+          show-menu-by-longpress="true"
+          bindtap="previewImage"
+          binderror="onImageError"
+        />
+        <button wx:else class="image-failed" data-index="{{index}}" bindtap="onImageRetry">
+          <text class="image-failed-title">图片加载失败</text>
+          <text class="image-retry">点击重试</text>
+        </button>
       </view>
     </view>
+
+    <view wx:else class="empty-wrap compact-empty"><text>当前入口暂无图片</text></view>
   </view>
-  <view wx:elif="{{!loading}}" class="empty-wrap"><text>攻略不存在</text></view>
+
+  <view wx:else class="empty-wrap"><text>攻略不存在</text></view>
 </view>

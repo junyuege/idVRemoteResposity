@@ -1,12 +1,13 @@
 const api = require('../../data/api.js');
 
 // 难度标签压缩 + 特殊版别名（与样式类的难度顺序一致）
-const DIFF_RANK = { newbie: 0, easy: 1, normal: 2, hard: 3, hard_fast: 4 };
+const DIFF_RANK = { newbie: 0, easy: 1, normal: 2, hard: 3, special: 4 };
 
 function fmtLabel(name) {
   if (!name) return '';
   if (name.indexOf('速刷') > -1) return '困难·速刷';
   if (name.indexOf('全棺') > -1) return '困难·全棺';
+  if (name.indexOf('新版') > -1) return '新版';
   var parts = name.split('·');
   var base = parts[0];
   return base.length > 2 ? base.substring(0, 2) : base;
@@ -15,7 +16,7 @@ function fmtLabel(name) {
 Page({
   data: {
     strategies: [],
-    loading: false,
+    loading: true,
     currentMode: ''
   },
 
@@ -25,30 +26,45 @@ Page({
 
   loadStrategies() {
     const maps = api.getMaps();
-    const strategies = maps.map(m => {
-      // 短标签（≤2字：新手/简单/普通）固定在上行，长标签（困难·全棺/困难·速刷）固定在下行；
-      // 每组内按难度进阶顺序排列，行内胶囊等宽铺满
-      const order = (m.routes || []).map((r, i) => ({
-        id: r.id,
-        name: r.name,
-        label: fmtLabel(r.name),
-        __order: i
-      })).sort((a, b) => a.label.length - b.label.length || DIFF_RANK[a.id] - DIFF_RANK[b.id] || a.__order - b.__order);
-      const shortRoutes = order.filter(r => r.label.length <= 2);
-      const longRoutes = order.filter(r => r.label.length > 2);
-      return {
-        _id: m.id,
-        title: m.displayName,
-        coverImage: m.coverImage ? m.coverImage : '/images/placeholder/cover.png',
-        summary: (m.routes || []).map(r => r.name).join(' / ') + ' 共 ' + (m.routes || []).length + ' 种难度',
-        difficultyTag: m.difficulty,
-        difficultyTagClass: 'tag-nightmare',
-        author: '宝藏房攻略组',
-        mapId: m.id,
-        routes: order,
-        shortRoutes: shortRoutes,
-        longRoutes: longRoutes
-      };
+    const strategies = [];
+    maps.forEach(m => {
+      // 按作者拆分卡片：同一地图下的「展十版」「凉哈皮版」各自独立成卡
+      // 卡片顺序 = 该地图 routes 首次出现的作者顺序（展十版在前）
+      const byAuthor = {};
+      const authorSeq = [];
+      api.getRoutesByMapId(m.id).forEach(r => {
+        const a = r.authorId || r.author || 'other';
+        (byAuthor[a] = byAuthor[a] || []).push(r);
+        if (byAuthor[a].length === 1) authorSeq.push(a);
+      });
+      authorSeq.forEach(authorId => {
+        const authorRoutes = byAuthor[authorId];
+        const author = authorRoutes[0].author || '其他';
+        // 短标签（≤2字：新手/简单/普通）固定在上行，长标签（困难·全棺/困难·速刷）固定在下行；
+        // 每组内按难度进阶顺序排列，行内胶囊等宽铺满
+        const order = authorRoutes.map((r, i) => ({
+          id: r.id,
+          name: r.name,
+          label: fmtLabel(r.name),
+          difficulty: r.difficulty || r.id,
+          __order: i
+        })).sort((a, b) => a.label.length - b.label.length || (DIFF_RANK[a.difficulty] == null ? 99 : DIFF_RANK[a.difficulty]) - (DIFF_RANK[b.difficulty] == null ? 99 : DIFF_RANK[b.difficulty]) || a.__order - b.__order);
+        const shortRoutes = order.filter(r => r.label.length <= 2);
+        const longRoutes = order.filter(r => r.label.length > 2);
+        strategies.push({
+          _id: m.id + '_' + authorId,
+          title: m.displayName + ' · ' + author,
+          coverImage: m.coverImage ? m.coverImage : '/images/placeholder/cover.png',
+          summary: authorRoutes.map(r => r.name).join(' / ') + ' 共 ' + authorRoutes.length + ' 种难度',
+          difficulty: m.difficulty || '攻略地图',
+          author: author,
+          authorId: authorId,
+          mapId: m.id,
+          routes: order,
+          shortRoutes: shortRoutes,
+          longRoutes: longRoutes
+        });
+      });
     });
     // 首页仅展示 SSOT 索引中的地图（当前唯一：厄运之女）
     let list = strategies;
@@ -61,23 +77,40 @@ Page({
     this.setData({ strategies: list, loading: false });
   },
 
+  onPullDownRefresh() {
+    this.setData({ loading: true });
+    this.loadStrategies();
+    wx.stopPullDownRefresh();
+  },
+
   // 小抄教学按钮 -> 进入教程页（新版小抄看法教学图）
   goToCategory() {
     wx.navigateTo({ url: '/pages/tutorial/tutorial' });
   },
 
+  goToInventory() {
+    wx.switchTab({ url: '/pages/inventory/inventory' });
+  },
+
   onStrategyTap(e) {
     const mapId = e.currentTarget.dataset.id;
-    // 首页卡片点击 -> 难度版本列表页（四级层级：地图 → 版本 → 形状 → 图）
-    wx.navigateTo({ url: '/pages/version/version?mapId=' + mapId });
+    const authorId = e.currentTarget.dataset.authorid || '';
+    wx.navigateTo({
+      url: '/pages/explorer/explorer?mapId=' + encodeURIComponent(mapId) +
+        '&author=' + encodeURIComponent(authorId)
+    });
   },
 
   onSelectMode(e) {
     const mode = e.currentTarget.dataset.mode;
     const mapId = e.currentTarget.dataset.mapid;
+    const authorId = e.currentTarget.dataset.authorid || '';
     this.setData({ currentMode: mode });
-    // 对接原地图页：点击难度 -> 直达对应难度的路线页
-    wx.navigateTo({ url: '/pages/route/route?mapId=' + mapId + '&mode=' + mode });
+    wx.navigateTo({
+      url: '/pages/explorer/explorer?mapId=' + encodeURIComponent(mapId) +
+        '&author=' + encodeURIComponent(authorId) +
+        '&routeId=' + encodeURIComponent(mode)
+    });
   },
 
   onShareAppMessage() {

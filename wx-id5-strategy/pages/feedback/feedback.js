@@ -1,7 +1,7 @@
 const DRAFT_KEY = 'feedback_draft';
 
 Page({
-  data: { content: '', contentLength: 0, images: [] },
+  data: { content: '', contentLength: 0, images: [], submitting: false },
   onLoad() {
     const draft = wx.getStorageSync(DRAFT_KEY);
     if (draft && draft.content && !this.data.content) {
@@ -28,16 +28,25 @@ Page({
     this.setData({ images });
   },
   submitFeedback() {
+    if (this.data.submitting) return;
     if (!this.data.content.trim()) { wx.showToast({ title: '请输入反馈内容', icon: 'none' }); return; }
     const app = getApp();
-    if (!app.globalData.cloudReady) { this.saveDraft(); return; }
+    if (!app.globalData.cloudReady) {
+      this.saveDraft();
+      wx.showToast({ title: '服务未连接，已保存草稿', icon: 'none' });
+      return;
+    }
+    this.setData({ submitting: true });
     wx.showLoading({ title: '提交中...' });
-    const uploads = this.data.images.map((p, i) =>
-      wx.cloud.uploadFile({
-        cloudPath: 'feedback/' + Date.now() + '_' + i + p.slice(p.lastIndexOf('.')),
+    const uploadBatch = Date.now();
+    const uploads = this.data.images.map((p, i) => {
+      const extMatch = String(p).match(/\.[a-zA-Z0-9]+$/);
+      const extension = extMatch ? extMatch[0].toLowerCase() : '.jpg';
+      return wx.cloud.uploadFile({
+        cloudPath: 'feedback/' + uploadBatch + '_' + i + extension,
         filePath: p
-      }).then(r => r.fileID).catch(() => '')
-    );
+      }).then(r => r.fileID).catch(() => '');
+    });
     Promise.all(uploads).then((fileIDs) => {
       return wx.cloud.callFunction({
         name: 'addFeedback',
@@ -45,6 +54,7 @@ Page({
       });
     }).then((res) => {
       wx.hideLoading();
+      this.setData({ submitting: false });
       const r = res.result || {};
       if (r.code === 0) {
         wx.removeStorageSync(DRAFT_KEY);
@@ -56,6 +66,7 @@ Page({
       }
     }).catch(() => {
       wx.hideLoading();
+      this.setData({ submitting: false });
       this.saveDraft();
       wx.showToast({ title: '网络异常，已暂存草稿', icon: 'none' });
     });
@@ -66,5 +77,8 @@ Page({
       images: this.data.images,
       ts: Date.now()
     });
+  },
+  onUnload() {
+    if (this.data.content.trim()) this.saveDraft();
   }
 });

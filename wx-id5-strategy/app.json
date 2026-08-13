@@ -1,7 +1,8 @@
 {
-"pages": [
+  "pages": [
     "pages/index/index",
     "pages/mine/mine",
+    "pages/explorer/explorer",
     "pages/version/version",
     "pages/door/door",
     "pages/tutorial/tutorial",
@@ -13,27 +14,80 @@
   ],
   "lazyCodeLoading": "requiredComponents",
   "subPackages": [
-    { "root": "pkg-hard", "pages": ["pages/redirect/redirect"] },
-    { "root": "pkg-normal", "pages": ["pages/redirect/redirect"] },
-    { "root": "pkg-easy", "pages": ["pages/redirect/redirect"] },
-    { "root": "pkg-newbie", "pages": ["pages/redirect/redirect"] }
+    {
+      "root": "pkg-zhanshi-hard-full",
+      "pages": [
+        "pages/redirect/redirect"
+      ]
+    },
+    {
+      "root": "pkg-zhanshi-hard-fast",
+      "pages": [
+        "pages/redirect/redirect"
+      ]
+    },
+    {
+      "root": "pkg-zhanshi-normal",
+      "pages": [
+        "pages/redirect/redirect"
+      ]
+    },
+    {
+      "root": "pkg-zhanshi-easy",
+      "pages": [
+        "pages/redirect/redirect"
+      ]
+    },
+    {
+      "root": "pkg-zhanshi-newbie",
+      "pages": [
+        "pages/redirect/redirect"
+      ]
+    },
+    {
+      "root": "pkg-lianghapi-v0710",
+      "pages": [
+        "pages/redirect/redirect"
+      ]
+    },
+    {
+      "root": "pkg-lianghapi-icons",
+      "pages": [
+        "pages/redirect/redirect"
+      ]
+    }
   ],
   "window": {
-    "navigationBarBackgroundColor": "#1c1d22",
+    "navigationBarBackgroundColor": "#17181c",
     "navigationBarTitleText": "加页手记攻略",
     "navigationBarTextStyle": "white",
-    "backgroundColor": "#1c1d22",
+    "backgroundColor": "#17181c",
     "backgroundTextStyle": "light"
   },
   "tabBar": {
-    "color": "#888",
-    "selectedColor": "#ff9c00",
-    "backgroundColor": "#1c1d22",
+    "color": "#8b8d94",
+    "selectedColor": "#e1a442",
+    "backgroundColor": "#1b1c21",
     "borderStyle": "black",
-"list": [
-      { "pagePath": "pages/index/index", "text": "首页", "iconPath": "images/tab-home.png", "selectedIconPath": "images/tab-home-active.png" },
-      { "pagePath": "pages/inventory/inventory", "text": "图鉴", "iconPath": "images/tab-inventory.png", "selectedIconPath": "images/tab-inventory-active.png" },
-      { "pagePath": "pages/mine/mine", "text": "我的", "iconPath": "images/tab-mine.png", "selectedIconPath": "images/tab-mine-active.png" }
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "images/tab-home.png",
+        "selectedIconPath": "images/tab-home-active.png"
+      },
+      {
+        "pagePath": "pages/inventory/inventory",
+        "text": "图鉴",
+        "iconPath": "images/tab-inventory.png",
+        "selectedIconPath": "images/tab-inventory-active.png"
+      },
+      {
+        "pagePath": "pages/mine/mine",
+        "text": "我的",
+        "iconPath": "images/tab-mine.png",
+        "selectedIconPath": "images/tab-mine-active.png"
+      }
     ]
   }
 }
