@@ -26,6 +26,8 @@ Page({
     isAdmin: false,
     adminCount: 0,
     matched: false,
+    bindCode: '',
+    binding: false,
     activeTab: 'feedback',
     feedback: [],
     stats: []
@@ -95,6 +97,31 @@ Page({
         });
       }
     }).catch(() => {});
+  },
+
+  onBindInput(e) {
+    this.setData({ bindCode: e.detail.value || '' });
+  },
+
+  bindAdmin() {
+    const bindCode = (this.data.bindCode || '').trim();
+    if (!bindCode) {
+      wx.showToast({ title: '请输入绑定码', icon: 'none' });
+      return;
+    }
+    this.setData({ binding: true });
+    callAdmin('bindAdmin', { bindCode: bindCode }).then(result => {
+      this.setData({ binding: false });
+      if (result.code === 0) {
+        wx.showToast({ title: '绑定成功', icon: 'success' });
+        this.whoami();
+      } else {
+        wx.showToast({ title: result.message || '绑定失败', icon: 'none' });
+      }
+    }).catch(() => {
+      this.setData({ binding: false });
+      wx.showToast({ title: '绑定失败', icon: 'none' });
+    });
   },
 
   onTabTap(e) {

@@ -18,8 +18,17 @@
   <view wx:elif="{{!isAdmin}}" class="empty-wrap">
     <text>当前账号不是管理员</text>
     <text class="admin-openid">当前 openid：{{openid}}</text>
-    <text class="admin-tip">配置数量：{{adminCount}}，匹配结果：{{matched ? '是' : '否'}}</text>
-    <text class="admin-tip">请把该 openid 填入 adminApi 云函数的 ADMIN_OPENIDS 后重新部署</text>
+    <view class="bind-box">
+      <input
+        class="bind-input"
+        value="{{bindCode}}"
+        placeholder="请输入管理员绑定码"
+        placeholder-class="bind-placeholder"
+        bindinput="onBindInput"
+      />
+      <button class="bind-btn" bindtap="bindAdmin" disabled="{{binding}}">{{binding ? '绑定中...' : '绑定管理员'}}</button>
+    </view>
+    <text class="admin-tip">绑定成功后自动进入管理台，无需修改云函数代码</text>
   </view>
 
   <block wx:else>

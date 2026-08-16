@@ -14,4 +14,8 @@
 .admin-stat-label { color: #e2dfda; font-size: 14px; }
 .admin-stat-count { color: #d8a04a; font-size: 22px; font-weight: 700; }
 .admin-openid { display: block; margin-top: 10px; color: #d8a04a; font-size: 12px; word-break: break-all; }
+.bind-box { display: flex; width: 100%; margin-top: 16px; gap: 8px; }
+.bind-input { height: 38px; padding: 0 10px; flex: 1; background: #2a2c33; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #f3f1ed; font-size: 13px; }
+.bind-placeholder { color: #6f7280; }
+.bind-btn { width: 96px; height: 38px; background: #3a3021; border: 1px solid rgba(216,155,60,0.45); border-radius: 6px; color: #efbd6d; font-size: 12px; line-height: 36px; }
 .admin-tip { display: block; margin-top: 8px; color: #858790; font-size: 12px; line-height: 1.5; }
