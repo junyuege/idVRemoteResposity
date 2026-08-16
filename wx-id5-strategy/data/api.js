@@ -418,19 +418,68 @@ function getPackageRoot(routeOrId) {
 }
 
 /**
+ * 确保某个分包已经下载。
+ */
+function loadPackage(packageRoot) {
+  if (!packageRoot || !wx.loadSubpackage) return Promise.resolve();
+  return new Promise(resolve => {
+    wx.loadSubpackage({
+      name: packageRoot,
+      success: resolve,
+      fail(err) {
+        console.warn('[api] 分包加载失败，将继续尝试其他来源: ' + packageRoot, err && err.errMsg || err);
+        resolve();
+      }
+    });
+  });
+}
+
+/**
  * 确保路线对应的图片分包已经加载。
  * 云图片解析失败或分享直达详情页时，本地素材回退依赖该分包。
  */
 function loadRoutePackage(routeId) {
-  if (!routeId || !wx.loadSubpackage) return Promise.resolve();
-  return new Promise(resolve => {
-    wx.loadSubpackage({
-      name: getPackageRoot(routeId),
-      success: resolve,
-      fail(err) {
-        console.warn('[api] 图片分包加载失败，将继续尝试云素材', err && err.errMsg || err);
-        resolve();
-      }
+  return loadPackage(getPackageRoot(routeId));
+}
+
+/**
+ * 预下载 fileIcons 图标分包，并把所有识别图标的 cloud:// fileID 提前解析为 HTTPS。
+ * 返回 { [shape + '|' + fileName]: url }，查询页可先落缓存，打开图标弹层时直接使用。
+ */
+function prefetchIconUrls(mapId, routeId) {
+  const route = getRoute(mapId, routeId);
+  if (!route || route.entryMode !== 'fileIcons' || !route.iconPackageRoot) {
+    return Promise.resolve({});
+  }
+  const cacheKeyList = [];
+  const fileIds = [];
+  (route.shapes || []).forEach(shape => {
+    const detail = (route.shapeDetails || {})[shape] || {};
+    (detail.rootFiles || []).forEach(file => {
+      cacheKeyList.push(shape + '|' + file);
+      const relPath = getIconRelPath(route, shape, file);
+      const fileId = route.iconNamespace ? getCloudAsset(route.iconNamespace + '/' + relPath) : '';
+      fileIds.push(fileId || '');
+    });
+  });
+
+  return loadPackage(route.iconPackageRoot).then(() => {
+    if (!isCloudReady()) {
+      const map = {};
+      cacheKeyList.forEach((key, index) => {
+        const file = String(key).split('|').pop();
+        const shape = String(key).split('|').shift();
+        map[key] = getShapeIconLocalUrl(mapId, routeId, shape, file);
+      });
+      return map;
+    }
+    return resolveImageUrls(fileIds).then(urls => {
+      const map = {};
+      cacheKeyList.forEach((key, index) => {
+        const url = urls[index];
+        if (url && url.indexOf('cloud://') !== 0) map[key] = url;
+      });
+      return map;
     });
   });
 }
@@ -452,6 +501,7 @@ module.exports = {
   getShapeIconLocalUrl,
   getPackageRoot,
   loadRoutePackage,
+  prefetchIconUrls,
   buildImageUrl,
   getImagesForShape,
   resolveImageUrls

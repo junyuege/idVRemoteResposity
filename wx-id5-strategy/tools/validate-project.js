@@ -415,6 +415,9 @@ async function validateDataFlow() {
     const secondExplorerPage = loadPage('pages/explorer/explorer.js');
     navigationCalls.length = 0;
     secondExplorerPage.onLoad({ mapId: firstMap.id, author: secondAuthor.id, routeId: secondRoute.id });
+    await new Promise(resolve => setImmediate(resolve));
+    check(loadedPackages.includes(secondRoute.iconPackageRoot), 'Explorer should preload icon package');
+    check(Object.keys(secondExplorerPage._iconUrlMap || {}).length > 0, 'Explorer should prefetch icon urls');
     check(secondExplorerPage.data.shapes.length > 0, 'Second author route did not render shapes');
     secondExplorerPage.openShape(secondExplorerPage.data.shapes[0]);
     check(secondExplorerPage.data.showDoorSheet === true, 'Second author route did not open the icon sheet');

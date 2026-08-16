@@ -118,6 +118,16 @@ Page({
     // 在用户继续选择形状/入口时后台预热图片分包，详情页可省去下载等待。
     api.loadRoutePackage(route.id);
 
+    // fileIcons 路线：同时预下载图标分包并预取图标临时链接。
+    this._iconUrlMap = {};
+    if (route.entryMode === 'fileIcons' && route.iconPackageRoot) {
+      const prefetchMapId = this.data.mapId;
+      const prefetchRouteId = route.id;
+      api.prefetchIconUrls(prefetchMapId, prefetchRouteId).then(map => {
+        if (this.data.routeId === prefetchRouteId) this._iconUrlMap = map || {};
+      });
+    }
+
     const shapes = (api.getShapes(this.data.mapId, routeId) || []).map((shape, index) => {
       const detail = api.getShapeDetails(this.data.mapId, routeId, shape);
       const doors = detail && Array.isArray(detail.doors) ? detail.doors : [];
@@ -232,10 +242,11 @@ Page({
     if ((detail.rootFiles || []).length) {
       if (route && route.entryMode === 'fileIcons') {
         detail.rootFiles.forEach(file => {
+          const iconCacheKey = item.shapeId + '|' + file;
           doors.push({
             door: file,
             file: file,
-            icon: api.getShapeIconUrl(this.data.mapId, this.data.routeId, item.shapeId, file),
+            icon: this._iconUrlMap[iconCacheKey] || api.getShapeIconUrl(this.data.mapId, this.data.routeId, item.shapeId, file),
             mark: '',
             desc: '查看对应路线图'
           });
