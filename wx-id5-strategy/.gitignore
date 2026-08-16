@@ -4,3 +4,6 @@ tools/.env.local
 tools/.env
 tools/asset-cache/
 tools/upload-report.json
+project.private.config.json
+
+.tmp/

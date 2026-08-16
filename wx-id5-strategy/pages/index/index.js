@@ -24,6 +24,14 @@ Page({
     this.loadStrategies();
   },
 
+  // 返回首页时清除上次点击的难度筛选，避免用户误以为其他攻略版本消失。
+  onShow() {
+    if (this.data.currentMode) {
+      this.setData({ currentMode: '' });
+      this.loadStrategies();
+    }
+  },
+
   loadStrategies() {
     const maps = api.getMaps();
     const strategies = [];

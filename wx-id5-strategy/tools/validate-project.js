@@ -34,6 +34,7 @@ const storage = {};
 const loadedPackages = [];
 const navigationCalls = [];
 global.wx = {
+  env: { USER_DATA_PATH: path.join(ROOT, '.tmp', 'feedback-draft') },
   cloud: {
     getTempFileURL({ fileList }) {
       return Promise.resolve({
@@ -43,7 +44,9 @@ global.wx = {
           tempFileURL: 'https://example.invalid/' + encodeURIComponent(fileID)
         }))
       });
-    }
+    },
+    uploadFile() { return Promise.resolve({ fileID: 'cloud://mock/feedback.jpg' }); },
+    callFunction() { return Promise.resolve({ result: { code: 0, data: 'mock-id' } }); }
   },
   getStorageSync(key) { return storage[key]; },
   setStorageSync(key, value) { storage[key] = value; },
@@ -54,11 +57,21 @@ global.wx = {
     if (success) success();
   },
   showToast() {},
+  hideLoading() {},
+  showLoading() {},
   stopPullDownRefresh() {},
   navigateTo(options) { navigationCalls.push({ method: 'navigateTo', url: options.url }); },
   redirectTo(options) { navigationCalls.push({ method: 'redirectTo', url: options.url }); },
   switchTab() {},
-  previewImage() {}
+  previewImage() {},
+  getFileSystemManager() {
+    return {
+      accessSync(p) { fs.accessSync(p); },
+      mkdirSync(p) { fs.mkdirSync(p, { recursive: true }); },
+      copyFileSync(src, dst) { fs.copyFileSync(src, dst); },
+      unlinkSync(p) { fs.unlinkSync(p); }
+    };
+  }
 };
 global.getApp = () => ({ globalData: { appVersion: '1.0.0', cloudReady: false } });
 
@@ -102,6 +115,14 @@ function validatePackConfig() {
   const ignoreRules = (projectConfig.packOptions && projectConfig.packOptions.ignore) || [];
   check(ignoreRules.some(rule => rule.type === 'folder' && rule.value === 'tools'), 'Build should exclude the tools directory');
   check(ignoreRules.some(rule => rule.type === 'folder' && rule.value === 'docs'), 'Build should exclude the docs directory');
+  const gitignore = fs.readFileSync(path.join(ROOT, '.gitignore'), 'utf8');
+  check(gitignore.indexOf('project.private.config.json') >= 0, '.gitignore should include project.private.config.json');
+}
+
+function validateCloudFunctionPackage() {
+  const packageJson = readJson('cloudfunctions/addFeedback/package.json');
+  const sdkVersion = packageJson.dependencies && packageJson.dependencies['wx-server-sdk'];
+  check(Boolean(sdkVersion) && !/latest/i.test(sdkVersion), 'cloudfunctions/addFeedback should pin wx-server-sdk version');
 }
 
 function validateCloudConfig() {
@@ -312,6 +333,9 @@ async function validateDataFlow() {
   const indexPage = loadPage('pages/index/index.js');
   indexPage.onLoad();
   check(indexPage.data.strategies.length > 0, 'Home page did not render strategies');
+  indexPage.setData({ currentMode: firstRoute.id });
+  indexPage.onShow();
+  check(indexPage.data.currentMode === '', 'Home page should reset currentMode when shown');
 
   const explorerPage = loadPage('pages/explorer/explorer.js');
   explorerPage.onLoad({
@@ -427,6 +451,25 @@ async function validateDataFlow() {
   inventoryPage.onLoad();
   check(inventoryPage.data.allItems.length > 0, 'Inventory page did not render entries');
 
+  // 图鉴图标必须本地化，避免依赖 BWIKI 外链与域名白名单。
+  api.getInventoryData().concat(api.getChapterData()).forEach(item => {
+    check(Boolean(item.icon) && item.icon.indexOf('/images/inventory/') === 0, 'Inventory icon should use a local path: ' + item.id);
+    if (item.icon) check(fs.existsSync(path.join(ROOT, ...item.icon.slice(1).split('/'))), 'Missing local inventory icon: ' + item.icon);
+  });
+
+  // 反馈草稿图片必须能持久化到 USER_DATA_PATH，且提交成功后清理本地文件。
+  const feedbackPage = loadPage('pages/feedback/feedback.js');
+  const tempImage = path.join(ROOT, '.tmp', 'feedback-temp.jpg');
+  fs.mkdirSync(path.dirname(tempImage), { recursive: true });
+  fs.writeFileSync(tempImage, 'mock-image');
+  const persisted = feedbackPage.persistImages([tempImage]);
+  check(persisted[0] && persisted[0].indexOf(wx.env.USER_DATA_PATH) === 0 && fs.existsSync(persisted[0]), 'Feedback draft image should be persisted to USER_DATA_PATH');
+  feedbackPage.setData({ content: '校验草稿', contentLength: 4, images: persisted });
+  feedbackPage.saveDraft('校验草稿', persisted);
+  check(storage.feedback_draft && storage.feedback_draft.images[0] === persisted[0], 'Feedback draft should save persisted image path');
+  feedbackPage.removeImage({ currentTarget: { dataset: { index: 0 } } });
+  check(!fs.existsSync(persisted[0]), 'Feedback draft image should be removed from USER_DATA_PATH');
+
   return { maps: maps.length, routes: routeCount, shapes: shapeCount, images: imageCount };
 }
 
@@ -434,10 +477,16 @@ async function main() {
   const appConfig = readJson('app.json');
   validatePackConfig();
   validateCloudConfig();
+  validateCloudFunctionPackage();
   validateRegisteredPages(appConfig);
   validateBindings(appConfig);
   validateWxmlStructure(appConfig);
-  const totals = await validateDataFlow();
+  let totals;
+  try {
+    totals = await validateDataFlow();
+  } finally {
+    fs.rmSync(path.join(ROOT, '.tmp'), { recursive: true, force: true });
+  }
 
   if (failures.length) {
     console.error('Validation failed:');
