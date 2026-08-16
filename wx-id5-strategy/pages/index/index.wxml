@@ -23,13 +23,16 @@
     <text class="list-arrow">›</text>
   </view>
 
-  <view wx:if="{{recentList.length > 1}}" class="history-panel">
+  <view wx:if="{{recentList.length > 0}}" class="history-panel">
     <view class="history-head">
       <text class="history-title">最近记录</text>
-      <text class="history-clear" bindtap="clearRecentHistory">清空</text>
+      <view class="history-actions">
+        <text wx:if="{{recentList.length > 2}}" class="history-clear" bindtap="toggleRecentHistory">{{recentExpanded ? '收起' : '展开'}}</text>
+        <text class="history-clear" bindtap="clearRecentHistory">清空</text>
+      </view>
     </view>
     <view
-      wx:for="{{recentList}}"
+      wx:for="{{recentVisibleList}}"
       wx:key="ts"
       class="history-row"
       data-index="{{index}}"

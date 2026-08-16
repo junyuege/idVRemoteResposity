@@ -3,6 +3,8 @@ const analytics = require('../../utils/analytics.js');
 
 const RECENT_VIEW_KEY = 'id5_recent_view_v1'; // 兼容旧单条记录
 const RECENT_HISTORY_KEY = 'id5_recent_history_v1';
+const RECENT_LIST_LIMIT = 5; // 历史记录最多展示 5 条
+const RECENT_COLLAPSED_COUNT = 2; // 默认只展示 2 条，其余收起
 
 // 难度标签压缩 + 特殊版别名（与样式类的难度顺序一致）
 const DIFF_RANK = { newbie: 0, easy: 1, normal: 2, hard: 3, special: 4 };
@@ -23,7 +25,9 @@ Page({
     loading: true,
     currentMode: '',
     recent: null,
-    recentList: []
+    recentList: [],
+    recentVisibleList: [],
+    recentExpanded: false
   },
 
   onLoad() {
@@ -88,11 +92,16 @@ Page({
       }
     }
     const recentViews = this.getRecentViews(strategies);
+    const recent = recentViews[0] || null;
+    // 最新一条用“最近查看”卡片展示，其余进入最近记录，默认只展示 2 条。
+    const recentList = recentViews.slice(1, 1 + RECENT_LIST_LIMIT);
     this.setData({
       strategies: list,
       loading: false,
-      recent: recentViews[0] || null,
-      recentList: recentViews.slice(0, 5)
+      recent: recent,
+      recentList: recentList,
+      recentVisibleList: recentList.slice(0, RECENT_COLLAPSED_COUNT),
+      recentExpanded: false
     });
   },
 
@@ -134,8 +143,16 @@ Page({
   },
 
   onHistoryTap(e) {
-    const raw = this.data.recentList[e.currentTarget.dataset.index];
+    const raw = this.data.recentVisibleList[e.currentTarget.dataset.index];
     this.openRecent(raw);
+  },
+
+  toggleRecentHistory() {
+    const expanded = !this.data.recentExpanded;
+    this.setData({
+      recentExpanded: expanded,
+      recentVisibleList: expanded ? this.data.recentList : this.data.recentList.slice(0, RECENT_COLLAPSED_COUNT)
+    });
   },
 
   clearRecentHistory() {
@@ -143,7 +160,7 @@ Page({
       wx.removeStorageSync(RECENT_HISTORY_KEY);
       wx.removeStorageSync(RECENT_VIEW_KEY);
     } catch (e) {}
-    this.setData({ recent: null, recentList: [] });
+    this.setData({ recent: null, recentList: [], recentVisibleList: [], recentExpanded: false });
   },
 
   onPullDownRefresh() {

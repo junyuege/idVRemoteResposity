@@ -163,6 +163,7 @@
 }
 
 .history-title { color: #c9c9cf; font-size: 12px; font-weight: 700; }
+.history-actions { display: flex; align-items: center; gap: 12px; }
 .history-clear { color: #d89b3c; font-size: 12px; }
 
 .history-row {
