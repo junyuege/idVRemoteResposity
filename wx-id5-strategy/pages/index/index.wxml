@@ -13,39 +13,6 @@
     </view>
   </view>
 
-  <view wx:if="{{recent}}" class="recent-card" bindtap="onRecentTap">
-    <view class="recent-mark">最</view>
-    <view class="recent-body">
-      <text class="recent-kicker">最近查看</text>
-      <text class="recent-title">{{recent.mapName}} · {{recent.author}}</text>
-      <text class="recent-sub">{{recent.summary}}</text>
-    </view>
-    <text class="list-arrow">›</text>
-  </view>
-
-  <view wx:if="{{recentList.length > 0}}" class="history-panel">
-    <view class="history-head">
-      <text class="history-title">最近记录</text>
-      <view class="history-actions">
-        <text wx:if="{{recentList.length > 2}}" class="history-clear" bindtap="toggleRecentHistory">{{recentExpanded ? '收起' : '展开'}}</text>
-        <text class="history-clear" bindtap="clearRecentHistory">清空</text>
-      </view>
-    </view>
-    <view
-      wx:for="{{recentVisibleList}}"
-      wx:key="ts"
-      class="history-row"
-      data-index="{{index}}"
-      bindtap="onHistoryTap"
-    >
-      <view class="history-body">
-        <text class="history-name">{{item.mapName}} · {{item.author}}</text>
-        <text class="history-sub">{{item.summary}}</text>
-      </view>
-      <text class="list-arrow">›</text>
-    </view>
-  </view>
-
   <view class="section-title-row">
     <text class="section-title">路线攻略</text>
     <text class="section-meta">{{strategies.length}} 个攻略版本</text>
@@ -99,5 +66,42 @@
     </view>
   </view>
 
+  <button wx:if="{{recentHistory.length}}" class="history-fab" bindtap="openHistorySheet" aria-label="查看历史记录">
+    <text class="history-fab-icon">史</text>
+    <text class="history-fab-badge">{{recentHistory.length}}</text>
+  </button>
+
   <button class="share-fab" open-type="share" aria-label="分享攻略">↗</button>
+
+  <view wx:if="{{showHistory}}" class="history-mask" bindtap="closeHistorySheet"></view>
+  <view wx:if="{{showHistory}}" class="history-sheet" catchtap="preventClose">
+    <view class="sheet-handle"></view>
+    <view class="history-sheet-head">
+      <view>
+        <text class="history-sheet-kicker">HISTORY</text>
+        <text class="history-sheet-title">最近记录</text>
+      </view>
+      <view class="history-sheet-actions">
+        <text wx:if="{{recentHistory.length > 2}}" class="history-action" bindtap="toggleRecentHistory">{{recentExpanded ? '收起' : '展开'}}</text>
+        <text class="history-action" bindtap="clearRecentHistory">清空</text>
+        <button class="sheet-close" bindtap="closeHistorySheet" aria-label="关闭">×</button>
+      </view>
+    </view>
+    <view wx:if="{{recentHistoryVisible.length}}" class="history-sheet-list">
+      <view
+        wx:for="{{recentHistoryVisible}}"
+        wx:key="ts"
+        class="history-sheet-row"
+        data-index="{{index}}"
+        bindtap="onHistoryTap"
+      >
+        <view class="history-sheet-body">
+          <text class="history-sheet-name">{{item.mapName}} · {{item.author}}</text>
+          <text class="history-sheet-sub">{{item.summary}}</text>
+        </view>
+        <text class="list-arrow">›</text>
+      </view>
+    </view>
+    <view wx:else class="empty-wrap compact-empty"><text>暂无历史记录</text></view>
+  </view>
 </view>

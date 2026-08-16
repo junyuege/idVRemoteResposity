@@ -477,10 +477,14 @@ async function validateDataFlow() {
     check(Array.isArray(storage.id5_recent_history_v1) && storage.id5_recent_history_v1[0] && storage.id5_recent_history_v1[0].routeId === firstRoute.id, 'Detail page should save recent view history');
     const recentIndexPage = loadPage('pages/index/index.js');
     recentIndexPage.onLoad();
-    check(recentIndexPage.data.recent && recentIndexPage.data.recent.routeId === firstRoute.id, 'Home page should restore recent view');
-    check(recentIndexPage.data.recentVisibleList.length <= 2, 'Home page should collapse recent history to 2 items by default');
+    check(recentIndexPage.data.recentHistory.length > 0, 'Home page should restore recent view history');
+    check(recentIndexPage.data.recentHistoryVisible.length <= 2, 'Home page should collapse recent history to 2 items by default');
+    recentIndexPage.openHistorySheet();
+    check(recentIndexPage.data.showHistory === true, 'Home page should open history bottom sheet');
+    recentIndexPage.closeHistorySheet();
+    check(recentIndexPage.data.showHistory === false, 'Home page should close history bottom sheet');
     recentIndexPage.clearRecentHistory();
-    check(recentIndexPage.data.recent === null && recentIndexPage.data.recentList.length === 0, 'Home page should clear recent view history');
+    check(recentIndexPage.data.recentHistory.length === 0, 'Home page should clear recent view history');
   }
 
   const rootRoute = api.getRoutesByMapId(firstMap.id).find(route =>
@@ -515,12 +519,13 @@ async function validateDataFlow() {
   wx.setStorageSync('id5_recent_history_v1', seededHistory);
   const collapsedIndexPage = loadPage('pages/index/index.js');
   collapsedIndexPage.onLoad();
-  check(collapsedIndexPage.data.recentVisibleList.length === 2, 'Recent history should default to 2 visible items');
+  collapsedIndexPage.openHistorySheet();
+  check(collapsedIndexPage.data.recentHistoryVisible.length === 2, 'Recent history should default to 2 visible items');
   check(collapsedIndexPage.data.recentExpanded === false, 'Recent history should start collapsed');
   collapsedIndexPage.toggleRecentHistory();
-  check(collapsedIndexPage.data.recentVisibleList.length === collapsedIndexPage.data.recentList.length, 'Toggle should expand recent history');
+  check(collapsedIndexPage.data.recentHistoryVisible.length === collapsedIndexPage.data.recentHistory.length, 'Toggle should expand recent history');
   collapsedIndexPage.toggleRecentHistory();
-  check(collapsedIndexPage.data.recentVisibleList.length === 2, 'Second toggle should collapse recent history again');
+  check(collapsedIndexPage.data.recentHistoryVisible.length === 2, 'Second toggle should collapse recent history again');
   collapsedIndexPage.clearRecentHistory();
 
   const inventoryPage = loadPage('pages/inventory/inventory.js');

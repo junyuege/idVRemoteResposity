@@ -127,9 +127,13 @@ function assert(condition, message) { if (!condition) throw new Error(message); 
     assert(inventory.data.allItems.length === 54, 'inventory entries mismatch');
     const index = loadPage('pages/index/index.js');
     index.onLoad();
-    assert(index.data.recent && index.data.recent.routeId, 'recent view missing');
-    index.onRecentTap();
+    assert(index.data.recentHistory.length > 0, 'recent history missing');
+    index.openHistorySheet();
+    assert(index.data.showHistory === true && index.data.recentHistoryVisible.length <= 2, 'history sheet failed');
+    navigationCalls.length = 0;
+    index.onHistoryTap({ currentTarget: { dataset: { index: 0 } } });
     assert(navigationCalls[0] && navigationCalls[0].url.includes('/pages/detail/detail?'), 'recent navigation failed');
+    assert(index.data.showHistory === false, 'history sheet should close after tap');
     console.log('loop', loop, 'OK | routes', routePassed, 'shapes', shapePassed, 'choices', choicePassed, 'details', detailPassed, 'cloudCalls', cloudCalls, 'cloudItems', cloudItems);
   }
   console.log('SMOKE_ALL_OK');
