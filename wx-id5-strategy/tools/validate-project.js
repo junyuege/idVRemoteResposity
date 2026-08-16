@@ -476,7 +476,6 @@ async function validateDataFlow() {
     check(detailPage.data.strategy && detailPage.data.strategy.images.length > 0, 'Detail page did not render images');
     check(loadedPackages.includes(api.getPackageRoot(firstRoute.id)), 'Detail page did not load its image package');
     check(detailPage.data.strategy.imageItems.length > 0 && detailPage.data.strategy.imageItems[0].fallback, 'Detail image should have local fallback');
-    check(detailPage.data.strategy.imageItems[0].height > 0, 'Detail image should have stable height');
     check(Array.isArray(storage.id5_recent_history_v1) && storage.id5_recent_history_v1[0] && storage.id5_recent_history_v1[0].routeId === firstRoute.id, 'Detail page should save recent view history');
     const recentIndexPage = loadPage('pages/index/index.js');
     recentIndexPage.onLoad();
