@@ -1,0 +1,9 @@
+{
+  "name": "addAnalytics",
+  "version": "1.0.0",
+  "description": "匿名事件统计：页面访问、图片失败、无结果搜索",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "4.0.2"
+  }
+}

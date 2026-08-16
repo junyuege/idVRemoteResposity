@@ -23,6 +23,26 @@
     <text class="list-arrow">›</text>
   </view>
 
+  <view wx:if="{{recentList.length > 1}}" class="history-panel">
+    <view class="history-head">
+      <text class="history-title">最近记录</text>
+      <text class="history-clear" bindtap="clearRecentHistory">清空</text>
+    </view>
+    <view
+      wx:for="{{recentList}}"
+      wx:key="ts"
+      class="history-row"
+      data-index="{{index}}"
+      bindtap="onHistoryTap"
+    >
+      <view class="history-body">
+        <text class="history-name">{{item.mapName}} · {{item.author}}</text>
+        <text class="history-sub">{{item.summary}}</text>
+      </view>
+      <text class="list-arrow">›</text>
+    </view>
+  </view>
+
   <view class="section-title-row">
     <text class="section-title">路线攻略</text>
     <text class="section-meta">{{strategies.length}} 个攻略版本</text>

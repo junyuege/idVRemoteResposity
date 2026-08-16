@@ -120,9 +120,12 @@ function validatePackConfig() {
 }
 
 function validateCloudFunctionPackage() {
-  const packageJson = readJson('cloudfunctions/addFeedback/package.json');
-  const sdkVersion = packageJson.dependencies && packageJson.dependencies['wx-server-sdk'];
-  check(Boolean(sdkVersion) && !/latest/i.test(sdkVersion), 'cloudfunctions/addFeedback should pin wx-server-sdk version');
+  ['addFeedback', 'addAnalytics'].forEach(name => {
+    const packageJson = readJson('cloudfunctions/' + name + '/package.json');
+    const sdkVersion = packageJson.dependencies && packageJson.dependencies['wx-server-sdk'];
+    check(Boolean(sdkVersion) && !/latest/i.test(sdkVersion), 'cloudfunctions/' + name + ' should pin wx-server-sdk version');
+    check(fs.existsSync(path.join(ROOT, 'cloudfunctions', name, 'index.js')), 'cloudfunctions/' + name + ' should have index.js');
+  });
 }
 
 function validateToolchain() {
@@ -460,10 +463,13 @@ async function validateDataFlow() {
     await new Promise(resolve => setImmediate(resolve));
     check(detailPage.data.strategy && detailPage.data.strategy.images.length > 0, 'Detail page did not render images');
     check(loadedPackages.includes(api.getPackageRoot(firstRoute.id)), 'Detail page did not load its image package');
-    check(storage.id5_recent_view_v1 && storage.id5_recent_view_v1.routeId === firstRoute.id, 'Detail page should save recent view');
+    check(Array.isArray(storage.id5_recent_history_v1) && storage.id5_recent_history_v1[0] && storage.id5_recent_history_v1[0].routeId === firstRoute.id, 'Detail page should save recent view history');
     const recentIndexPage = loadPage('pages/index/index.js');
     recentIndexPage.onLoad();
     check(recentIndexPage.data.recent && recentIndexPage.data.recent.routeId === firstRoute.id, 'Home page should restore recent view');
+    check(recentIndexPage.data.recentList.length > 0, 'Home page should render recent view history');
+    recentIndexPage.clearRecentHistory();
+    check(recentIndexPage.data.recent === null && recentIndexPage.data.recentList.length === 0, 'Home page should clear recent view history');
   }
 
   const rootRoute = api.getRoutesByMapId(firstMap.id).find(route =>
@@ -486,6 +492,13 @@ async function validateDataFlow() {
   const inventoryPage = loadPage('pages/inventory/inventory.js');
   inventoryPage.onLoad();
   check(inventoryPage.data.allItems.length > 0, 'Inventory page did not render entries');
+  check(inventoryPage.data.filters.length > 0 && inventoryPage.data.activeFilter === '', 'Inventory page should initialize anomaly difficulty filters');
+  inventoryPage.onFilterTap({ currentTarget: { dataset: { filter: '困难' } } });
+  check(inventoryPage.data.items.length > 0 && inventoryPage.data.items.every(item => (item.mapsList || []).indexOf('困难') >= 0), 'Inventory anomaly difficulty filter failed');
+  inventoryPage.onTabTap({ currentTarget: { dataset: { tab: 'material' } } });
+  inventoryPage.onFilterTap({ currentTarget: { dataset: { filter: '稀世' } } });
+  check(inventoryPage.data.items.length > 0 && inventoryPage.data.items.every(item => item.quality === '稀世'), 'Inventory quality filter failed');
+  inventoryPage.onTabTap({ currentTarget: { dataset: { tab: 'anomaly' } } });
 
   // 图鉴图标必须本地化，避免依赖 BWIKI 外链与域名白名单。
   api.getInventoryData().concat(api.getChapterData()).forEach(item => {

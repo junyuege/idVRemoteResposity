@@ -1,6 +1,8 @@
 const api = require('../../data/api.js');
+const analytics = require('../../utils/analytics.js');
 
-const RECENT_VIEW_KEY = 'id5_recent_view_v1';
+const RECENT_VIEW_KEY = 'id5_recent_view_v1'; // 兼容旧单条记录
+const RECENT_HISTORY_KEY = 'id5_recent_history_v1';
 
 // 难度标签压缩 + 特殊版别名（与样式类的难度顺序一致）
 const DIFF_RANK = { newbie: 0, easy: 1, normal: 2, hard: 3, special: 4 };
@@ -20,11 +22,13 @@ Page({
     strategies: [],
     loading: true,
     currentMode: '',
-    recent: null
+    recent: null,
+    recentList: []
   },
 
   onLoad() {
     this.loadStrategies();
+    analytics.track('page_view', 'pages/index/index');
   },
 
   // 返回首页时清除上次点击的难度筛选，并刷新最近查看卡片。
@@ -83,33 +87,63 @@ Page({
         list = filtered;
       }
     }
-    const recent = this.getRecentView(strategies);
-    this.setData({ strategies: list, loading: false, recent: recent });
+    const recentViews = this.getRecentViews(strategies);
+    this.setData({
+      strategies: list,
+      loading: false,
+      recent: recentViews[0] || null,
+      recentList: recentViews.slice(0, 5)
+    });
   },
 
-  getRecentView(strategies) {
-    let raw = null;
-    try { raw = wx.getStorageSync(RECENT_VIEW_KEY); } catch (e) { raw = null; }
-    if (!raw || !raw.mapId || !raw.routeId) return null;
-    const strategy = strategies.find(item => item.mapId === raw.mapId && item.routes.some(route => route.id === raw.routeId));
-    if (!strategy) return null;
-    const parts = [raw.routeName || raw.routeId];
-    if (raw.shapeId && raw.shapeId !== '__root__') parts.push(raw.shapeId);
-    if (raw.door) parts.push(raw.door);
-    if (raw.file) parts.push(raw.file);
-    return Object.assign({}, raw, { summary: parts.join(' · '), author: raw.author || strategy.author });
+  getRecentViews(strategies) {
+    let rawList = null;
+    try { rawList = wx.getStorageSync(RECENT_HISTORY_KEY) || []; } catch (e) { rawList = []; }
+    if (!Array.isArray(rawList)) rawList = [];
+    if (!rawList.length) {
+      const legacy = wx.getStorageSync(RECENT_VIEW_KEY);
+      if (legacy && legacy.routeId) rawList = [legacy];
+    }
+    return rawList
+      .filter(raw => raw && raw.mapId && raw.routeId)
+      .map(raw => {
+        const strategy = strategies.find(item => item.mapId === raw.mapId && item.routes.some(route => route.id === raw.routeId));
+        if (!strategy) return null;
+        const parts = [raw.routeName || raw.routeId];
+        if (raw.shapeId && raw.shapeId !== '__root__') parts.push(raw.shapeId);
+        if (raw.door) parts.push(raw.door);
+        if (raw.file) parts.push(raw.file);
+        return Object.assign({}, raw, { summary: parts.join(' · '), author: raw.author || strategy.author });
+      })
+      .filter(Boolean);
+  },
+
+  openRecent(raw) {
+    if (!raw) return;
+    const doorParam = raw.door ? '&door=' + encodeURIComponent(raw.door) : '';
+    const fileParam = raw.file ? '&file=' + encodeURIComponent(raw.file) : '';
+    wx.navigateTo({
+      url: '/pages/detail/detail?mapId=' + encodeURIComponent(raw.mapId) +
+        '&routeId=' + encodeURIComponent(raw.routeId) +
+        '&shapeId=' + encodeURIComponent(raw.shapeId || '__root__') + doorParam + fileParam
+    });
   },
 
   onRecentTap() {
-    const recent = this.data.recent;
-    if (!recent) return;
-    const doorParam = recent.door ? '&door=' + encodeURIComponent(recent.door) : '';
-    const fileParam = recent.file ? '&file=' + encodeURIComponent(recent.file) : '';
-    wx.navigateTo({
-      url: '/pages/detail/detail?mapId=' + encodeURIComponent(recent.mapId) +
-        '&routeId=' + encodeURIComponent(recent.routeId) +
-        '&shapeId=' + encodeURIComponent(recent.shapeId || '__root__') + doorParam + fileParam
-    });
+    this.openRecent(this.data.recent);
+  },
+
+  onHistoryTap(e) {
+    const raw = this.data.recentList[e.currentTarget.dataset.index];
+    this.openRecent(raw);
+  },
+
+  clearRecentHistory() {
+    try {
+      wx.removeStorageSync(RECENT_HISTORY_KEY);
+      wx.removeStorageSync(RECENT_VIEW_KEY);
+    } catch (e) {}
+    this.setData({ recent: null, recentList: [] });
   },
 
   onPullDownRefresh() {
@@ -153,6 +187,12 @@ Page({
       title: '第五人格·加页手记攻略查询',
       desc: '地图路线、物资点位、通关技巧一网打尽',
       path: '/pages/index/index'
+    };
+  },
+
+  onShareTimeline() {
+    return {
+      title: '第五人格·加页手记攻略查询'
     };
   }
 });

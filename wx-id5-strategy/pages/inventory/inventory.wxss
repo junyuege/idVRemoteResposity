@@ -15,6 +15,24 @@
 
 .seg-item { display: flex; height: 34px; flex: 1; align-items: center; justify-content: center; border-radius: 5px; color: #8f9199; font-size: 13px; }
 .seg-active { background: #3a3021; color: #edb65f; font-weight: 650; }
+
+.filter-scroll { margin-bottom: 14px; white-space: nowrap; }
+.filter-row { display: inline-flex; gap: 8px; padding: 1px; }
+.filter-chip {
+  display: inline-flex;
+  height: 30px;
+  padding: 0 12px;
+  align-items: center;
+  justify-content: center;
+  background: #25272d;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 15px;
+  color: #9b9da5;
+  font-size: 12px;
+  line-height: 30px;
+}
+.filter-active { background: #3a3021; border-color: rgba(216, 155, 60, 0.45); color: #efbd6d; }
+
 .inventory-list { display: flex; flex-direction: column; gap: 9px; }
 
 .inventory-card {

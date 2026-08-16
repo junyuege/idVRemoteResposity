@@ -141,7 +141,7 @@ cover_rows = [
     ['项目形态', '原生微信小程序 + 微信云开发 + Node.js 工具链'],
     ['数据规模', '1 张地图 · 6 条攻略路线 · 40 个路线形状 · 123 张攻略图'],
     ['图鉴规模', '24 条异象/道具图鉴 + 30 条辞章条目'],
-    ['质量基线', 'node tools/validate-project.js 通过 1154 项检查'],
+    ['质量基线', 'node tools/validate-project.js 通过 1184 项检查'],
 ]
 story.append(Table([[Paragraph(k, S['cell_bold']), Paragraph(v, S['cell'])] for k, v in cover_rows], colWidths=[34*mm, 110*mm], style=[
     ('BACKGROUND', (0,0), (0,-1), C_PANEL),
@@ -189,7 +189,7 @@ story.append(TBL(
         ['数据层', 'data/localMapIndex.js + data/api.js', '单一数据源（SSOT）与统一数据读取接口'],
         ['云端', '微信云开发（云存储 / 云函数 / 云数据库）', '攻略图片临时链接、反馈图片上传、反馈入库'],
         ['资源策略', '分包加载 + 本地兜底分包 + cloud:// 映射', '弱网可用、控制主包体积、云资源失败自动回退'],
-        ['工程工具', 'Node.js + PowerShell 脚本', '素材同步压缩、云映射生成、1154 项完整性校验'],
+        ['工程工具', 'Node.js + PowerShell 脚本', '素材同步压缩、云映射生成、1184 项完整性校验'],
     ],
     widths=(24*mm, 64*mm, 88*mm),
 ))
@@ -204,7 +204,7 @@ story.append(TBL(
         ['攻略图片', '123 张', '按 shape/door/file 三级索引，由验证脚本统计'],
         ['云映射条目', '151 条', '123 张攻略图 + 28 张凉哈皮识别图标'],
         ['图鉴条目', '54 条', 'inventoryData 24 条 + chapterData 30 条'],
-        ['完整性校验', '1154 项', 'node tools/validate-project.js 全部通过'],
+        ['完整性校验', '1184 项', 'node tools/validate-project.js 全部通过'],
     ],
     widths=(30*mm, 24*mm, 122*mm),
 ))
@@ -231,7 +231,7 @@ story.append(TBL(
         ['pkg-lianghapi-icons', '凉哈皮识别图标分包（28 张），与路线图文件名一一对应。'],
         ['（已删除）pkg-hard / pkg-normal / pkg-easy / pkg-newbie / pkg-v0710', '历史遗留本地分包已从仓库删除；云端旧命名空间仅保留 easy/normal/newbie 的现行目录。'],
         ['cloudfunctions/addFeedback', '云函数：校验反馈内容并写入 feedback 集合，自动记录 OPENID 与创建时间。'],
-        ['tools/validate-project.js', '项目体检脚本：注册、绑定、WXML 结构、数据流、页面模拟共 1154 项检查。'],
+        ['tools/validate-project.js', '项目体检脚本：注册、绑定、WXML 结构、数据流、页面模拟共 1184 项检查。'],
         ['tools/gen-cloud-assets.js', '按本地索引与固定云前缀生成 data/cloudAssets.js（只生成映射，不上传文件）。'],
         ['node tools/sync-assets.js', '从本地源盘按索引扫描素材，压缩并按分包预算写入 pkg-*/assets。'],
         ['tools/import-report.json', '最近一次素材同步的分包数量、体积、缺失/多余文件报告。'],
@@ -266,7 +266,7 @@ story.append(H2('3.5 凉哈皮“逐图图标”模式'))
 story.append(P('凉哈皮版使用 entryMode: "fileIcons"。形状下没有“侧门”概念，而是每个识别图标对应一张攻略图：'))
 story.append(CODE('route.entryMode = "fileIcons"\niconPackageRoot = "pkg-lianghapi-icons"\niconNamespace = "maps/e_yun_zhi_nv/lianghapi/v0710/icons"\n图标文件名与攻略图文件名同名（可不同扩展名）\n查询页：显示图标列表 → 点击后带 file 参数进入详情 → 只展示单张'))
 story.append(H2('3.6 工程化校验'))
-story.append(P('tools/validate-project.js 不是简单 lint，而是一个“可执行的发布前验收”：它会注册每个页面、模拟 wx API、跑首页/查询页/详情页/图鉴页流程、检查每条索引图片是否存在本地兜底文件、检查 cloud:// 映射、检查旧 id 解析、检查作者切换是否串数据。目前 1154 项检查全部通过。'))
+story.append(P('tools/validate-project.js 不是简单 lint，而是一个“可执行的发布前验收”：它会注册每个页面、模拟 wx API、跑首页/查询页/详情页/图鉴页流程、检查每条索引图片是否存在本地兜底文件、检查 cloud:// 映射、检查旧 id 解析、检查作者切换是否串数据。目前 1184 项检查全部通过。'))
 story.append(H2('3.7 值得注意的现状与风险'))
 story.append(TBL(
     ['观察点', '现状 / 风险', '建议'],
@@ -290,8 +290,8 @@ story.append(TBL(
         ['首页', 'pages/index', '按“地图 × 作者”生成攻略卡片；展示各难度并可直接跳转；短标签与长标签分两行排布；下拉刷新；分享小程序；入口到教学与图鉴。'],
         ['路线查询（核心）', 'pages/explorer', '作者切换、版本横向滚动切换、形状卡片（含入口数与图片数）、侧门底部弹层、单入口自动直达、凉哈皮识别图标列表、长按图标放大预览、当前路线分享。'],
         ['攻略详情', 'pages/detail', '解析 mapId/routeId/shapeId/door/file 参数；兼容 legacyIds；预加载分包；云端临时链接 + 本地兜底；图片失败标记与点击重试；全屏预览与长按保存；生成可读摘要；分享输出新稳定 id。'],
-        ['资料图鉴', 'pages/inventory', '异象/道具/辞章三类 Tab；关键词搜索；品质映射（独特蓝/奇珍紫/稀世金/华彩红）；强化异象红框；点击底部抽屉展示刷新地图、应对方式、价格、重量、耐久等详情；图片失败回退占位图。'],
-        ['小抄教学', 'pages/tutorial', '展示教学图片；点击全屏预览；支持分享教学页。'],
+        ['资料图鉴', 'pages/inventory', '异象/道具/辞章三类 Tab；关键词搜索；异象刷新难度筛选；道具/辞章品质筛选；品质映射（独特蓝/奇珍紫/稀世金/华彩红）；强化异象红框；点击底部抽屉展示刷新地图、应对方式、价格、重量、耐久等详情；图片失败回退占位图。'],
+        ['小抄教学', 'pages/tutorial', '展示教学图片；加载失败重试；点击全屏预览；支持好友与朋友圈分享。'],
         ['意见反馈', 'pages/feedback', '文字最多 500 字；截图最多 8 张；图片上传云存储；调用 addFeedback 云函数入库；失败或云不可用时本地草稿暂存并在下次进入恢复；提交中禁用重复提交。'],
         ['我的', 'pages/mine', '版本号展示；入口到教学/反馈/关于；分享小程序；数据来源说明。'],
         ['关于项目', 'pages/about', '项目说明、内容来源、免责声明、版本展示。'],
@@ -299,7 +299,7 @@ story.append(TBL(
         ['分包占位页', 'pkg-*/pages/redirect', '使各资源包满足分包注册要求，资源包可按需被 wx.loadSubpackage 下载。'],
         ['数据/API 层', 'data/api.js', 'getMaps / getRoute / getShapes / getShapeDetails / buildImageUrl / getImagesForShape / resolveImageUrls / loadRoutePackage 等统一接口；图片临时链接缓存 90 分钟。'],
         ['云函数', 'cloudfunctions/addFeedback', '校验非空内容，截断 500 字，限制 8 张图，写入 feedback 集合，返回统一 code/data/message。'],
-        ['工具链', 'tools/*', 'validate-project.js 做 1154 项发布前检查；gen-cloud-assets.js 生成云映射；sync-assets.js 跨平台压缩同步素材；smoke-test.js 全路由冒烟测试。'],
+        ['工具链', 'tools/*', 'validate-project.js 做 1184 项发布前检查；gen-cloud-assets.js 生成云映射；sync-assets.js 跨平台压缩同步素材；smoke-test.js 全路由冒烟测试。'],
     ],
     widths=(30*mm, 40*mm, 106*mm),
 ))
@@ -313,12 +313,12 @@ story.append(P('下面按“先宏观、再数据、再核心链路、最后工�
 story.append(TBL(
     ['阶段', '目标', '学习动作', '重点文件', '验收标准'],
     [
-        ['0. 环境准备（约10分钟）', '能打开并校验项目', '用微信开发者工具打开项目；终端运行 node tools/validate-project.js；通读 PROJECT_PLAN.md。', 'project.config.json、app.json、PROJECT_PLAN.md、tools/validate-project.js', '校验输出 Validation passed: 1154 checks；知道主包 11 页、7 个分包。'],
+        ['0. 环境准备（约10分钟）', '能打开并校验项目', '用微信开发者工具打开项目；终端运行 node tools/validate-project.js；通读 PROJECT_PLAN.md。', 'project.config.json、app.json、PROJECT_PLAN.md、tools/validate-project.js', '校验输出 Validation passed: 1184 checks；知道主包 11 页、7 个分包。'],
         ['1. 读数据（约30分钟）', '理解 SSOT 结构', '从 maps 数组开始读；找出 6 条 route 的 id/legacyIds/packageRoot/assetNamespace/shapes/shapeDetails；对照 api.js 的字段用途。', 'data/localMapIndex.js、data/api.js', '能画出“地图→作者→路线→形状→门→文件”的层级图；能说清一条路线图片如何拼出路径。'],
         ['2. 走核心链路（约40分钟）', '理解查询交互', '按“首页点击难度 → explorer 选形状/入口 → detail 显示图片”的顺序阅读；关注参数如何层层传递。', 'pages/index/index.js、pages/explorer/explorer.js、pages/detail/detail.js（配合 .wxml）', '能口述一次点击从 onSelectMode 到 wx.previewImage 的完整调用链；知道 __root__、fileIcons 两个特殊分支。'],
         ['3. 读资源链路（约30分钟）', '理解云端/本地双通道', '读 api.cloudUrl、resolveImageUrls、getLocalFallback、loadRoutePackage；读 gen-cloud-assets.js 看映射如何生成。', 'data/api.js、data/cloudAssets.js、tools/gen-cloud-assets.js、CLOUD_STORAGE_GUIDE.md', '能解释：cloud:// fileID → HTTPS 临时链接；失败时如何回退到 /pkg-*/assets。'],
         ['4. 读辅助功能（约30分钟）', '覆盖非核心页面', '读图鉴分类与搜索、反馈草稿与云函数、旧页面重定向。', 'pages/inventory/inventory.js、pages/feedback/feedback.js、cloudfunctions/addFeedback/index.js、pages/version/route/door', '能说出图鉴三个 Tab 的数据来源；知道反馈失败时本地草稿如何恢复。'],
-        ['5. 读维护工具（约40分钟）', '能安全新增内容', '通读 validate-project.js 的检查分类；按 CLOUD_STORAGE_GUIDE.md 新增作者流程走一遍（可只做 DryRun）。', 'tools/validate-project.js、tools/sync-assets.js、tools/gen-cloud-assets.js、tools/smoke-test.js', '能按 7 步新增一条路线而不破坏 1154 项检查；理解“先传云、再生成映射”。'],
+        ['5. 读维护工具（约40分钟）', '能安全新增内容', '通读 validate-project.js 的检查分类；按 CLOUD_STORAGE_GUIDE.md 新增作者流程走一遍（可只做 DryRun）。', 'tools/validate-project.js、tools/sync-assets.js、tools/gen-cloud-assets.js、tools/smoke-test.js', '能按 7 步新增一条路线而不破坏 1184 项检查；理解“先传云、再生成映射”。'],
     ],
     widths=(28*mm, 24*mm, 60*mm, 40*mm, 24*mm),
     fontsize=8.2,
@@ -363,7 +363,7 @@ story += H1('7. 发布与维护检查表')
 story.append(TBL(
     ['环节', '检查项', '通过标准'],
     [
-        ['代码与索引', '运行 node tools/validate-project.js', 'Validation passed: 1154 checks，零失败'],
+        ['代码与索引', '运行 node tools/validate-project.js', 'Validation passed: 1184 checks，零失败'],
         ['编译', '微信开发者工具编译与代码质量检查', '无 WXML/WXSS 编译错误'],
         ['主流程', '首页→详情、整图路线、图鉴搜索、详情弹层、反馈草稿', '均可正常操作'],
         ['真机', '云图片、长按图片、全屏预览、分享落地页', '真机体验正常'],
@@ -407,7 +407,7 @@ story.append(PageBreak())
 
 # ============ 9 本轮改造记录 ============
 story += H1('9. 本轮改造记录')
-story.append(P('以下改造已完成并通过 node tools/validate-project.js 全部校验（1154 checks）。'))
+story.append(P('以下改造已完成并通过 node tools/validate-project.js 全部校验（1184 checks）。'))
 story.append(TBL(
     ['改造项', '改动内容', '效果'],
     [
@@ -416,7 +416,7 @@ story.append(TBL(
         ['图标降级修复', 'getShapeIconUrl 增加 cloudReady 判断；新增 getShapeIconLocalUrl；图标图片与预览增加 binderror 本地回退', '云不可用时凉哈皮图标直接显示本地分包图标'],
         ['分包预热', 'explorer 选中路线时立即 loadRoutePackage', '用户选择形状/入口期间后台下载图片分包，详情页更快'],
         ['临时链接请求加固', 'getTempFileURL 按 50 个一批拆分；缓存最多保留 400 条', '适配接口上限，防止 storage 无限增长'],
-        ['校验工具增强', '覆盖 bindlongpress 与分包页面；新增图片扩展名/文件头一致性检查；新增云配置与图标回退检查', '校验项从 773 提升到 1154，堵住原有盲区'],
+        ['校验工具增强', '覆盖 bindlongpress 与分包页面；新增图片扩展名/文件头一致性检查；新增云配置与图标回退检查', '校验项从 773 提升到 1184，堵住原有盲区'],
         ['文档与清理', '更新 CLOUD_STORAGE_GUIDE.md 格式约定；删除未使用的 utils 与占位图', '减少误导与仓库冗余'],
         ['循环冒烟修复', '清理 explorer 单入口自动跳转时的残留弹层；移除索引中的 0 图片空入口并在页面层防御过滤', '避免展示“0 张路线图”无效选项'],
         ['图鉴图标本地化', '54 张 BWIKI 外链图标下载压缩到 images/inventory，并同步改索引为本地路径', '图鉴不再依赖外链域名，弱网可用'],
@@ -431,6 +431,12 @@ story.append(TBL(
         ['最近查看', '详情页保存最近查看，首页展示入口并支持一键返回', '减少重复查找点击'],
         ['路线搜索', '查询页支持按形状或侧门名称实时过滤', '数据量增长后更快定位'],
         ['全路由冒烟测试', '新增 tools/smoke-test.js，遍历 6 路线/41 形状/77 入口和 78 个详情', '每次改动可快速回归'],
+        ['CI 自动校验', '新增 .github/workflows/validate.yml，每次提交运行 validate-project 与 smoke-test', '防止回归进入主分支'],
+        ['图鉴筛选', '异象支持刷新难度筛选；道具/辞章支持品质筛选', '54 条图鉴数据可快速定位'],
+        ['教学与分享增强', '教学图增加失败重试；首页/查询页/详情页/教学页支持朋友圈分享', '异常状态更完整，传播入口更多'],
+        ['最近查看历史', '从单条升级为最多 10 条历史，首页展示最近 5 条并支持清空', '方便切换最近查过的多个入口'],
+        ['数据文件拆分', 'localMapIndex.js 拆分为 data/source/maps.js 与 data/source/encyclopedia.js', '地图路线与图鉴辞章可独立维护'],
+        ['匿名统计', '新增 addAnalytics 云函数与 utils/analytics.js；上报页面访问、图片失败、无结果搜索', '为内容维护优先级提供数据'],
     ],
     widths=(30*mm, 92*mm, 54*mm),
 ))

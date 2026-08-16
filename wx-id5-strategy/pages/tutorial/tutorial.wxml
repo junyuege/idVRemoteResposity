@@ -10,8 +10,13 @@
     <text>正在加载教学图...</text>
   </view>
 
+  <view wx:elif="{{failed}}" class="empty-wrap">
+    <text>教学图片加载失败</text>
+    <button class="retry-btn" bindtap="onRetry">重新加载</button>
+  </view>
+
   <view wx:else class="tutorial-frame" bindtap="onPreview">
-    <image class="tutorial-img" src="{{image}}" mode="widthFix" lazy-load="true" show-menu-by-longpress="true" />
+    <image class="tutorial-img" src="{{image}}" mode="widthFix" lazy-load="true" show-menu-by-longpress="true" binderror="onImageError" />
     <view class="image-footer">
       <text>小抄阅读说明</text>
       <text class="image-action">查看原图 ›</text>

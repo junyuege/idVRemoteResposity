@@ -1,6 +1,9 @@
 ﻿const api = require('../../data/api.js');
+const analytics = require('../../utils/analytics.js');
 
-const RECENT_VIEW_KEY = 'id5_recent_view_v1';
+const RECENT_VIEW_KEY = 'id5_recent_view_v1'; // 旧版单条记录，读取后迁移
+const RECENT_HISTORY_KEY = 'id5_recent_history_v1';
+const RECENT_HISTORY_LIMIT = 10;
 
 // 难度 -> 样式类映射（复用既有 wxss 类名，不新增样式）
 const TAG_CLASS = {
@@ -156,11 +159,24 @@ Page({
       loading: false
     });
     this.saveRecentView(map, route, hasShape ? shapeId : '__root__', this._lastDoor || '', this._lastFile || '');
+    analytics.track('page_view', 'pages/detail/detail', {
+      mapId: this._lastMapId,
+      routeId: route.id,
+      shapeId: hasShape ? shapeId : '__root__'
+    });
   },
 
   saveRecentView(map, route, shapeId, door, file) {
     try {
-      wx.setStorageSync(RECENT_VIEW_KEY, {
+      let list = wx.getStorageSync(RECENT_HISTORY_KEY) || [];
+      if (!Array.isArray(list)) list = [];
+      // 迁移旧版单条记录
+      let legacy = null;
+      if (!list.length) {
+        legacy = wx.getStorageSync(RECENT_VIEW_KEY) || null;
+        if (legacy && legacy.routeId) list = [legacy];
+      }
+      const entry = {
         mapId: map && map.id,
         mapName: (map && map.displayName) || '',
         routeId: route && route.id,
@@ -170,7 +186,13 @@ Page({
         door: door || '',
         file: file || '',
         ts: Date.now()
-      });
+      };
+      const entryKey = [entry.mapId, entry.routeId, entry.shapeId, entry.door, entry.file].join('|');
+      list = list.filter(item => [item.mapId, item.routeId, item.shapeId, item.door, item.file].join('|') !== entryKey);
+      list.unshift(entry);
+      list = list.slice(0, RECENT_HISTORY_LIMIT);
+      wx.setStorageSync(RECENT_HISTORY_KEY, list);
+      if (legacy) wx.removeStorageSync(RECENT_VIEW_KEY);
     } catch (e) {
       console.warn('[detail] 保存最近查看失败', e);
     }
@@ -190,14 +212,10 @@ Page({
   onShareAppMessage() {
     const s = this.data.strategy;
     if (s) {
-      const doorParam = this._lastDoor ? '&door=' + encodeURIComponent(this._lastDoor) : '';
-      const fileParam = this._lastFile ? '&file=' + encodeURIComponent(this._lastFile) : '';
       return {
         title: s.title + " - 加页手记攻略",
         desc: "加页手记·厄运之女路线图",
-        path: "/pages/detail/detail?mapId=" + encodeURIComponent(this._lastMapId) +
-              "&routeId=" + encodeURIComponent(this._lastRouteId) +
-              "&shapeId=" + encodeURIComponent(this._lastShapeId) + doorParam + fileParam
+        path: "/pages/detail/detail?" + this.buildDetailQuery()
       };
     }
     return {
@@ -206,10 +224,37 @@ Page({
     };
   },
 
+  buildDetailQuery() {
+    const doorParam = this._lastDoor ? '&door=' + encodeURIComponent(this._lastDoor) : '';
+    const fileParam = this._lastFile ? '&file=' + encodeURIComponent(this._lastFile) : '';
+    return 'mapId=' + encodeURIComponent(this._lastMapId) +
+      '&routeId=' + encodeURIComponent(this._lastRouteId) +
+      '&shapeId=' + encodeURIComponent(this._lastShapeId) + doorParam + fileParam;
+  },
+
+  onShareTimeline() {
+    const s = this.data.strategy;
+    if (s) {
+      return {
+        title: s.title + ' - 加页手记攻略',
+        query: this.buildDetailQuery()
+      };
+    }
+    return {
+      title: '第五人格·加页手记攻略'
+    };
+  },
+
   onImageError(e) {
     const index = Number(e.currentTarget.dataset.index);
     const src = e.currentTarget.dataset.src || '';
     console.error('[detail] 图片加载失败:', src, e.detail && e.detail.errMsg);
+    analytics.track('image_failed', 'pages/detail/detail', {
+      mapId: this._lastMapId,
+      routeId: this._lastRouteId,
+      index: isNaN(index) ? -1 : index,
+      src: String(src).slice(0, 200)
+    });
     if (!isNaN(index)) {
       this.setData({ ['strategy.imageItems[' + index + '].failed']: true });
     }

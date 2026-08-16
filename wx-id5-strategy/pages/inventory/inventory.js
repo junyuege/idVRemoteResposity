@@ -1,4 +1,5 @@
 const api = require('../../data/api.js');
+const analytics = require('../../utils/analytics.js');
 
 // 品质 -> 展示文案 / 卡片边框类 / 角标类（独特=蓝、奇珍=紫、稀世=金、华彩=红）
 const QUALITY_META = {
@@ -16,6 +17,10 @@ const CATEGORY_META = {
 };
 
 const PLACEHOLDER_ICON = '/images/placeholder/item.png';
+
+// 异象按刷新难度筛选；道具/辞章按品质筛选。
+const ANOMALY_DIFFICULTIES = ['新手', '简单', '普通', '困难'];
+const QUALITY_FILTERS = Object.keys(QUALITY_META);
 
 // 千分位格式化金额
 function formatMoney(n) {
@@ -42,6 +47,8 @@ Page({
     items: [],
     allItems: [],
     keyword: '',
+    filters: [],
+    activeFilter: '',
     error: '',
     showDetail: false,
     detail: null
@@ -50,6 +57,7 @@ Page({
   onLoad() {
     try {
       this.loadItems();
+      analytics.track('page_view', 'pages/inventory/inventory');
     } catch (err) {
       console.error('[inventory] 加载失败', err);
       this.setData({ error: '数据加载失败，请稍后重试', items: [], allItems: [] });
@@ -86,6 +94,7 @@ Page({
           categoryCls: category.cls,
           metaText: '刷新：' + mapsSummary(it.maps),
           maps: (it.maps || []).join(' / '),
+          mapsList: it.maps || [],
           counter: it.counter || ''
         };
       }
@@ -101,6 +110,7 @@ Page({
         borderCls: quality.borderCls,
         chipCls: quality.chipCls,
         chipLabel: quality.label,
+        quality: it.quality || quality.label,
         categoryLabel: category.label,
         categoryCls: category.cls,
         metaText: '价值：' + formatMoney(it.value != null ? it.value : it.price),
@@ -113,22 +123,45 @@ Page({
       };
     });
 
-    this.setData({ allItems: items });
+    const filters = this.data.currentTab === 'anomaly' ? ANOMALY_DIFFICULTIES : QUALITY_FILTERS;
+    this.setData({ allItems: items, filters: filters, activeFilter: '' });
     this.renderItems();
   },
 
-  // 按 分段 tab + 搜索词 过滤渲染
+  // 按 分段 tab + 搜索词 + 筛选条件 过滤渲染
   renderItems() {
     const kw = (this.data.keyword || '').trim().toLowerCase();
+    const filter = this.data.activeFilter || '';
     let list = (this.data.allItems || []).filter(it => it.category === this.data.currentTab);
     if (kw) {
       list = list.filter(it => (it.key || '').toLowerCase().indexOf(kw) >= 0);
+    }
+    if (filter) {
+      if (this.data.currentTab === 'anomaly') {
+        list = list.filter(it => (it.mapsList || []).indexOf(filter) >= 0);
+      } else {
+        list = list.filter(it => it.quality === filter);
+      }
+    }
+    if (!list.length && (kw || filter)) {
+      analytics.track('search_no_result', 'pages/inventory/inventory', {
+        tab: this.data.currentTab,
+        keyword: kw,
+        filter: filter
+      });
     }
     this.setData({ items: list });
   },
 
   onTabTap(e) {
-    this.setData({ currentTab: e.currentTarget.dataset.tab }, () => this.renderItems());
+    const tab = e.currentTarget.dataset.tab;
+    const filters = tab === 'anomaly' ? ANOMALY_DIFFICULTIES : QUALITY_FILTERS;
+    this.setData({ currentTab: tab, filters: filters, activeFilter: '' }, () => this.renderItems());
+  },
+
+  onFilterTap(e) {
+    const filter = e.currentTarget.dataset.filter;
+    this.setData({ activeFilter: filter || '' }, () => this.renderItems());
   },
 
   onSearch(e) {

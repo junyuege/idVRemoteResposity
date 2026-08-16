@@ -24,6 +24,20 @@
     >{{tab.label}}</view>
   </view>
 
+  <scroll-view wx:if="{{filters.length}}" class="filter-scroll" scroll-x="true" enhanced="true" show-scrollbar="false">
+    <view class="filter-row">
+      <button class="filter-chip {{activeFilter === '' ? 'filter-active' : ''}}" data-filter="" bindtap="onFilterTap">全部</button>
+      <button
+        wx:for="{{filters}}"
+        wx:key="*this"
+        wx:for-item="filter"
+        class="filter-chip {{activeFilter === filter ? 'filter-active' : ''}}"
+        data-filter="{{filter}}"
+        bindtap="onFilterTap"
+      >{{filter}}</button>
+    </view>
+  </scroll-view>
+
   <view wx:if="{{items.length > 0}}" class="inventory-list">
     <view
       wx:for="{{items}}"

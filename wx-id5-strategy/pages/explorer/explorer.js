@@ -1,4 +1,5 @@
 const api = require('../../data/api.js');
+const analytics = require('../../utils/analytics.js');
 
 const DIFF_RANK = { newbie: 0, easy: 1, normal: 2, hard: 3, special: 4 };
 
@@ -89,6 +90,7 @@ Page({
       const authorName = selectedRoute.author;
 
       wx.setNavigationBarTitle({ title: (map.displayName || '路线') + ' · 路线查询' });
+      analytics.track('page_view', 'pages/explorer/explorer', { mapId: mapId, author: selectedAuthor.id });
       this.setData({
         mapId,
         mapName: map.displayName || '',
@@ -192,6 +194,12 @@ Page({
       ? this.data.shapes.filter(item => (item.searchText || '').indexOf(keyword) >= 0)
       : this.data.shapes;
     this.setData({ keyword: e.detail.value || '', displayShapes: displayShapes });
+    if (!displayShapes.length) {
+      analytics.track('search_no_result', 'pages/explorer/explorer', {
+        keyword: keyword,
+        routeId: this.data.routeId
+      });
+    }
   },
 
   clearSearch() {
@@ -323,6 +331,16 @@ Page({
       path: '/pages/explorer/explorer?mapId=' + encodeURIComponent(this.data.mapId) +
         '&routeId=' + encodeURIComponent(this.data.routeId) +
         '&author=' + encodeURIComponent(this.data.authorId)
+    };
+  },
+
+  onShareTimeline() {
+    const query = 'mapId=' + encodeURIComponent(this.data.mapId) +
+      '&routeId=' + encodeURIComponent(this.data.routeId) +
+      '&author=' + encodeURIComponent(this.data.authorId);
+    return {
+      title: this.data.mapName + ' · ' + this.data.routeName,
+      query: query
     };
   }
 });
