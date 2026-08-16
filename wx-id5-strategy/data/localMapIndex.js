@@ -669,10 +669,6 @@ module.exports = {
             "▃▃": {
               "doors": [
                 {
-                  "door": "侧门在上",
-                  "files": []
-                },
-                {
                   "door": "侧门在右",
                   "files": [
                     "左路.jpg",

@@ -188,13 +188,16 @@ Page({
     }
 
     const route = api.getRoute(this.data.mapId, this.data.routeId);
-    const doors = (detail.doors || []).map(door => ({
-      door: door.door,
-      file: '',
-      icon: '',
-      mark: '门',
-      desc: ((door.files && door.files.length) || 0) + ' 张路线图'
-    }));
+    // 防御：索引中不应出现空入口，这里再过滤一次，避免给用户展示“0 张路线图”的无效选项。
+    const doors = (detail.doors || [])
+      .filter(door => Array.isArray(door.files) && door.files.length > 0)
+      .map(door => ({
+        door: door.door,
+        file: '',
+        icon: '',
+        mark: '门',
+        desc: door.files.length + ' 张路线图'
+      }));
     if ((detail.rootFiles || []).length) {
       if (route && route.entryMode === 'fileIcons') {
         detail.rootFiles.forEach(file => {
@@ -212,10 +215,13 @@ Page({
     }
 
     if (!doors.length) {
+      // 自动直达详情页，同时清掉上一个形状可能遗留的底部弹层状态。
+      this.setData({ showDoorSheet: false, selectedShape: null, doors: [] });
       this.goToDetail(item.shapeId, '');
       return;
     }
     if (doors.length === 1) {
+      this.setData({ showDoorSheet: false, selectedShape: null, doors: [] });
       this.goToDetail(item.shapeId, doors[0].door, doors[0].file);
       return;
     }

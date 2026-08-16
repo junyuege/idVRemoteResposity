@@ -256,6 +256,11 @@ async function validateDataFlow() {
       shapes.forEach(shape => {
         const detail = api.getShapeDetails(map.id, route.id, shape);
         check(Boolean(detail), 'Missing shape detail for ' + route.id + '/' + shape);
+        if (detail) {
+          (detail.doors || []).forEach(door => {
+            check(Array.isArray(door.files) && door.files.length > 0, 'Door entry has no files: ' + route.id + '/' + shape + '/' + door.door);
+          });
+        }
       });
     });
   });
