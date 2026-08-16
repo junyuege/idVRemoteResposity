@@ -45,21 +45,49 @@
           <text class="admin-time">{{item.time}}</text>
         </view>
         <text class="admin-content">{{item.content}}</text>
+        <view wx:if="{{item.processedTime}}" class="admin-processed">最近处理：{{item.processedTime}}</view>
         <view class="admin-meta-row">
-          <text class="admin-meta">截图 {{item.images}} 张</text>
+          <button wx:if="{{item.imageCount}}" class="admin-action" data-index="{{index}}" bindtap="previewFeedbackImages">预览截图 {{item.imageCount}}</button>
+          <text wx:else class="admin-meta">无截图</text>
           <view class="admin-actions">
             <button class="admin-action" data-id="{{item.id}}" data-status="processing" bindtap="onFeedbackStatusTap">处理中</button>
             <button class="admin-action" data-id="{{item.id}}" data-status="resolved" bindtap="onFeedbackStatusTap">已解决</button>
           </view>
         </view>
       </view>
+      <view wx:if="{{hasMore}}" class="load-more-row">
+        <button class="load-more-btn" bindtap="loadMoreFeedback" disabled="{{loadingMore}}">{{loadingMore ? '加载中...' : '加载更多'}}</button>
+      </view>
     </view>
 
     <view wx:else class="admin-list">
-      <view wx:if="{{!stats.length}}" class="empty-wrap compact-empty"><text>暂无统计</text></view>
-      <view wx:for="{{stats}}" wx:key="label" class="admin-stat-card">
+      <view wx:if="{{!stats.totals.length && !stats.dailyTrend.length}}" class="empty-wrap compact-empty"><text>暂无统计</text></view>
+
+      <view class="admin-section-title">事件汇总</view>
+      <view wx:for="{{stats.totals}}" wx:key="label" class="admin-stat-card">
         <text class="admin-stat-label">{{item.label}}</text>
         <text class="admin-stat-count">{{item.count}}</text>
+      </view>
+
+      <view wx:if="{{stats.dailyTrend.length}}" class="admin-section-title">近 14 天趋势</view>
+      <view class="trend-list">
+        <view wx:for="{{stats.dailyTrend}}" wx:key="day" class="trend-row">
+          <text class="trend-day">{{item.day}}</text>
+          <view class="trend-bar-wrap"><view class="trend-bar" style="width: {{item.percent}}%;"></view></view>
+          <text class="trend-count">{{item.count}}</text>
+        </view>
+      </view>
+
+      <view wx:if="{{stats.topRoutes.length}}" class="admin-section-title">热门路线</view>
+      <view wx:for="{{stats.topRoutes}}" wx:key="routeId" class="top-row">
+        <text class="top-name">{{item.routeId}}</text>
+        <text class="top-count">{{item.count}}</text>
+      </view>
+
+      <view wx:if="{{stats.topFailedImages.length}}" class="admin-section-title">失败图片 Top</view>
+      <view wx:for="{{stats.topFailedImages}}" wx:key="src" class="top-row">
+        <text class="top-name top-name-small">{{item.src}}</text>
+        <text class="top-count">{{item.count}}</text>
       </view>
     </view>
   </block>

@@ -5,16 +5,15 @@
  * action:
  *   whoami            -> 返回当前 openid 与是否管理员
  *   bindAdmin         -> 使用绑定码把当前 openid 写入 admin_users
- *   listFeedback      -> 最近 50 条反馈
- *   updateFeedback    -> 更新反馈状态 pending/processing/resolved
- *   analyticsSummary  -> 最近 30 天按事件聚合
+ *   listFeedback      -> 分页返回反馈
+ *   updateFeedback    -> 更新反馈状态，并记录处理人与处理时间
+ *   analyticsSummary  -> 事件汇总、每日趋势、Top 路线、Top 失败图片
  */
 const cloud = require('wx-server-sdk');
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
 const db = cloud.database();
-const $ = db.command.aggregate;
 
-// 仅用于首次绑定。绑定成功后即由 admin_users 集合控制，不再依赖这里的 openid 文本。
+// 仅用于首次绑定。绑定成功后即由 admin_users 集合控制。
 const ADMIN_BIND_CODE = 'ID5-2026-ADMIN-8F3A';
 
 async function isAdmin(openid) {
@@ -24,6 +23,53 @@ async function isAdmin(openid) {
     enabled: true
   }).count();
   return res.total > 0;
+}
+
+function pad(n) { return String(n).padStart(2, '0'); }
+function dayKey(date) {
+  return date.getFullYear() + '-' + pad(date.getMonth() + 1) + '-' + pad(date.getDate());
+}
+
+function buildAnalyticsSummary(rows) {
+  const totals = {};
+  const dailyMap = {};
+  const topRoutesMap = {};
+  const topFailedMap = {};
+
+  (rows || []).forEach(row => {
+    const eventName = row.event || 'other';
+    totals[eventName] = (totals[eventName] || 0) + 1;
+
+    const payload = row.payload && typeof row.payload === 'object' ? row.payload : {};
+    if (payload.routeId) {
+      topRoutesMap[payload.routeId] = (topRoutesMap[payload.routeId] || 0) + 1;
+    }
+    if (eventName === 'image_failed' && payload.src) {
+      const src = String(payload.src).split('/').pop().slice(0, 80);
+      topFailedMap[src] = (topFailedMap[src] || 0) + 1;
+    }
+
+    const created = row.createTime ? new Date(row.createTime) : null;
+    if (created && !isNaN(created.getTime())) {
+      const key = dayKey(created);
+      dailyMap[key] = (dailyMap[key] || 0) + 1;
+    }
+  });
+
+  const dailyTrend = [];
+  const today = new Date();
+  for (let i = 13; i >= 0; i -= 1) {
+    const d = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i);
+    const key = dayKey(d);
+    dailyTrend.push({ day: key, count: dailyMap[key] || 0 });
+  }
+
+  return {
+    totals: Object.keys(totals).map(event => ({ event: event, count: totals[event] })),
+    dailyTrend: dailyTrend,
+    topRoutes: Object.keys(topRoutesMap).map(routeId => ({ routeId: routeId, count: topRoutesMap[routeId] })).sort((a, b) => b.count - a.count).slice(0, 10),
+    topFailedImages: Object.keys(topFailedMap).map(src => ({ src: src, count: topFailedMap[src] })).sort((a, b) => b.count - a.count).slice(0, 10)
+  };
 }
 
 exports.main = async (event) => {
@@ -70,8 +116,24 @@ exports.main = async (event) => {
     }
 
     if (action === 'listFeedback') {
-      const res = await db.collection('feedback').orderBy('createTime', 'desc').limit(50).get();
-      return { code: 0, data: res.data || [], message: 'success' };
+      const page = Math.max(1, parseInt(event && event.page, 10) || 1);
+      const pageSize = Math.min(50, Math.max(10, parseInt(event && event.pageSize, 10) || 20));
+      const res = await db.collection('feedback')
+        .orderBy('createTime', 'desc')
+        .skip((page - 1) * pageSize)
+        .limit(pageSize)
+        .get();
+      const list = res.data || [];
+      return {
+        code: 0,
+        data: {
+          list: list,
+          page: page,
+          pageSize: pageSize,
+          hasMore: list.length === pageSize
+        },
+        message: 'success'
+      };
     }
 
     if (action === 'updateFeedback') {
@@ -81,18 +143,18 @@ exports.main = async (event) => {
         return { code: -1, data: null, message: '参数错误' };
       }
       await db.collection('feedback').doc(id).update({
-        data: { status: status, updateTime: db.serverDate() }
+        data: {
+          status: status,
+          updateTime: db.serverDate(),
+          handlerOpenid: OPENID
+        }
       });
       return { code: 0, data: null, message: 'success' };
     }
 
     if (action === 'analyticsSummary') {
-      const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-      const res = await db.collection('analytics').aggregate()
-        .match({ createTime: db.command.gte(since) })
-        .group({ _id: '$event', count: $.sum(1) })
-        .end();
-      return { code: 0, data: res.list || [], message: 'success' };
+      const res = await db.collection('analytics').orderBy('createTime', 'desc').limit(300).get();
+      return { code: 0, data: buildAnalyticsSummary(res.data || []), message: 'success' };
     }
 
     return { code: -1, data: null, message: '未知 action' };

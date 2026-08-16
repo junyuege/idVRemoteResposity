@@ -19,3 +19,18 @@
 .bind-placeholder { color: #6f7280; }
 .bind-btn { width: 96px; height: 38px; background: #3a3021; border: 1px solid rgba(216,155,60,0.45); border-radius: 6px; color: #efbd6d; font-size: 12px; line-height: 36px; }
 .admin-tip { display: block; margin-top: 8px; color: #858790; font-size: 12px; line-height: 1.5; }
+
+.admin-processed { margin-top: 8px; color: #858790; font-size: 11px; }
+.load-more-row { display: flex; padding: 6px 0 16px; justify-content: center; }
+.load-more-btn { width: 160px; height: 34px; background: #2d2f36; border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; color: #b9bac0; font-size: 12px; line-height: 32px; }
+.admin-section-title { margin: 16px 2px 8px; color: #d8a04a; font-size: 12px; font-weight: 700; }
+.trend-list { display: flex; flex-direction: column; gap: 7px; }
+.trend-row { display: flex; align-items: center; gap: 8px; }
+.trend-day { width: 82px; color: #858790; font-size: 11px; }
+.trend-bar-wrap { height: 8px; flex: 1; overflow: hidden; background: #25272d; border-radius: 4px; }
+.trend-bar { height: 8px; background: #d8a04a; border-radius: 4px; }
+.trend-count { width: 30px; color: #e2dfda; font-size: 11px; text-align: right; }
+.top-row { display: flex; padding: 9px 10px; align-items: center; justify-content: space-between; background: #22242a; border-radius: 6px; }
+.top-name { color: #e2dfda; font-size: 12px; }
+.top-name-small { max-width: 75%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.top-count { color: #d8a04a; font-size: 13px; font-weight: 700; }

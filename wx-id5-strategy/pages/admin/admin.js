@@ -30,7 +30,15 @@ Page({
     binding: false,
     activeTab: 'feedback',
     feedback: [],
-    stats: []
+    feedbackPage: 1,
+    hasMore: false,
+    loadingMore: false,
+    stats: {
+      totals: [],
+      dailyTrend: [],
+      topRoutes: [],
+      topFailedImages: []
+    }
   },
 
   onLoad() {
@@ -57,7 +65,7 @@ Page({
         matched: !!result.data.matched
       });
       if (isAdmin) {
-        this.loadFeedback();
+        this.loadFeedback(true);
         this.loadStats();
       }
     }).catch(err => {
@@ -68,34 +76,83 @@ Page({
     });
   },
 
-  loadFeedback() {
-    callAdmin('listFeedback').then(result => {
-      if (result.code === 0) {
-        const feedback = (result.data || []).map(item => ({
-          id: item._id,
-          content: item.content || '',
-          images: (item.images || []).length,
-          status: item.status || 'pending',
-          statusText: STATUS_TEXT[item.status] || STATUS_TEXT.pending,
-          statusClass: STATUS_CLASS[item.status] || STATUS_CLASS.pending,
-          time: formatTime(item.createTime)
-        }));
-        this.setData({ feedback: feedback });
+  loadFeedback(reset) {
+    const page = reset ? 1 : this.data.feedbackPage;
+    callAdmin('listFeedback', { page: page, pageSize: 20 }).then(result => {
+      if (result.code !== 0) return;
+      const payload = result.data || {};
+      const mapped = (payload.list || []).map(item => ({
+        id: item._id,
+        content: item.content || '',
+        images: item.images || [],
+        imageCount: (item.images || []).length,
+        status: item.status || 'pending',
+        statusText: STATUS_TEXT[item.status] || STATUS_TEXT.pending,
+        statusClass: STATUS_CLASS[item.status] || STATUS_CLASS.pending,
+        time: formatTime(item.createTime),
+        processedTime: formatTime(item.updateTime)
+      }));
+      this.setData({
+        feedback: reset ? mapped : this.data.feedback.concat(mapped),
+        feedbackPage: page,
+        hasMore: !!payload.hasMore,
+        loadingMore: false
+      });
+    }).catch(() => {
+      this.setData({ loadingMore: false });
+    });
+  },
+
+  loadMoreFeedback() {
+    if (!this.data.hasMore || this.data.loadingMore) return;
+    this.setData({ loadingMore: true, feedbackPage: this.data.feedbackPage + 1 });
+    this.loadFeedback(false);
+  },
+
+  previewFeedbackImages(e) {
+    const item = this.data.feedback[e.currentTarget.dataset.index];
+    if (!item || !item.images || !item.images.length) {
+      wx.showToast({ title: '暂无截图', icon: 'none' });
+      return;
+    }
+    if (!wx.cloud || !wx.cloud.getTempFileURL) {
+      wx.showToast({ title: '云能力不可用', icon: 'none' });
+      return;
+    }
+    wx.cloud.getTempFileURL({ fileList: item.images }).then(res => {
+      const urls = (res.fileList || []).filter(it => it.status === 0 && it.tempFileURL).map(it => it.tempFileURL);
+      if (!urls.length) {
+        wx.showToast({ title: '截图无法加载', icon: 'none' });
+        return;
       }
-    }).catch(() => {});
+      wx.previewImage({ current: urls[0], urls: urls });
+    }).catch(() => {
+      wx.showToast({ title: '截图预览失败', icon: 'none' });
+    });
   },
 
   loadStats() {
     callAdmin('analyticsSummary').then(result => {
-      if (result.code === 0) {
-        const labels = { page_view: '页面访问', image_failed: '图片失败', search_no_result: '无结果搜索' };
-        this.setData({
-          stats: (result.data || []).map(item => ({
-            label: labels[item._id] || item._id,
+      if (result.code !== 0) return;
+      const payload = result.data || {};
+      const labels = { page_view: '页面访问', image_failed: '图片失败', search_no_result: '无结果搜索' };
+      const trend = payload.dailyTrend || [];
+      const maxTrend = trend.reduce((max, item) => Math.max(max, item.count || 0), 0);
+      this.setData({
+        stats: {
+          totals: (payload.totals || []).map(item => ({
+            label: labels[item.event] || item.event,
             count: item.count || 0
-          }))
-        });
-      }
+          })),
+          dailyTrend: trend.map(item => ({
+            day: item.day,
+            count: item.count || 0,
+            percent: maxTrend ? Math.max(4, Math.round((item.count || 0) * 100 / maxTrend)) : 0
+          })),
+          topRoutes: payload.topRoutes || [],
+          topFailedImages: payload.topFailedImages || []
+        }
+      });
     }).catch(() => {});
   },
 
@@ -132,7 +189,7 @@ Page({
     const id = e.currentTarget.dataset.id;
     const status = e.currentTarget.dataset.status;
     callAdmin('updateFeedback', { id: id, status: status }).then(result => {
-      if (result.code === 0) this.loadFeedback();
+      if (result.code === 0) this.loadFeedback(true);
     }).catch(() => {});
   },
 
