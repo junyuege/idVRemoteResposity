@@ -24,7 +24,17 @@ exports.main = async (event) => {
 
   try {
     if (action === 'whoami') {
-      return { code: 0, data: { openid: OPENID, isAdmin: isAdmin(OPENID) }, message: 'success' };
+      const admin = isAdmin(OPENID);
+      return {
+        code: 0,
+        data: {
+          openid: OPENID || '',
+          isAdmin: admin,
+          adminCount: ADMIN_OPENIDS.length,
+          matched: ADMIN_OPENIDS.indexOf(OPENID) >= 0
+        },
+        message: 'success'
+      };
     }
     if (!isAdmin(OPENID)) {
       return { code: 403, data: null, message: '无管理员权限' };

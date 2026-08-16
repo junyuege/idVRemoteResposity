@@ -24,6 +24,8 @@ Page({
     error: '',
     openid: '',
     isAdmin: false,
+    adminCount: 0,
+    matched: false,
     activeTab: 'feedback',
     feedback: [],
     stats: []
@@ -48,14 +50,19 @@ Page({
       this.setData({
         loading: false,
         openid: result.data.openid || '',
-        isAdmin: !!isAdmin
+        isAdmin: !!isAdmin,
+        adminCount: result.data.adminCount || 0,
+        matched: !!result.data.matched
       });
       if (isAdmin) {
         this.loadFeedback();
         this.loadStats();
       }
-    }).catch(() => {
-      this.setData({ loading: false, error: '云函数 adminApi 可能未部署' });
+    }).catch(err => {
+      this.setData({
+        loading: false,
+        error: '云函数调用失败：' + ((err && (err.errMsg || err.message)) || '未知错误')
+      });
     });
   },
 
