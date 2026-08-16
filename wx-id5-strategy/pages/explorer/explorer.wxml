@@ -44,14 +44,26 @@
       </scroll-view>
     </view>
 
-    <view class="section-title-row shape-heading">
-      <text class="section-title">路线形状</text>
-      <text class="section-meta">{{shapes.length}} 种</text>
+    <view class="shape-search">
+      <text class="search-icon">⌕</text>
+      <input
+        class="shape-search-input"
+        value="{{keyword}}"
+        placeholder="搜索形状或侧门入口"
+        placeholder-class="shape-search-placeholder"
+        bindinput="onSearchInput"
+      />
+      <text wx:if="{{keyword}}" class="search-clear" bindtap="clearSearch">×</text>
     </view>
 
-    <view wx:if="{{shapes.length}}" class="shape-list">
+    <view class="section-title-row shape-heading">
+      <text class="section-title">路线形状</text>
+      <text class="section-meta">{{displayShapes.length}} / {{shapes.length}} 种</text>
+    </view>
+
+    <view wx:if="{{displayShapes.length}}" class="shape-list">
       <view
-        wx:for="{{shapes}}"
+        wx:for="{{displayShapes}}"
         wx:key="id"
         class="list-card shape-card"
         data-index="{{index}}"
@@ -66,6 +78,7 @@
       </view>
     </view>
 
+    <view wx:elif="{{keyword}}" class="empty-wrap compact-empty"><text>没有匹配的形状或入口</text></view>
     <view wx:else class="empty-wrap compact-empty"><text>该版本暂无路线数据</text></view>
   </block>
 

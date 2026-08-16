@@ -13,6 +13,16 @@
     </view>
   </view>
 
+  <view wx:if="{{recent}}" class="recent-card" bindtap="onRecentTap">
+    <view class="recent-mark">最</view>
+    <view class="recent-body">
+      <text class="recent-kicker">最近查看</text>
+      <text class="recent-title">{{recent.mapName}} · {{recent.author}}</text>
+      <text class="recent-sub">{{recent.summary}}</text>
+    </view>
+    <text class="list-arrow">›</text>
+  </view>
+
   <view class="section-title-row">
     <text class="section-title">路线攻略</text>
     <text class="section-meta">{{strategies.length}} 个攻略版本</text>

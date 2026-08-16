@@ -332,19 +332,6 @@ function getRootImageUrls(mapId, routeId) {
   return (route.rootFiles || []).map(f => cloudUrl(route, f) || base + f);
 }
 
-/**
- * 路线难度 -> 分包根目录映射（subPackage root）
- * 新路线可映射到任意已有分包；未知难度回退 pkg-{routeId}
- */
-const LEGACY_ROUTE_PACKAGE = {
-  hard: 'pkg-hard',
-  hard_fast: 'pkg-hard',
-  normal: 'pkg-normal',
-  easy: 'pkg-easy',
-  newbie: 'pkg-newbie',
-  v0710: 'pkg-v0710'
-};
-
 const FILEURL_CACHE_KEY = 'id5_fileurl_v1';
 const FILEURL_TTL = 90 * 60 * 1000; // 临时链接有效期约 2 小时，缓存 90 分钟
 const FILEURL_BATCH_SIZE = 50; // wx.cloud.getTempFileURL 单次 fileList 上限
@@ -419,15 +406,15 @@ function resolveImageUrls(fileIds) {
 }
 
 /**
- * 获取某难度路线对应的分包根目录（如 'pkg-hard'）
+ * 获取某难度路线对应的分包根目录（例如 'pkg-zhanshi-hard-full'）
  */
 function getPackageRoot(routeOrId) {
   if (routeOrId && typeof routeOrId === 'object') {
-    return routeOrId.packageRoot || LEGACY_ROUTE_PACKAGE[routeOrId.id] || 'pkg-' + routeOrId.id;
+    return routeOrId.packageRoot || 'pkg-' + routeOrId.id;
   }
   const routeId = routeOrId || '';
   const route = getAllRoutes().find(item => item.id === routeId) || getAllRoutes().find(item => matchesRouteId(item, routeId));
-  return (route && route.packageRoot) || LEGACY_ROUTE_PACKAGE[routeId] || 'pkg-' + routeId;
+  return (route && route.packageRoot) || 'pkg-' + routeId;
 }
 
 /**

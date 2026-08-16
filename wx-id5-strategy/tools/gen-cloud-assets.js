@@ -44,7 +44,7 @@ for (const map of index.maps || []) {
     }
     const assetsDir = path.join(ROOT, route.packageRoot, 'assets');
     if (!fs.existsSync(assetsDir)) {
-      throw new Error('未找到 ' + route.packageRoot + '/assets（先运行 tools/sync-assets.ps1）');
+      throw new Error('未找到 ' + route.packageRoot + '/assets（先运行 node tools/sync-assets.js）');
     }
     for (const file of walk(assetsDir)) {
       const rel = file.slice(assetsDir.length + 1).replace(/\\/g, '/');

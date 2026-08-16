@@ -28,15 +28,15 @@ maps/e_yun_zhi_nv/lianghapi/v0710/...
 maps/e_yun_zhi_nv/lianghapi/v0710/icons/...
 ```
 
-> 现状说明：凉哈皮版在索引中仍配置 `legacyCloudPackage: "pkg-v0710"` 和
-> `iconNamespace: "pkg-v0710/icon"`，即当前云端资源仍位于旧目录；待云端完成
-> 迁移后再切换到上面的 `maps/...` 新目录，并清除 `legacyCloudPackage`。
+凉哈皮版已经完成迁移，不再使用 `pkg-v0710` 旧目录。展十版 easy/normal/newbie
+仍使用 `pkg-easy` / `pkg-normal` / `pkg-newbie` 旧云目录，新增路线时请使用
+`maps/...` 命名空间，不要再扩展这些旧目录。
 
 不再使用 `pkg-hard/...` 作为新资源的云目录，因为不同作者和路线可能存在同名图片。
 
 ## 路线素材格式约定
 
-- 路线攻略图统一输出为 `.jpg`：即使源盘文件是 `.png`，`sync-assets.ps1`
+- 路线攻略图统一输出为 `.jpg`：即使源盘文件是 `.png`，`sync-assets.js`
   也会自动查找同名源文件、压缩为 JPEG，并按索引中的 `.jpg` 文件名写入分包。
 - 识别图标包 `pkg-lianghapi-icons` 保持 PNG，允许透明背景；图标文件名与攻略图
   文件名只要求“同名不同扩展名”，例如路线图 `北-1门.jpg` 对应图标 `北-1门.png`。
@@ -57,13 +57,13 @@ maps/e_yun_zhi_nv/lianghapi/v0710/icons/...
 2. 在 `data/localMapIndex.js` 的地图 `authors` 中添加 `{ id, name }`。
 3. 添加路线，确保 `id`、`authorId`、`difficulty`、`packageRoot`、`assetNamespace` 唯一且完整；如需逐图图标，再填写 `entryMode`、`iconPackageRoot` 和 `iconNamespace`。
 4. 为旧链接迁移时填写 `legacyIds`；全新路线使用空数组。
-5. 运行 `./tools/sync-assets.ps1`，生成压缩后的本地兜底分包。
+5. 运行 `node tools/sync-assets.js`，生成压缩后的本地兜底分包。
 6. 给新分包添加 `pages/redirect/redirect` 四个入口文件，并在 `app.json` 注册。
 7. 将 `packageRoot/assets` 下的图片上传到对应 `assetNamespace`，保持相对目录不变。
 8. 全部上传完成后运行 `node tools/gen-cloud-assets.js`。
 9. 运行 `node tools/validate-project.js`，然后在开发者工具和真机检查。
 
-视频不属于此流程，不传 `sync-assets.ps1` 的 `-IncludeVideo` 参数。
+视频不属于此流程，`sync-assets.js` 不处理视频。
 
 ## 微信开发者工具上传方法
 

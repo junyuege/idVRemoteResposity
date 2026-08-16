@@ -51,7 +51,22 @@
 }
 
 .route-option-active { background: #3a3021; border-color: rgba(216, 155, 60, 0.5); color: #efbd6d; font-weight: 650; }
-.shape-heading { margin-top: 21px; }
+.shape-search {
+  display: flex;
+  margin-top: 16px;
+  padding: 0 12px;
+  align-items: center;
+  background: #22242a;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 7px;
+}
+
+.shape-search .search-icon { margin-right: 8px; color: #8b8d94; font-size: 16px; }
+.shape-search-input { height: 38px; flex: 1; color: #f3f1ed; font-size: 13px; }
+.shape-search-placeholder { color: #6f7280; }
+.shape-search .search-clear { padding: 0 8px; color: #8b8d94; font-size: 18px; }
+
+.shape-heading { margin-top: 18px; }
 .shape-list { display: flex; flex-direction: column; gap: 9px; }
 .shape-card { min-height: 78px; }
 

@@ -1,5 +1,7 @@
 ﻿const api = require('../../data/api.js');
 
+const RECENT_VIEW_KEY = 'id5_recent_view_v1';
+
 // 难度 -> 样式类映射（复用既有 wxss 类名，不新增样式）
 const TAG_CLASS = {
   hard: 'tag-hard',
@@ -153,6 +155,25 @@ Page({
       error: '',
       loading: false
     });
+    this.saveRecentView(map, route, hasShape ? shapeId : '__root__', this._lastDoor || '', this._lastFile || '');
+  },
+
+  saveRecentView(map, route, shapeId, door, file) {
+    try {
+      wx.setStorageSync(RECENT_VIEW_KEY, {
+        mapId: map && map.id,
+        mapName: (map && map.displayName) || '',
+        routeId: route && route.id,
+        routeName: (route && route.name) || '',
+        author: (route && route.author) || '',
+        shapeId: shapeId || '__root__',
+        door: door || '',
+        file: file || '',
+        ts: Date.now()
+      });
+    } catch (e) {
+      console.warn('[detail] 保存最近查看失败', e);
+    }
   },
 
   showError(msg) {

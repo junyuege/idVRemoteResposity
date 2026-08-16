@@ -125,6 +125,33 @@ function validateCloudFunctionPackage() {
   check(Boolean(sdkVersion) && !/latest/i.test(sdkVersion), 'cloudfunctions/addFeedback should pin wx-server-sdk version');
 }
 
+function validateToolchain() {
+  check(fs.existsSync(path.join(ROOT, 'tools', 'sync-assets.js')), 'Missing cross-platform tools/sync-assets.js');
+  check(fs.existsSync(path.join(ROOT, 'tools', 'smoke-test.js')), 'Missing tools/smoke-test.js');
+  const syncPackage = readJson('tools/package.json');
+  const sharpVersion = syncPackage.dependencies && syncPackage.dependencies.sharp;
+  check(Boolean(sharpVersion) && !/latest/i.test(sharpVersion), 'tools/package.json should pin sharp version');
+
+  ['pkg-hard', 'pkg-normal', 'pkg-easy', 'pkg-newbie', 'pkg-v0710'].forEach(root => {
+    check(!fs.existsSync(path.join(ROOT, root)), 'Legacy local package should be removed: ' + root);
+  });
+
+  const index = requireFresh('data/localMapIndex.js');
+  const lianghapi = (index.maps || []).flatMap(map => map.routes || []).find(route => route.id === 'lianghapi-v0710');
+  check(Boolean(lianghapi), 'lianghapi-v0710 route is missing');
+  if (lianghapi) {
+    check(!lianghapi.legacyCloudPackage, 'lianghapi-v0710 should not use legacyCloudPackage');
+    check(lianghapi.iconNamespace === 'maps/e_yun_zhi_nv/lianghapi/v0710/icons', 'lianghapi iconNamespace should use maps namespace');
+  }
+
+  const cloudAssets = requireFresh('data/cloudAssets.js');
+  check(!Object.keys(cloudAssets).some(key => key.indexOf('pkg-v0710') === 0), 'cloudAssets should not contain pkg-v0710 keys');
+
+  const importReport = readJson('tools/import-report.json');
+  check(Array.isArray(importReport) && importReport.length >= 7, 'import-report.json should cover route packages and icon package');
+  check(importReport.some(item => item.Pkg === 'pkg-lianghapi-icons'), 'import-report.json should include pkg-lianghapi-icons');
+}
+
 function validateCloudConfig() {
   const config = requireFresh('config/cloud.js');
   check(Boolean(config && config.envId), 'config/cloud.js is missing envId');
@@ -345,7 +372,12 @@ async function validateDataFlow() {
   });
   check(explorerPage.data.routeId === firstRoute.id, 'Explorer did not select the requested route');
   check(explorerPage.data.shapes.length > 0, 'Explorer did not render route shapes');
+  check(explorerPage.data.displayShapes.length === explorerPage.data.shapes.length, 'Explorer displayShapes should equal shapes on load');
   check(loadedPackages.includes(api.getPackageRoot(firstRoute.id)), 'Explorer should preload the selected route package');
+  explorerPage.onSearchInput({ detail: { value: firstShape } });
+  check(explorerPage.data.displayShapes.length > 0 && explorerPage.data.displayShapes.length <= explorerPage.data.shapes.length, 'Explorer shape search should filter displayShapes');
+  explorerPage.clearSearch();
+  check(explorerPage.data.displayShapes.length === explorerPage.data.shapes.length, 'Explorer clearSearch should restore all shapes');
 
   const multiDoorShape = explorerPage.data.shapes.find(item => {
     if (item.shapeId === '__root__') return false;
@@ -428,6 +460,10 @@ async function validateDataFlow() {
     await new Promise(resolve => setImmediate(resolve));
     check(detailPage.data.strategy && detailPage.data.strategy.images.length > 0, 'Detail page did not render images');
     check(loadedPackages.includes(api.getPackageRoot(firstRoute.id)), 'Detail page did not load its image package');
+    check(storage.id5_recent_view_v1 && storage.id5_recent_view_v1.routeId === firstRoute.id, 'Detail page should save recent view');
+    const recentIndexPage = loadPage('pages/index/index.js');
+    recentIndexPage.onLoad();
+    check(recentIndexPage.data.recent && recentIndexPage.data.recent.routeId === firstRoute.id, 'Home page should restore recent view');
   }
 
   const rootRoute = api.getRoutesByMapId(firstMap.id).find(route =>
@@ -478,6 +514,7 @@ async function main() {
   validatePackConfig();
   validateCloudConfig();
   validateCloudFunctionPackage();
+  validateToolchain();
   validateRegisteredPages(appConfig);
   validateBindings(appConfig);
   validateWxmlStructure(appConfig);

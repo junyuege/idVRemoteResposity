@@ -108,6 +108,44 @@
 .mode-wide { flex: 1; }
 .mode-btn:active, .mode-active { background: #3a3021; border-color: rgba(216, 155, 60, 0.5); color: #efbd6d; }
 
+.recent-card {
+  display: flex;
+  align-items: center;
+  margin: 18px 0 4px;
+  padding: 12px;
+  background: #22242a;
+  border: 1px solid rgba(216, 155, 60, 0.28);
+  border-radius: 8px;
+}
+
+.recent-mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  margin-right: 11px;
+  flex-shrink: 0;
+  background: #3a3021;
+  border-radius: 6px;
+  color: #efbd6d;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.recent-body { flex: 1; min-width: 0; }
+.recent-kicker { display: block; color: #d89b3c; font-size: 10px; font-weight: 700; }
+.recent-title { display: block; margin-top: 3px; color: #f5f3ef; font-size: 14px; font-weight: 700; }
+.recent-sub {
+  display: block;
+  margin-top: 3px;
+  overflow: hidden;
+  color: #858790;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .share-fab {
   position: fixed;
   right: 18px;

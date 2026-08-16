@@ -28,6 +28,8 @@ Page({
     routeId: '',
     routeName: '',
     shapes: [],
+    displayShapes: [],
+    keyword: '',
     selectedShape: null,
     doors: [],
     showDoorSheet: false,
@@ -119,12 +121,18 @@ Page({
       const doors = detail && Array.isArray(detail.doors) ? detail.doors : [];
       const rootFiles = detail && Array.isArray(detail.rootFiles) ? detail.rootFiles : [];
       const imageCount = doors.reduce((total, door) => total + ((door.files && door.files.length) || 0), 0) + rootFiles.length;
+      const searchText = [
+        shape,
+        doors.map(door => door.door).filter(Boolean).join(' '),
+        rootFiles.join(' ')
+      ].join(' ').toLowerCase();
       return {
         id: String(index),
         shapeId: shape,
         shape,
         title: doors.length ? doors.map(door => door.door).filter(Boolean).join(' / ') : '路线图',
-        desc: doors.length ? doors.length + ' 个入口 · ' + imageCount + ' 张图' : imageCount + ' 张路线图'
+        desc: doors.length ? doors.length + ' 个入口 · ' + imageCount + ' 张图' : imageCount + ' 张路线图',
+        searchText: searchText
       };
     });
 
@@ -135,7 +143,8 @@ Page({
         shapeId: '__root__',
         shape: '整图',
         title: '完整路线图',
-        desc: rootFiles.length + ' 张 · 点击直接查看'
+        desc: rootFiles.length + ' 张 · 点击直接查看',
+        searchText: ('整图 完整路线图 ' + rootFiles.join(' ')).toLowerCase()
       });
     }
 
@@ -144,6 +153,8 @@ Page({
       routeName: route.name || '',
       authorName: route.author || this.data.authorName,
       shapes,
+      displayShapes: shapes,
+      keyword: '',
       selectedShape: null,
       doors: [],
       showDoorSheet: false,
@@ -171,8 +182,20 @@ Page({
   },
 
   onShapeTap(e) {
-    const item = this.data.shapes[e.currentTarget.dataset.index];
+    const item = this.data.displayShapes[e.currentTarget.dataset.index];
     if (item) this.openShape(item);
+  },
+
+  onSearchInput(e) {
+    const keyword = (e.detail.value || '').trim().toLowerCase();
+    const displayShapes = keyword
+      ? this.data.shapes.filter(item => (item.searchText || '').indexOf(keyword) >= 0)
+      : this.data.shapes;
+    this.setData({ keyword: e.detail.value || '', displayShapes: displayShapes });
+  },
+
+  clearSearch() {
+    this.setData({ keyword: '', displayShapes: this.data.shapes });
   },
 
   openShape(item) {

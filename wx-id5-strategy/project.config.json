@@ -17,26 +17,6 @@
       {
         "type": "file",
         "value": "CLOUD_STORAGE_GUIDE.md"
-      },
-      {
-        "type": "folder",
-        "value": "pkg-hard"
-      },
-      {
-        "type": "folder",
-        "value": "pkg-normal"
-      },
-      {
-        "type": "folder",
-        "value": "pkg-easy"
-      },
-      {
-        "type": "folder",
-        "value": "pkg-newbie"
-      },
-      {
-        "type": "folder",
-        "value": "pkg-v0710"
       }
     ],
     "include": []

@@ -1,0 +1,10 @@
+{
+  "name": "id5-sync-tools",
+  "version": "1.0.0",
+  "private": true,
+  "description": "跨平台素材同步工具（Node + sharp）",
+  "main": "sync-assets.js",
+  "dependencies": {
+    "sharp": "0.35.3"
+  }
+}

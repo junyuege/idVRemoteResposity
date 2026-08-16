@@ -1,5 +1,7 @@
 const api = require('../../data/api.js');
 
+const RECENT_VIEW_KEY = 'id5_recent_view_v1';
+
 // 难度标签压缩 + 特殊版别名（与样式类的难度顺序一致）
 const DIFF_RANK = { newbie: 0, easy: 1, normal: 2, hard: 3, special: 4 };
 
@@ -17,19 +19,18 @@ Page({
   data: {
     strategies: [],
     loading: true,
-    currentMode: ''
+    currentMode: '',
+    recent: null
   },
 
   onLoad() {
     this.loadStrategies();
   },
 
-  // 返回首页时清除上次点击的难度筛选，避免用户误以为其他攻略版本消失。
+  // 返回首页时清除上次点击的难度筛选，并刷新最近查看卡片。
   onShow() {
-    if (this.data.currentMode) {
-      this.setData({ currentMode: '' });
-      this.loadStrategies();
-    }
+    this.setData({ currentMode: '' });
+    this.loadStrategies();
   },
 
   loadStrategies() {
@@ -82,7 +83,33 @@ Page({
         list = filtered;
       }
     }
-    this.setData({ strategies: list, loading: false });
+    const recent = this.getRecentView(strategies);
+    this.setData({ strategies: list, loading: false, recent: recent });
+  },
+
+  getRecentView(strategies) {
+    let raw = null;
+    try { raw = wx.getStorageSync(RECENT_VIEW_KEY); } catch (e) { raw = null; }
+    if (!raw || !raw.mapId || !raw.routeId) return null;
+    const strategy = strategies.find(item => item.mapId === raw.mapId && item.routes.some(route => route.id === raw.routeId));
+    if (!strategy) return null;
+    const parts = [raw.routeName || raw.routeId];
+    if (raw.shapeId && raw.shapeId !== '__root__') parts.push(raw.shapeId);
+    if (raw.door) parts.push(raw.door);
+    if (raw.file) parts.push(raw.file);
+    return Object.assign({}, raw, { summary: parts.join(' · '), author: raw.author || strategy.author });
+  },
+
+  onRecentTap() {
+    const recent = this.data.recent;
+    if (!recent) return;
+    const doorParam = recent.door ? '&door=' + encodeURIComponent(recent.door) : '';
+    const fileParam = recent.file ? '&file=' + encodeURIComponent(recent.file) : '';
+    wx.navigateTo({
+      url: '/pages/detail/detail?mapId=' + encodeURIComponent(recent.mapId) +
+        '&routeId=' + encodeURIComponent(recent.routeId) +
+        '&shapeId=' + encodeURIComponent(recent.shapeId || '__root__') + doorParam + fileParam
+    });
   },
 
   onPullDownRefresh() {

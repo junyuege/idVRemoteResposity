@@ -903,11 +903,10 @@ module.exports = {
           "name": "7.10 新版",
           "author": "凉哈皮版",
           "packageRoot": "pkg-lianghapi-v0710",
-          "legacyCloudPackage": "pkg-v0710",
           "assetNamespace": "maps/e_yun_zhi_nv/lianghapi/v0710",
           "entryMode": "fileIcons",
           "iconPackageRoot": "pkg-lianghapi-icons",
-          "iconNamespace": "pkg-v0710/icon",
+          "iconNamespace": "maps/e_yun_zhi_nv/lianghapi/v0710/icons",
           "sourceAnchor": "F:/d5/加页手记地图（07.10更新）",
           "shapeDir": "",
           "shapes": [
