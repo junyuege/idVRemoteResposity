@@ -117,6 +117,8 @@ Page({
 
     // 在用户继续选择形状/入口时后台预热图片分包，详情页可省去下载等待。
     api.loadRoutePackage(route.id);
+    // 同时预取整条路线的攻略图临时链接，进入详情页时直接命中缓存。
+    api.prefetchRouteImageUrls(this.data.mapId, route.id);
 
     // fileIcons 路线：同时预下载图标分包并预取图标临时链接。
     this._iconUrlMap = {};

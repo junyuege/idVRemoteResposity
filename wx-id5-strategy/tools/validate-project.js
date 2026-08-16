@@ -377,6 +377,8 @@ async function validateDataFlow() {
   check(explorerPage.data.shapes.length > 0, 'Explorer did not render route shapes');
   check(explorerPage.data.displayShapes.length === explorerPage.data.shapes.length, 'Explorer displayShapes should equal shapes on load');
   check(loadedPackages.includes(api.getPackageRoot(firstRoute.id)), 'Explorer should preload the selected route package');
+  const routePrefetchMap = await api.prefetchRouteImageUrls(firstMap.id, firstRoute.id);
+  check(Object.keys(routePrefetchMap).length > 0, 'Route image prefetch should return a fallback map');
   explorerPage.onSearchInput({ detail: { value: firstShape } });
   check(explorerPage.data.displayShapes.length > 0 && explorerPage.data.displayShapes.length <= explorerPage.data.shapes.length, 'Explorer shape search should filter displayShapes');
   explorerPage.clearSearch();
@@ -440,6 +442,11 @@ async function validateDataFlow() {
   indexPage.onStrategyTap({ currentTarget: { dataset: { id: firstMap.id, authorid: firstRoute.authorId } } });
   check(navigationCalls[0] && navigationCalls[0].url.startsWith('/pages/explorer/explorer?'), 'Home card should open explorer');
 
+  navigationCalls.length = 0;
+  indexPage.onSelectMode({ currentTarget: { dataset: { mode: firstRoute.id, mapid: firstMap.id, authorid: firstRoute.authorId } } });
+  check(navigationCalls[0] && navigationCalls[0].url.indexOf('routeId=' + encodeURIComponent(firstRoute.id)) >= 0, 'Home mode button should open explorer with routeId');
+  check(loadedPackages.includes(api.getPackageRoot(firstRoute.id)), 'Home mode button should preload route package');
+
   const versionPage = loadPage('pages/version/version.js');
   navigationCalls.length = 0;
   versionPage.onLoad({ mapId: firstMap.id, author: encodeURIComponent(firstRoute.authorId || '') });
@@ -466,6 +473,7 @@ async function validateDataFlow() {
     await new Promise(resolve => setImmediate(resolve));
     check(detailPage.data.strategy && detailPage.data.strategy.images.length > 0, 'Detail page did not render images');
     check(loadedPackages.includes(api.getPackageRoot(firstRoute.id)), 'Detail page did not load its image package');
+    check(detailPage.data.strategy.imageItems.length > 0 && detailPage.data.strategy.imageItems[0].fallback, 'Detail image should have local fallback');
     check(Array.isArray(storage.id5_recent_history_v1) && storage.id5_recent_history_v1[0] && storage.id5_recent_history_v1[0].routeId === firstRoute.id, 'Detail page should save recent view history');
     const recentIndexPage = loadPage('pages/index/index.js');
     recentIndexPage.onLoad();

@@ -23,6 +23,7 @@ const mapIndex = require('./localMapIndex.js');
 let cloudMap = null;
 let cloudFallbackMap = null;
 let cloudKeyMap = null;
+const prefetchPromiseMap = {};
 function getCloudMap() {
   if (cloudMap === null) {
     try { cloudMap = require('./cloudAssets.js'); }
@@ -132,6 +133,18 @@ function getLocalFallback(fileId) {
     });
   }
   return cloudFallbackMap[fileId] || fileId;
+}
+
+function rememberPrefetch(key, factory) {
+  if (prefetchPromiseMap[key]) return prefetchPromiseMap[key];
+  const promise = factory();
+  prefetchPromiseMap[key] = promise;
+  promise.then(() => {
+    if (prefetchPromiseMap[key] === promise) delete prefetchPromiseMap[key];
+  }).catch(() => {
+    if (prefetchPromiseMap[key] === promise) delete prefetchPromiseMap[key];
+  });
+  return promise;
 }
 
 /**
@@ -446,11 +459,43 @@ function loadRoutePackage(routeId) {
  * 预下载 fileIcons 图标分包，并把所有识别图标的 cloud:// fileID 提前解析为 HTTPS。
  * 返回 { [shape + '|' + fileName]: url }，查询页可先落缓存，打开图标弹层时直接使用。
  */
+function prefetchRouteImageUrls(mapId, routeId) {
+  const route = getRoute(mapId, routeId);
+  if (!route || !route.packageRoot) return Promise.resolve({});
+  return rememberPrefetch('route:' + route.id, () => {
+    const fileIds = [];
+    const relPaths = [];
+    getRouteAssetPaths(route).forEach(relPath => {
+      const fileId = (route.assetNamespace && getCloudAsset(route.assetNamespace + '/' + relPath)) ||
+        (route.legacyCloudPackage && getCloudAsset(route.legacyCloudPackage + '/' + relPath)) || '';
+      relPaths.push(relPath);
+      fileIds.push(fileId);
+    });
+    return loadPackage(route.packageRoot).then(() => {
+      if (!isCloudReady()) {
+        const base = resolveBase(getMapById(mapId), route);
+        const map = {};
+        relPaths.forEach((relPath, index) => { map[relPath] = base + relPath; });
+        return map;
+      }
+      return resolveImageUrls(fileIds).then(urls => {
+        const map = {};
+        relPaths.forEach((relPath, index) => {
+          const url = urls[index];
+          if (url && url.indexOf('cloud://') !== 0) map[relPath] = url;
+        });
+        return map;
+      });
+    });
+  });
+}
+
 function prefetchIconUrls(mapId, routeId) {
   const route = getRoute(mapId, routeId);
   if (!route || route.entryMode !== 'fileIcons' || !route.iconPackageRoot) {
     return Promise.resolve({});
   }
+  return rememberPrefetch('icons:' + route.id, () => {
   const cacheKeyList = [];
   const fileIds = [];
   (route.shapes || []).forEach(shape => {
@@ -473,13 +518,14 @@ function prefetchIconUrls(mapId, routeId) {
       });
       return map;
     }
-    return resolveImageUrls(fileIds).then(urls => {
-      const map = {};
-      cacheKeyList.forEach((key, index) => {
-        const url = urls[index];
-        if (url && url.indexOf('cloud://') !== 0) map[key] = url;
+      return resolveImageUrls(fileIds).then(urls => {
+        const map = {};
+        cacheKeyList.forEach((key, index) => {
+          const url = urls[index];
+          if (url && url.indexOf('cloud://') !== 0) map[key] = url;
+        });
+        return map;
       });
-      return map;
     });
   });
 }
@@ -501,7 +547,9 @@ module.exports = {
   getShapeIconLocalUrl,
   getPackageRoot,
   loadRoutePackage,
+  prefetchRouteImageUrls,
   prefetchIconUrls,
+  getLocalFallback,
   buildImageUrl,
   getImagesForShape,
   resolveImageUrls

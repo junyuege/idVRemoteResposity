@@ -104,8 +104,10 @@ Page({
       }
 
       // 先准备本地分包，再解析云链接；任一来源失败都不会中断页面。
+      // 保留原始 fileID 列表，用于图片加载失败时自动切换本地分包。
+      const requestedFileIds = images.slice();
       api.loadRoutePackage(routeId).then(() => api.resolveImageUrls(images)).then(resolved => {
-        this.render(resolved, map, hasShape, shapeId, route, doors, shapeRootFiles, summaryParts);
+        this.render(resolved, requestedFileIds, map, hasShape, shapeId, route, doors, shapeRootFiles, summaryParts);
       });
     } catch (err) {
       console.error('[detail] 加载失败', err);
@@ -113,7 +115,7 @@ Page({
     }
   },
 
-  render(images, map, hasShape, shapeId, route, doors, shapeRootFiles, summaryParts) {
+  render(images, fileIds, map, hasShape, shapeId, route, doors, shapeRootFiles, summaryParts) {
     const rootImages = this._rootImages || [];
     const contentLines = [];
     contentLines.push('【' + (hasShape ? (shapeId + ' 型路线') : '整图路线') + '】');
@@ -139,7 +141,13 @@ Page({
         contentLines.push('该形状暂无图片素材，仅有编号信息');
       }
     }
-    const imageItems = images.map((url, index) => ({ url, index: index + 1, failed: false }));
+    const imageItems = images.map((url, index) => {
+      const original = url;
+      const fallback = (fileIds && fileIds[index] && fileIds[index].indexOf('cloud://') === 0)
+        ? api.getLocalFallback(fileIds[index])
+        : url;
+      return { url, original, fallback, index: index + 1, failed: false };
+    });
 
     this.setData({
       strategy: {
@@ -255,21 +263,34 @@ Page({
       index: isNaN(index) ? -1 : index,
       src: String(src).slice(0, 200)
     });
-    if (!isNaN(index)) {
-      this.setData({ ['strategy.imageItems[' + index + '].failed']: true });
+    if (isNaN(index)) return;
+    const item = this.data.strategy && this.data.strategy.imageItems[index];
+    if (!item) return;
+    // 第一次失败：自动切换到本地分包兜底。
+    if (item.fallback && item.url !== item.fallback) {
+      this.setData({ ['strategy.imageItems[' + index + '].url']: item.fallback });
+      return;
     }
+    // 本地兜底也失败：进入失败态，允许用户重试回原图。
+    this.setData({ ['strategy.imageItems[' + index + '].failed']: true });
   },
 
   onImageRetry(e) {
     const index = Number(e.currentTarget.dataset.index);
     if (isNaN(index)) return;
-    this.setData({ ['strategy.imageItems[' + index + '].failed']: false });
+    const item = this.data.strategy && this.data.strategy.imageItems[index];
+    if (!item) return;
+    this.setData({
+      ['strategy.imageItems[' + index + '].url']: item.original,
+      ['strategy.imageItems[' + index + '].failed']: false
+    });
   },
 
   previewImage(e) {
     const idx = e.currentTarget.dataset.index;
-    const imgs = this.data.strategy && this.data.strategy.images;
-    if (!imgs || !imgs[idx]) return;
+    const items = this.data.strategy && this.data.strategy.imageItems;
+    if (!items || !items[idx]) return;
+    const imgs = items.map(item => item.url);
     wx.previewImage({ current: imgs[idx], urls: imgs });
   }
 });

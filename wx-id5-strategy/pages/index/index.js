@@ -175,6 +175,10 @@ Page({
     const mapId = e.currentTarget.dataset.mapid;
     const authorId = e.currentTarget.dataset.authorid || '';
     this.setData({ currentMode: mode });
+    // 跳转动画期间就提前下载分包并预取临时链接，让查询页和详情页更快。
+    api.loadRoutePackage(mode);
+    api.prefetchRouteImageUrls(mapId, mode);
+    api.prefetchIconUrls(mapId, mode);
     wx.navigateTo({
       url: '/pages/explorer/explorer?mapId=' + encodeURIComponent(mapId) +
         '&author=' + encodeURIComponent(authorId) +
