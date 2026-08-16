@@ -18,8 +18,7 @@ const CATEGORY_META = {
 
 const PLACEHOLDER_ICON = '/images/placeholder/item.png';
 
-// 异象按刷新难度筛选；道具/辞章按品质筛选。
-const ANOMALY_DIFFICULTIES = ['新手', '简单', '普通', '困难'];
+// 图鉴以介绍为主，仅道具/辞章保留品质筛选。
 const QUALITY_FILTERS = Object.keys(QUALITY_META);
 
 // 千分位格式化金额
@@ -94,7 +93,6 @@ Page({
           categoryCls: category.cls,
           metaText: '刷新：' + mapsSummary(it.maps),
           maps: (it.maps || []).join(' / '),
-          mapsList: it.maps || [],
           counter: it.counter || ''
         };
       }
@@ -123,7 +121,7 @@ Page({
       };
     });
 
-    const filters = this.data.currentTab === 'anomaly' ? ANOMALY_DIFFICULTIES : QUALITY_FILTERS;
+    const filters = this.data.currentTab === 'anomaly' ? [] : QUALITY_FILTERS;
     this.setData({ allItems: items, filters: filters, activeFilter: '' });
     this.renderItems();
   },
@@ -137,11 +135,7 @@ Page({
       list = list.filter(it => (it.key || '').toLowerCase().indexOf(kw) >= 0);
     }
     if (filter) {
-      if (this.data.currentTab === 'anomaly') {
-        list = list.filter(it => (it.mapsList || []).indexOf(filter) >= 0);
-      } else {
-        list = list.filter(it => it.quality === filter);
-      }
+      list = list.filter(it => it.quality === filter);
     }
     if (!list.length && (kw || filter)) {
       analytics.track('search_no_result', 'pages/inventory/inventory', {
@@ -155,7 +149,7 @@ Page({
 
   onTabTap(e) {
     const tab = e.currentTarget.dataset.tab;
-    const filters = tab === 'anomaly' ? ANOMALY_DIFFICULTIES : QUALITY_FILTERS;
+    const filters = tab === 'anomaly' ? [] : QUALITY_FILTERS;
     this.setData({ currentTab: tab, filters: filters, activeFilter: '' }, () => this.renderItems());
   },
 

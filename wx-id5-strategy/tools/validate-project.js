@@ -531,9 +531,7 @@ async function validateDataFlow() {
   const inventoryPage = loadPage('pages/inventory/inventory.js');
   inventoryPage.onLoad();
   check(inventoryPage.data.allItems.length > 0, 'Inventory page did not render entries');
-  check(inventoryPage.data.filters.length > 0 && inventoryPage.data.activeFilter === '', 'Inventory page should initialize anomaly difficulty filters');
-  inventoryPage.onFilterTap({ currentTarget: { dataset: { filter: '困难' } } });
-  check(inventoryPage.data.items.length > 0 && inventoryPage.data.items.every(item => (item.mapsList || []).indexOf('困难') >= 0), 'Inventory anomaly difficulty filter failed');
+  check(inventoryPage.data.filters.length === 0 && inventoryPage.data.activeFilter === '', 'Anomaly tab should not show difficulty filters');
   inventoryPage.onTabTap({ currentTarget: { dataset: { tab: 'material' } } });
   inventoryPage.onFilterTap({ currentTarget: { dataset: { filter: '稀世' } } });
   check(inventoryPage.data.items.length > 0 && inventoryPage.data.items.every(item => item.quality === '稀世'), 'Inventory quality filter failed');
