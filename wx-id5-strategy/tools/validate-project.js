@@ -120,7 +120,7 @@ function validatePackConfig() {
 }
 
 function validateCloudFunctionPackage() {
-  ['addFeedback', 'addAnalytics'].forEach(name => {
+  ['addFeedback', 'addAnalytics', 'adminApi'].forEach(name => {
     const packageJson = readJson('cloudfunctions/' + name + '/package.json');
     const sdkVersion = packageJson.dependencies && packageJson.dependencies['wx-server-sdk'];
     check(Boolean(sdkVersion) && !/latest/i.test(sdkVersion), 'cloudfunctions/' + name + ' should pin wx-server-sdk version');

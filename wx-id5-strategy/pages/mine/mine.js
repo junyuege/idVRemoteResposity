@@ -16,6 +16,11 @@ Page({
     wx.navigateTo({ url: '/pages/about/about' });
   },
 
+  // 隐藏管理入口：长按“我的”页面版本号进入。
+  openAdmin() {
+    wx.navigateTo({ url: '/pages/admin/admin' });
+  },
+
   goToTutorial() {
     wx.navigateTo({ url: '/pages/tutorial/tutorial' });
   },

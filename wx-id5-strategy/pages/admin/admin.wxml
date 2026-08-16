@@ -1,0 +1,56 @@
+<view class="page-wrap admin-page">
+  <view class="page-header">
+    <text class="header-kicker">ADMIN</text>
+    <view class="header-title">管理台</view>
+    <text class="header-sub">反馈处理与匿名统计</text>
+  </view>
+
+  <view wx:if="{{loading}}" class="loading-wrap">
+    <view class="loading-dot"></view>
+    <text>正在识别管理员...</text>
+  </view>
+
+  <view wx:elif="{{error}}" class="empty-wrap">
+    <text>{{error}}</text>
+    <button class="retry-btn" bindtap="retry">重新加载</button>
+  </view>
+
+  <view wx:elif="{{!isAdmin}}" class="empty-wrap">
+    <text>当前账号不是管理员</text>
+    <text class="admin-openid">当前 openid：{{openid}}</text>
+    <text class="admin-tip">请把该 openid 填入 adminApi 云函数的 ADMIN_OPENIDS 后重新部署</text>
+  </view>
+
+  <block wx:else>
+    <view class="admin-tabs">
+      <view class="admin-tab {{activeTab === 'feedback' ? 'admin-tab-active' : ''}}" data-tab="feedback" bindtap="onTabTap">反馈</view>
+      <view class="admin-tab {{activeTab === 'stats' ? 'admin-tab-active' : ''}}" data-tab="stats" bindtap="onTabTap">统计</view>
+    </view>
+
+    <view wx:if="{{activeTab === 'feedback'}}" class="admin-list">
+      <view wx:if="{{!feedback.length}}" class="empty-wrap compact-empty"><text>暂无反馈</text></view>
+      <view wx:for="{{feedback}}" wx:key="id" class="admin-card">
+        <view class="admin-card-head">
+          <text class="tag {{item.statusClass}}">{{item.statusText}}</text>
+          <text class="admin-time">{{item.time}}</text>
+        </view>
+        <text class="admin-content">{{item.content}}</text>
+        <view class="admin-meta-row">
+          <text class="admin-meta">截图 {{item.images}} 张</text>
+          <view class="admin-actions">
+            <button class="admin-action" data-id="{{item.id}}" data-status="processing" bindtap="onFeedbackStatusTap">处理中</button>
+            <button class="admin-action" data-id="{{item.id}}" data-status="resolved" bindtap="onFeedbackStatusTap">已解决</button>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view wx:else class="admin-list">
+      <view wx:if="{{!stats.length}}" class="empty-wrap compact-empty"><text>暂无统计</text></view>
+      <view wx:for="{{stats}}" wx:key="label" class="admin-stat-card">
+        <text class="admin-stat-label">{{item.label}}</text>
+        <text class="admin-stat-count">{{item.count}}</text>
+      </view>
+    </view>
+  </block>
+</view>

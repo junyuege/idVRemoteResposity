@@ -10,7 +10,8 @@
     "pages/route/route",
     "pages/inventory/inventory",
     "pages/feedback/feedback",
-    "pages/about/about"
+    "pages/about/about",
+    "pages/admin/admin"
   ],
   "lazyCodeLoading": "requiredComponents",
   "subPackages": [

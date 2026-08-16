@@ -5,7 +5,7 @@
       <text class="profile-title">加页手记攻略</text>
       <text class="profile-sub">第五人格玩家攻略查询工具</text>
     </view>
-    <text class="version-badge">v{{version}}</text>
+    <text class="version-badge" bindlongpress="openAdmin">v{{version}}</text>
   </view>
 
   <view class="section-title-row">

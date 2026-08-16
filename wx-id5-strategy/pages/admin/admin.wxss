@@ -1,0 +1,17 @@
+.admin-tabs { display: flex; margin-bottom: 14px; padding: 3px; background: #22242a; border-radius: 7px; }
+.admin-tab { display: flex; height: 34px; flex: 1; align-items: center; justify-content: center; color: #8f9199; font-size: 13px; border-radius: 5px; }
+.admin-tab-active { background: #3a3021; color: #edb65f; font-weight: 650; }
+.admin-list { display: flex; flex-direction: column; gap: 9px; }
+.admin-card { padding: 12px; background: #22242a; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 7px; }
+.admin-card-head { display: flex; align-items: center; justify-content: space-between; }
+.admin-time { color: #7f8189; font-size: 11px; }
+.admin-content { display: block; margin-top: 10px; color: #f3f1ed; font-size: 14px; line-height: 1.6; }
+.admin-meta-row { display: flex; margin-top: 10px; align-items: center; justify-content: space-between; }
+.admin-meta { color: #858790; font-size: 12px; }
+.admin-actions { display: flex; gap: 7px; }
+.admin-action { height: 28px; padding: 0 10px; background: #2d2f36; border: 1px solid rgba(255,255,255,0.08); border-radius: 5px; color: #b9bac0; font-size: 12px; line-height: 26px; }
+.admin-stat-card { display: flex; padding: 14px; align-items: center; justify-content: space-between; background: #22242a; border-radius: 7px; }
+.admin-stat-label { color: #e2dfda; font-size: 14px; }
+.admin-stat-count { color: #d8a04a; font-size: 22px; font-weight: 700; }
+.admin-openid { display: block; margin-top: 10px; color: #d8a04a; font-size: 12px; word-break: break-all; }
+.admin-tip { display: block; margin-top: 8px; color: #858790; font-size: 12px; line-height: 1.5; }
