@@ -19,6 +19,8 @@ const REPORT_PATH = path.join(ROOT, 'tools', 'import-report.json');
 const BUDGET_MB = 1.85;
 const WIDTHS = [1280, 1024, 800, 640];
 const QUALITIES = [70, 60, 50];
+const IMAGE_META_PATH = path.join(ROOT, 'data', 'imageMeta.js');
+const imageMeta = {};
 
 let sharp = null;
 try {
@@ -157,12 +159,15 @@ async function findBestVariant(entries) {
       const buffers = [];
       let total = 0;
       for (const entry of entries) {
+        const meta = await sharp(entry.src).metadata();
+        const outWidth = meta.width > width ? width : meta.width;
+        const outHeight = meta.width > width ? Math.round(meta.height * width / meta.width) : meta.height;
         const buffer = await sharp(entry.src)
           .resize({ width, withoutEnlargement: true })
           .flatten({ background: '#ffffff' })
-          .jpeg({ quality })
+          .jpeg({ quality, progressive: true })
           .toBuffer();
-        buffers.push({ entry, buffer });
+        buffers.push({ entry, buffer, width: outWidth, height: outHeight });
         total += buffer.length;
       }
       const fit = total <= Math.floor(BUDGET_MB * 1024 * 1024);
@@ -180,6 +185,7 @@ function writeRoutePackage(pkg, entries, variant) {
     const dest = path.join(assetsDir, ...item.entry.rel.split('/'));
     fs.mkdirSync(path.dirname(dest), { recursive: true });
     fs.writeFileSync(dest, item.buffer);
+    imageMeta[pkg + '/assets/' + item.entry.rel] = { w: item.width, h: item.height };
   }
   return variant.buffers.reduce((sum, item) => sum + item.buffer.length, 0);
 }
@@ -194,11 +200,13 @@ async function findBestIconVariant(entries) {
     for (const entry of entries) {
       const meta = await sharp(entry.src).metadata();
       const isPng = meta.format === 'png';
+      const outWidth = meta.width > width ? width : meta.width;
+      const outHeight = meta.width > width ? Math.round(meta.height * width / meta.width) : meta.height;
       const pipeline = sharp(entry.src).resize({ width, withoutEnlargement: true });
       const buffer = isPng
         ? await pipeline.png({ palette: true, compressionLevel: 9 }).toBuffer()
-        : await pipeline.flatten({ background: '#ffffff' }).jpeg({ quality: 78 }).toBuffer();
-      buffers.push({ entry, buffer, isPng });
+        : await pipeline.flatten({ background: '#ffffff' }).jpeg({ quality: 78, progressive: true }).toBuffer();
+      buffers.push({ entry, buffer, isPng, width: outWidth, height: outHeight });
       total += buffer.length;
     }
     const fit = total <= Math.floor(BUDGET_MB * 1024 * 1024);
@@ -216,11 +224,18 @@ function writeIconPackage(pkg, entries, variant) {
     const dest = path.join(assetsDir, ...item.entry.rel.split('/'));
     fs.mkdirSync(path.dirname(dest), { recursive: true });
     fs.writeFileSync(dest, item.buffer);
+    imageMeta[pkg + '/assets/' + item.entry.rel] = { w: item.width, h: item.height };
     bytes += item.buffer.length;
   }
   return bytes;
 }
 
+function writeImageMeta() {
+  const body = '// 攻略图片宽高元数据，由 tools/sync-assets.js 生成\n' +
+    '// key = 分包/assets 相对路径，value = { w, h }，用于详情页稳定占位。\n' +
+    'module.exports = ' + JSON.stringify(imageMeta, null, 2) + ';\n';
+  fs.writeFileSync(IMAGE_META_PATH, body, 'utf8');
+}
 async function main() {
   const dryRun = process.argv.includes('--dry-run');
   const pruneExtras = process.argv.includes('--prune-extras');
@@ -291,6 +306,7 @@ async function main() {
 
   if (!dryRun) {
     writeReport(report);
+    writeImageMeta();
     const totalMissing = report.reduce((sum, r) => sum + r.MissingCount, 0);
     const totalExtra = report.reduce((sum, r) => sum + r.ExtraCount, 0);
     const totalPruned = report.reduce((sum, r) => sum + r.Pruned, 0);

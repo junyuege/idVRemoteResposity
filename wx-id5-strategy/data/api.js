@@ -23,6 +23,7 @@ const mapIndex = require('./localMapIndex.js');
 let cloudMap = null;
 let cloudFallbackMap = null;
 let cloudKeyMap = null;
+let imageMetaMap = null;
 const prefetchPromiseMap = {};
 function getCloudMap() {
   if (cloudMap === null) {
@@ -100,6 +101,24 @@ function getRouteAssetPaths(route) {
     });
   });
   return paths;
+}
+
+function getImageMetaMap() {
+  if (imageMetaMap === null) {
+    try { imageMetaMap = require('./imageMeta.js'); }
+    catch (e) { imageMetaMap = {}; }
+  }
+  return imageMetaMap;
+}
+
+function getImageRatio(source) {
+  const localPath = String(source || '').indexOf('cloud://') === 0
+    ? getLocalFallback(source)
+    : String(source || '');
+  const key = localPath.replace(/^\//, '');
+  const meta = getImageMetaMap()[key];
+  if (meta && meta.w && meta.h) return meta.h / meta.w;
+  return 0.75; // 兜底 4:3
 }
 
 function getLocalFallback(fileId) {
@@ -550,6 +569,7 @@ module.exports = {
   prefetchRouteImageUrls,
   prefetchIconUrls,
   getLocalFallback,
+  getImageRatio,
   buildImageUrl,
   getImagesForShape,
   resolveImageUrls

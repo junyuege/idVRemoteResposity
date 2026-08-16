@@ -141,12 +141,21 @@ Page({
         contentLines.push('该形状暂无图片素材，仅有编号信息');
       }
     }
+    const contentWidth = this.getImageContentWidth();
     const imageItems = images.map((url, index) => {
       const original = url;
       const fallback = (fileIds && fileIds[index] && fileIds[index].indexOf('cloud://') === 0)
         ? api.getLocalFallback(fileIds[index])
         : url;
-      return { url, original, fallback, index: index + 1, failed: false };
+      const ratio = api.getImageRatio(fileIds[index] || url);
+      return {
+        url,
+        original,
+        fallback,
+        index: index + 1,
+        failed: false,
+        height: Math.max(160, Math.round(contentWidth / ratio))
+      };
     });
 
     this.setData({
@@ -172,6 +181,14 @@ Page({
       routeId: route.id,
       shapeId: hasShape ? shapeId : '__root__'
     });
+  },
+
+  getImageContentWidth() {
+    let windowWidth = 375;
+    try {
+      if (wx.getSystemInfoSync) windowWidth = wx.getSystemInfoSync().windowWidth || windowWidth;
+    } catch (e) {}
+    return Math.max(280, windowWidth - 32);
   },
 
   saveRecentView(map, route, shapeId, door, file) {
