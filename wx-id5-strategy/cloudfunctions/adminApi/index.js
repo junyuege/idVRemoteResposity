@@ -12,7 +12,7 @@ const db = cloud.database();
 const $ = db.command.aggregate;
 
 // 部署后先调用 whoami 获取自己的 openid，再填入下方数组并重新部署。
-const ADMIN_OPENIDS = ['oKq0W7dWANU1clADEwGBuhZE_Rwl'];
+const ADMIN_OPENIDS = ['oKq0W7dWANU1cIADEwGBuhZE_Rwl'];
 
 function isAdmin(openid) {
   return ADMIN_OPENIDS.indexOf(openid) >= 0;
