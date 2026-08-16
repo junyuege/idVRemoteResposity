@@ -82,7 +82,7 @@
     <text wx:if="{{hasIcon}}" class="sheet-hint">可长按图标放大查看</text>
     <view class="door-list">
       <view wx:for="{{doors}}" wx:key="door" class="door-option" data-index="{{index}}" bindtap="onDoorTap" bindlongpress="onIconLongPress" data-icon="{{item.icon}}">
-        <image wx:if="{{item.icon}}" class="door-icon" src="{{item.icon}}" mode="aspectFill" />
+        <image wx:if="{{item.icon}}" class="door-icon" src="{{item.icon}}" mode="aspectFill" data-index="{{index}}" binderror="onIconError" />
         <view wx:else class="door-mark">{{item.mark}}</view>
         <view class="door-body">
           <text class="door-name">{{item.door}}</text>
@@ -95,7 +95,7 @@
 
   <view wx:if="{{showIconPreview}}" class="preview-mask" bindtap="closeIconPreview">
     <view class="preview-body" catchtap="preventPreviewClose">
-      <image class="preview-img" src="{{previewIcon}}" mode="widthFix" />
+      <image class="preview-img" src="{{previewIcon}}" mode="widthFix" binderror="onIconPreviewError" />
       <text class="preview-hint">轻触空白处关闭</text>
     </view>
   </view>

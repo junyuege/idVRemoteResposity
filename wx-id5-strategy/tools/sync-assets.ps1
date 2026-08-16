@@ -26,8 +26,30 @@ function Get-NodeJson {
     return $json | ConvertFrom-Json
 }
 
+function Resolve-SourcePath {
+    # 索引中的文件名已统一为 .jpg，但源盘仍可能是 .png/.PNG/.jpeg 等原始命名。
+    # 本函数在候选路径不存在时按同文件名尝试常见图片扩展名，保证新老源盘都能同步。
+    param([string]$Candidate)
+    if (Test-Path -LiteralPath $Candidate -PathType Leaf) { return $Candidate }
+    $dir = Split-Path -Parent $Candidate
+    $baseName = [System.IO.Path]::GetFileNameWithoutExtension($Candidate)
+    foreach ($ext in @(".png", ".jpg", ".jpeg")) {
+        $alternate = Join-Path $dir ($baseName + $ext)
+        if (Test-Path -LiteralPath $alternate -PathType Leaf) { return $alternate }
+    }
+    return $Candidate
+}
+
 function Compress-One {
     param([string]$Src, [string]$Dst, [int]$Width, [int]$Quality)
+
+    # 路线素材统一编码为 JPEG，且输出扩展名必须与文件内容一致。
+    # 此前 .png 源文件被写入 JPEG 字节却保留 .png 后缀，导致扩展名与文件头不一致；
+    # 现在由索引层把路线素材统一命名为 .jpg，这里再兜底纠正一次输出扩展名。
+    $dstExt = [System.IO.Path]::GetExtension($Dst).ToLowerInvariant()
+    if ($dstExt -ne ".jpg" -and $dstExt -ne ".jpeg") {
+        $Dst = [System.IO.Path]::ChangeExtension($Dst, ".jpg")
+    }
     $img = [System.Drawing.Image]::FromFile($Src)
     try {
         $scale = 1.0
@@ -80,7 +102,9 @@ foreach ($map in $index.maps) {
                 # 形状根目录散图（不经过侧门子文件夹）；素材平铺时（shape 目录不存在）回退到路线根级
                 $cand1 = $routeAnchor + $route.shapeDir + "\" + $shapeProp.Name + "\" + $fn
                 $cand2 = $routeAnchor + $route.shapeDir + "\" + $fn
-                $src = if (Test-Path -LiteralPath $cand1) { $cand1 } else { $cand2 }
+                $src1 = Resolve-SourcePath $cand1
+                $src2 = Resolve-SourcePath $cand2
+                $src = if (Test-Path -LiteralPath $src1 -PathType Leaf) { $src1 } else { $src2 }
                 $rel = $shapeProp.Name + "/" + $fn
                 $pkgPlans[$pkg][$rel] = [PSCustomObject]@{ Src = $src; Priority = $priority }
             }
@@ -89,7 +113,9 @@ foreach ($map in $index.maps) {
                     # 优先 shape/door/文件 三层；素材侧部分形状把图片直接放在 shape 根（门名在文件名里），回退到根级
                     $cand1 = $routeAnchor + $route.shapeDir + "\" + $shapeProp.Name + "\" + $doorObj.door + "\" + $fn
                     $cand2 = $routeAnchor + $route.shapeDir + "\" + $shapeProp.Name + "\" + $fn
-                    $src = if (Test-Path -LiteralPath $cand1) { $cand1 } else { $cand2 }
+                    $src1 = Resolve-SourcePath $cand1
+                    $src2 = Resolve-SourcePath $cand2
+                    $src = if (Test-Path -LiteralPath $src1 -PathType Leaf) { $src1 } else { $src2 }
                     $rel = $shapeProp.Name + "/" + $doorObj.door + "/" + $fn
                     $pkgPlans[$pkg][$rel] = [PSCustomObject]@{ Src = $src; Priority = $priority }
                 }
@@ -97,7 +123,7 @@ foreach ($map in $index.maps) {
         }
         foreach ($fn in $route.rootFiles) {
             $rel = $fn
-            $pkgPlans[$pkg][$rel] = [PSCustomObject]@{ Src = $routeAnchor + $route.shapeDir + "\" + $fn; Priority = $priority }
+            $pkgPlans[$pkg][$rel] = [PSCustomObject]@{ Src = (Resolve-SourcePath ($routeAnchor + $route.shapeDir + "\" + $fn)); Priority = $priority }
         }
     }
 }
@@ -110,7 +136,7 @@ foreach ($pkg in ($pkgPlans.Keys | Sort-Object)) {
         $allEntries += [PSCustomObject]@{ Pkg = $pkg; Src = $kv.Value.Src; Rel = $kv.Key; Priority = $kv.Value.Priority }
     }
 }
-$missingSrc = $allEntries | Where-Object { -not (Test-Path -LiteralPath $_.Src) }
+$missingSrc = $allEntries | Where-Object { -not (Test-Path -LiteralPath $_.Src -PathType Leaf) }
 if ($missingSrc.Count -gt 0) {
     Write-Host ("=== 源文件缺失 {0} 个（索引与源盘不一致，请检查素材命名或在索引中删除） ===" -f $missingSrc.Count)
     foreach ($m in $missingSrc) {
@@ -185,7 +211,7 @@ foreach ($pkg in ($pkgPlans.Keys | Sort-Object)) {
         }
     }
     $extra = @($extraAll | Where-Object { $_ -notin $pruned })
-    $report += [PSCustomObject]@{ Pkg = $pkg; Count = $entries.Count; Bytes = $pkgBytes; Missing = $missing; Extra = $extra; MissingCount = $missing.Count; ExtraCount = $extra.Count; Pruned = $pruned.Count }
+    $report += [PSCustomObject]@{ Pkg = $pkg; Count = @($entries).Count; Bytes = $pkgBytes; Missing = $missing; Extra = $extra; MissingCount = @($missing).Count; ExtraCount = @($extra).Count; Pruned = @($pruned).Count }
     $status = if ($missing.Count -eq 0 -and $extra.Count -eq 0) { "OK" } else { "!!" }
     Write-Host ("[{0}] {1,-12} {2,3} 张  {3:N1} MB  校验: 缺失{4} 多余{5}{6}" -f $status, $pkg, $entries.Count, ($pkgBytes/1MB), $missing.Count, $extra.Count, $(if ($pruned.Count) { " 清理$($pruned.Count)" } else { "" }))
     foreach ($m in $missing) { Write-Host ("    缺失: {0}" -f $m) }

@@ -32,6 +32,7 @@ Page({
     doors: [],
     showDoorSheet: false,
     previewIcon: '',
+    previewIconFallback: '',
     showIconPreview: false
   },
 
@@ -109,6 +110,9 @@ Page({
       this.showError('未找到对应的攻略版本');
       return;
     }
+
+    // 在用户继续选择形状/入口时后台预热图片分包，详情页可省去下载等待。
+    api.loadRoutePackage(route.id);
 
     const shapes = (api.getShapes(this.data.mapId, routeId) || []).map((shape, index) => {
       const detail = api.getShapeDetails(this.data.mapId, routeId, shape);
@@ -243,13 +247,33 @@ Page({
   preventClose() {},
 
   onIconLongPress(e) {
+    const index = Number(e.currentTarget.dataset.index);
+    const item = this.data.doors[index];
     const icon = e.currentTarget.dataset.icon;
-    if (!icon) return;
-    this.setData({ previewIcon: icon, showIconPreview: true });
+    if (!icon || !item) return;
+    const fallback = (item.file && this.data.selectedShape)
+      ? api.getShapeIconLocalUrl(this.data.mapId, this.data.routeId, this.data.selectedShape.shapeId, item.file)
+      : '';
+    this.setData({ previewIcon: icon, previewIconFallback: fallback, showIconPreview: true });
+  },
+
+  onIconError(e) {
+    const index = Number(e.currentTarget.dataset.index);
+    const item = this.data.doors[index];
+    if (!item || !item.file || !this.data.selectedShape) return;
+    if (item.icon && item.icon.indexOf('/pkg-') === 0) return;
+    const local = api.getShapeIconLocalUrl(this.data.mapId, this.data.routeId, this.data.selectedShape.shapeId, item.file);
+    if (local && local !== item.icon) this.setData({ ['doors[' + index + '].icon']: local });
+  },
+
+  onIconPreviewError() {
+    if (this.data.previewIconFallback && this.data.previewIcon !== this.data.previewIconFallback) {
+      this.setData({ previewIcon: this.data.previewIconFallback });
+    }
   },
 
   closeIconPreview() {
-    this.setData({ showIconPreview: false, previewIcon: '' });
+    this.setData({ showIconPreview: false, previewIcon: '', previewIconFallback: '' });
   },
 
   preventPreviewClose() {},

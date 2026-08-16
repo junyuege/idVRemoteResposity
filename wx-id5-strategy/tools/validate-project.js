@@ -77,12 +77,17 @@ function loadPage(relativePath) {
   return page;
 }
 
-function validateRegisteredPages(appConfig) {
-  const pages = appConfig.pages || [];
+function registeredPagePaths(appConfig) {
+  const pages = (appConfig.pages || []).slice();
   const subPages = (appConfig.subPackages || []).flatMap(pkg =>
     (pkg.pages || []).map(page => path.posix.join(pkg.root, page))
   );
-  pages.concat(subPages).forEach(page => {
+  return pages.concat(subPages);
+}
+
+function validateRegisteredPages(appConfig) {
+  const pages = appConfig.pages || [];
+  registeredPagePaths(appConfig).forEach(page => {
     ['js', 'json', 'wxml', 'wxss'].forEach(ext => {
       check(fs.existsSync(path.join(ROOT, page + '.' + ext)), page + '.' + ext + ' is missing');
     });
@@ -96,13 +101,25 @@ function validatePackConfig() {
   const projectConfig = readJson('project.config.json');
   const ignoreRules = (projectConfig.packOptions && projectConfig.packOptions.ignore) || [];
   check(ignoreRules.some(rule => rule.type === 'folder' && rule.value === 'tools'), 'Build should exclude the tools directory');
+  check(ignoreRules.some(rule => rule.type === 'folder' && rule.value === 'docs'), 'Build should exclude the docs directory');
+}
+
+function validateCloudConfig() {
+  const config = requireFresh('config/cloud.js');
+  check(Boolean(config && config.envId), 'config/cloud.js is missing envId');
+  check(Boolean(config && config.storagePrefix && config.storagePrefix.indexOf('cloud://') === 0), 'config/cloud.js is missing a cloud:// storagePrefix');
+  check(config.storagePrefix.indexOf(config.envId) >= 0, 'config/cloud.js storagePrefix should contain envId');
+  const appSource = fs.readFileSync(path.join(ROOT, 'app.js'), 'utf8');
+  check(appSource.indexOf("require('./config/cloud.js')") >= 0, 'app.js should read cloud config from config/cloud.js');
+  const genSource = fs.readFileSync(path.join(ROOT, 'tools', 'gen-cloud-assets.js'), 'utf8');
+  check(genSource.indexOf("require('../config/cloud.js')") >= 0, 'gen-cloud-assets.js should read cloud config from config/cloud.js');
 }
 
 function validateBindings(appConfig) {
-  (appConfig.pages || []).forEach(pagePath => {
+  registeredPagePaths(appConfig).forEach(pagePath => {
     const page = loadPage(pagePath + '.js');
     const wxml = fs.readFileSync(path.join(ROOT, pagePath + '.wxml'), 'utf8');
-    const eventPattern = /(?:bind|catch)(?:tap|input|confirm|error|change|load|submit)="([A-Za-z_$][\w$]*)"/g;
+    const eventPattern = /(?:bind|catch)(?:tap|longpress|input|confirm|error|change|load|submit|focus|blur|scroll|touchstart|touchmove|touchend)="([A-Za-z_$][\w$]*)"/g;
     let match = eventPattern.exec(wxml);
     while (match) {
       check(page && typeof page[match[1]] === 'function', pagePath + ' is missing event handler ' + match[1]);
@@ -113,7 +130,7 @@ function validateBindings(appConfig) {
 
 function validateWxmlStructure(appConfig) {
   const voidTags = new Set(['image', 'input', 'textarea']);
-  (appConfig.pages || []).forEach(pagePath => {
+  registeredPagePaths(appConfig).forEach(pagePath => {
     const source = fs.readFileSync(path.join(ROOT, pagePath + '.wxml'), 'utf8')
       .replace(/<!--[\s\S]*?-->/g, '')
       .replace(/{{[\s\S]*?}}/g, 'EXPR');
@@ -148,11 +165,51 @@ function expectedAssetPaths(route) {
   return paths;
 }
 
+function walkFiles(dir) {
+  const out = [];
+  if (!fs.existsSync(dir)) return out;
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) out.push(...walkFiles(full));
+    else if (entry.isFile()) out.push(full);
+  }
+  return out;
+}
+
+function validatePackageImageFormats(packageRoots) {
+  const seen = new Set();
+  packageRoots.forEach(root => {
+    if (!root || seen.has(root)) return;
+    seen.add(root);
+    walkFiles(path.join(ROOT, root, 'assets')).forEach(filePath => {
+      const ext = path.extname(filePath).toLowerCase();
+      if (ext !== '.jpg' && ext !== '.jpeg' && ext !== '.png') return;
+      const buf = fs.readFileSync(filePath);
+      const isJpeg = buf.length > 2 && buf[0] === 0xff && buf[1] === 0xd8;
+      const isPng = buf.length > 7 && buf.slice(0, 8).toString('hex') === '89504e470d0a1a0a';
+      if (ext === '.png') {
+        check(isPng, 'Image extension/content mismatch (expected PNG): ' + filePath);
+      } else {
+        check(isJpeg, 'Image extension/content mismatch (expected JPEG): ' + filePath);
+      }
+    });
+  });
+}
+
 async function validateDataFlow() {
   const api = requireFresh('data/api.js');
   const cloudAssets = requireFresh('data/cloudAssets.js');
   const maps = api.getMaps();
   check(maps.length > 0, 'No maps are available');
+
+  // 检查所有在索引中登记过的图片分包，确保扩展名与文件头一致。
+  const rawIndex = requireFresh('data/localMapIndex.js');
+  const indexedPackages = [];
+  (rawIndex.maps || []).forEach(map => (map.routes || []).forEach(route => {
+    if (route.packageRoot) indexedPackages.push(route.packageRoot);
+    if (route.iconPackageRoot) indexedPackages.push(route.iconPackageRoot);
+  }));
+  validatePackageImageFormats(indexedPackages);
 
   let routeCount = 0;
   let shapeCount = 0;
@@ -184,12 +241,12 @@ async function validateDataFlow() {
         check(fs.existsSync(localPath), 'Missing local fallback image ' + localPath);
       });
 
-      if (route.entryMode === 'fileIcons' && route.iconPackageRoot && route.iconNamespace) {
+      if (route.entryMode === 'fileIcons' && route.iconPackageRoot) {
         (route.shapes || []).forEach(shape => {
           const detail = (route.shapeDetails || {})[shape] || {};
           (detail.rootFiles || []).forEach(file => {
-            const iconPath = path.join(ROOT, route.iconPackageRoot, 'assets', shape, file);
-            check(fs.existsSync(iconPath), 'Missing icon fallback image ' + iconPath);
+            const iconUrl = api.getShapeIconLocalUrl(map.id, route.id, shape, file);
+            check(iconUrl.indexOf('/pkg-') === 0 && fs.existsSync(path.join(ROOT, ...iconUrl.slice(1).split('/'))), 'Missing icon fallback image ' + iconUrl);
           });
         });
       }
@@ -228,6 +285,19 @@ async function validateDataFlow() {
     check(fs.existsSync(path.join(ROOT, ...fallbackUrl.slice(1).split('/'))), 'Cloud fallback URL should exist locally');
   }
 
+  // 图标在云不可用（validate 环境中 cloudReady=false）时必须直接回退本地图标分包。
+  maps.forEach(map => {
+    api.getRoutesByMapId(map.id).filter(route => route.entryMode === 'fileIcons').forEach(route => {
+      const shape = (route.shapes || [])[0];
+      const detail = shape && (route.shapeDetails || {})[shape];
+      const file = detail && detail.rootFiles && detail.rootFiles[0];
+      if (!shape || !file) return;
+      const iconUrl = api.getShapeIconUrl(map.id, route.id, shape, file);
+      check(iconUrl.indexOf('/pkg-') === 0, 'Icon URL should fall back to local package when cloud is unavailable: ' + route.id);
+      check(fs.existsSync(path.join(ROOT, ...iconUrl.slice(1).split('/'))), 'Icon fallback URL should exist locally: ' + iconUrl);
+    });
+  });
+
   const firstMap = maps[0];
   const firstRoute = api.getRoutesByMapId(firstMap.id)[0];
   const firstShape = api.getShapes(firstMap.id, firstRoute.id)[0];
@@ -246,6 +316,7 @@ async function validateDataFlow() {
   });
   check(explorerPage.data.routeId === firstRoute.id, 'Explorer did not select the requested route');
   check(explorerPage.data.shapes.length > 0, 'Explorer did not render route shapes');
+  check(loadedPackages.includes(api.getPackageRoot(firstRoute.id)), 'Explorer should preload the selected route package');
 
   const multiDoorShape = explorerPage.data.shapes.find(item => {
     if (item.shapeId === '__root__') return false;
@@ -357,6 +428,7 @@ async function validateDataFlow() {
 async function main() {
   const appConfig = readJson('app.json');
   validatePackConfig();
+  validateCloudConfig();
   validateRegisteredPages(appConfig);
   validateBindings(appConfig);
   validateWxmlStructure(appConfig);

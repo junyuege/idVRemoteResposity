@@ -492,7 +492,7 @@ module.exports = {
               ],
               "rootFiles": [
                 "侧门在右.jpg",
-                "侧门在中.png"
+                "侧门在中.jpg"
               ]
             },
             "┣": {
@@ -500,7 +500,7 @@ module.exports = {
                 {
                   "door": "侧门在下",
                   "files": [
-                    "左路右路.png"
+                    "左路右路.jpg"
                   ]
                 }
               ]
@@ -516,7 +516,7 @@ module.exports = {
                 {
                   "door": "侧门在上",
                   "files": [
-                    "左路右路下路.png"
+                    "左路右路下路.jpg"
                   ]
                 }
               ]
@@ -526,7 +526,7 @@ module.exports = {
                 {
                   "door": "侧门在右",
                   "files": [
-                    "上路下路.png",
+                    "上路下路.jpg",
                     "下路左路.jpg",
                     "左路.jpg"
                   ]
@@ -540,8 +540,8 @@ module.exports = {
                     "右路 右▃▃.jpg",
                     "右路 右丨3.jpg",
                     "右路 右丨4.jpg",
-                    "右路3 右▌（右红房间）.png",
-                    "右路4 右凹.png"
+                    "右路3 右▌（右红房间）.jpg",
+                    "右路4 右凹.jpg"
                   ]
                 }
               ]
@@ -551,9 +551,9 @@ module.exports = {
                 {
                   "door": "侧门在上",
                   "files": [
-                    "下路.png",
+                    "下路.jpg",
                     "下路2.jpg",
-                    "左路右路下路.PNG"
+                    "左路右路下路.jpg"
                   ]
                 },
                 {
@@ -561,7 +561,7 @@ module.exports = {
                   "files": [
                     "左路上路.jpg",
                     "左路右路2.jpg",
-                    "左路右路上路.png"
+                    "左路右路上路.jpg"
                   ]
                 }
               ]
@@ -925,8 +925,8 @@ module.exports = {
               "doors": [],
               "rootFiles": [
                 "北-1门.jpg",
-                "北-1沙发门（新增）.png",
-                "北-4安全门（新增）.png",
+                "北-1沙发门（新增）.jpg",
+                "北-4安全门（新增）.jpg",
                 "北-4门.jpg",
                 "北-凹门.jpg",
                 "北-红对角门.jpg",
@@ -937,36 +937,36 @@ module.exports = {
             "南": {
               "doors": [],
               "rootFiles": [
-                "南-红门.png",
+                "南-红门.jpg",
                 "南-三缺一门.jpg",
                 "南-十字门.jpg",
                 "南-L门.jpg",
-                "南-orz门（新增）.png"
+                "南-orz门（新增）.jpg"
               ]
             },
             "左": {
               "doors": [],
               "rootFiles": [
-                "左-锤灯笼门（新增）.png",
+                "左-锤灯笼门（新增）.jpg",
                 "左-锤子门.jpg",
                 "左-倒T门.jpg",
-                "左-对角门.png",
-                "左-对T门.png",
-                "左-罐子门.png",
+                "左-对角门.jpg",
+                "左-对T门.jpg",
+                "左-罐子门.jpg",
                 "左-音叉门.jpg",
                 "左-Y门.jpg",
-                "左-Y青蛙房（新增）.png"
+                "左-Y青蛙房（新增）.jpg"
               ]
             },
             "右": {
               "doors": [],
               "rootFiles": [
                 "右-锤子门.jpg",
-                "右-骑士门.png",
-                "右-三L门（新增）.png",
+                "右-骑士门.jpg",
+                "右-三L门（新增）.jpg",
                 "右-双L门.jpg",
                 "右-左上右下门.jpg",
-                "右-L门.png"
+                "右-L门.jpg"
               ]
             }
           },

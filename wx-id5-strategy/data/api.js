@@ -41,6 +41,40 @@ function getCloudAsset(key) {
   return cloudKeyMap[String(key || '').toLowerCase()] || '';
 }
 
+function isCloudReady() {
+  try {
+    const app = getApp();
+    return !!(app && app.globalData && app.globalData.cloudReady);
+  } catch (e) {
+    return false;
+  }
+}
+
+/**
+ * fileIcons 模式下，路线图与图标文件名可能只差扩展名：
+ * 例如路线图为 北-1门.jpg，识别图标为 北-1门.png。
+ * 这里返回 iconNamespace 中真实存在的相对路径；无映射时按当前项目约定回退 .png。
+ */
+function getIconRelPath(route, shape, fileName) {
+  const ext = String(fileName || '').toLowerCase();
+  const base = String(fileName || '').replace(/\.(jpe?g|png)$/i, '');
+  const candidates = [];
+  if (ext.endsWith('.jpg') || ext.endsWith('.jpeg')) candidates.push(base + '.png', String(fileName));
+  else if (ext.endsWith('.png')) candidates.push(String(fileName), base + '.jpg', base + '.jpeg');
+  else candidates.push(String(fileName));
+
+  const namespace = route && route.iconNamespace;
+  if (namespace) {
+    for (let i = 0; i < candidates.length; i += 1) {
+      if (getCloudAsset(namespace + '/' + shape + '/' + candidates[i])) {
+        return shape + '/' + candidates[i];
+      }
+    }
+  }
+  // 无云映射时按 fileIcons 约定优先使用 PNG 图标。
+  return shape + '/' + (ext.endsWith('.png') ? String(fileName) : (base + '.png'));
+}
+
 function getAllRoutes() {
   return getMaps().reduce((routes, map) => routes.concat(Array.isArray(map.routes) ? map.routes : []), []);
 }
@@ -84,6 +118,17 @@ function getLocalFallback(fileId) {
           (route.legacyCloudPackage && getCloudAsset(route.legacyCloudPackage + '/' + relPath));
         if (fileId) cloudFallbackMap[fileId] = '/' + getPackageRoot(route) + '/assets/' + relPath;
       });
+      // entryMode=fileIcons 的图标位于独立 iconPackageRoot，不能靠包名切片推导，必须显式映射。
+      if (route.entryMode === 'fileIcons' && route.iconPackageRoot) {
+        (route.shapes || []).forEach(shape => {
+          const detail = (route.shapeDetails || {})[shape] || {};
+          (detail.rootFiles || []).forEach(file => {
+            const relPath = getIconRelPath(route, shape, file);
+            const fileId = route.iconNamespace ? getCloudAsset(route.iconNamespace + '/' + relPath) : '';
+            if (fileId) cloudFallbackMap[fileId] = '/' + route.iconPackageRoot + '/assets/' + relPath;
+          });
+        });
+      }
     });
   }
   return cloudFallbackMap[fileId] || fileId;
@@ -209,12 +254,7 @@ function resolveBase(map, route) {
  * 规则：云存储 fileID（cloud://...）优先；未上传时回退 resolveBase + shape + "/" + door + "/" + fileName
  */
 function cloudUrl(route, relPath) {
-  try {
-    const app = getApp();
-    if (!app || !app.globalData || !app.globalData.cloudReady) return '';
-  } catch (e) {
-    return '';
-  }
+  if (!isCloudReady()) return '';
   const assets = getCloudMap();
   const namespace = route && route.assetNamespace;
   const legacyPackage = route && route.legacyCloudPackage;
@@ -243,16 +283,27 @@ function getShapeRootImageUrls(mapId, routeId, shape) {
 }
 
 /**
- * 获取某个形状下识别图标的本地/云端地址。
+ * 获取某个形状下识别图标的本地路径。
  * 图标路径规则：iconPackageRoot/assets/{shape}/{fileName}。
  */
-function getShapeIconUrl(mapId, routeId, shape, fileName) {
+function getShapeIconLocalUrl(mapId, routeId, shape, fileName) {
   const route = getRoute(mapId, routeId);
   if (!route || !route.iconPackageRoot || !shape || !fileName) return '';
-  const relPath = shape + '/' + fileName;
-  const cloudFileId = route.iconNamespace ? getCloudAsset(route.iconNamespace + '/' + relPath) : '';
-  if (cloudFileId) return cloudFileId;
+  const relPath = getIconRelPath(route, shape, fileName);
   return '/' + route.iconPackageRoot + '/assets/' + relPath;
+}
+
+/**
+ * 获取某个形状下识别图标的本地/云端地址。
+ * 与攻略图 cloudUrl 一样：云不可用时必须直接使用本地图标，不能返回无法展示的 cloud://。
+ */
+function getShapeIconUrl(mapId, routeId, shape, fileName) {
+  const localUrl = getShapeIconLocalUrl(mapId, routeId, shape, fileName);
+  if (!localUrl || !isCloudReady()) return localUrl;
+  const route = getRoute(mapId, routeId);
+  const relPath = getIconRelPath(route, shape, fileName);
+  const cloudFileId = route.iconNamespace ? getCloudAsset(route.iconNamespace + '/' + relPath) : '';
+  return cloudFileId || localUrl;
 }
 
 /**
@@ -296,6 +347,23 @@ const LEGACY_ROUTE_PACKAGE = {
 
 const FILEURL_CACHE_KEY = 'id5_fileurl_v1';
 const FILEURL_TTL = 90 * 60 * 1000; // 临时链接有效期约 2 小时，缓存 90 分钟
+const FILEURL_BATCH_SIZE = 50; // wx.cloud.getTempFileURL 单次 fileList 上限
+const FILEURL_CACHE_MAX = 400; // 本地缓存最多保留条数，防止 storage 无限增长
+
+function saveFileUrlCache(cache) {
+  try {
+    const keys = Object.keys(cache);
+    if (keys.length > FILEURL_CACHE_MAX) {
+      const pruned = {};
+      keys
+        .sort((a, b) => ((cache[b] && cache[b].ts) || 0) - ((cache[a] && cache[a].ts) || 0))
+        .slice(0, FILEURL_CACHE_MAX)
+        .forEach(key => { pruned[key] = cache[key]; });
+      cache = pruned;
+    }
+    wx.setStorageSync(FILEURL_CACHE_KEY, cache);
+  } catch (e) {}
+}
 
 /**
  * 把 cloud:// fileID 批量解析为 https 临时链接（wx.cloud.getTempFileURL）
@@ -326,19 +394,26 @@ function resolveImageUrls(fileIds) {
       : fid
   );
   if (!need.length) return Promise.resolve(apply());
-  return wx.cloud.getTempFileURL({ fileList: need }).then(res => {
-    (res.fileList || []).forEach(it => {
-      if (it.status === 0 && it.tempFileURL) {
-        urlMap[it.fileID] = it.tempFileURL;
-        cache[it.fileID] = { url: it.tempFileURL, ts: now };
-      } else {
-        console.warn('[api] getTempFileURL 单条失败:', it && it.fileID, it && it.errMsg);
-      }
-    });
-    try { wx.setStorageSync(FILEURL_CACHE_KEY, cache); } catch (e) {}
-    return apply();
-  }).catch(err => {
-    console.error('[api] getTempFileURL 整体失败:', err && err.errMsg || err);
+
+  const batches = [];
+  for (let i = 0; i < need.length; i += FILEURL_BATCH_SIZE) {
+    batches.push(need.slice(i, i + FILEURL_BATCH_SIZE));
+  }
+  return Promise.all(batches.map(batch =>
+    wx.cloud.getTempFileURL({ fileList: batch }).then(res => {
+      (res.fileList || []).forEach(it => {
+        if (it.status === 0 && it.tempFileURL) {
+          urlMap[it.fileID] = it.tempFileURL;
+          cache[it.fileID] = { url: it.tempFileURL, ts: now };
+        } else {
+          console.warn('[api] getTempFileURL 单条失败:', it && it.fileID, it && it.errMsg);
+        }
+      });
+    }).catch(err => {
+      console.error('[api] getTempFileURL 分批请求失败:', err && err.errMsg || err);
+    })
+  )).then(() => {
+    saveFileUrlCache(cache);
     return apply();
   });
 }
@@ -387,6 +462,7 @@ module.exports = {
   getRootImageUrls,
   getShapeRootImageUrls,
   getShapeIconUrl,
+  getShapeIconLocalUrl,
   getPackageRoot,
   loadRoutePackage,
   buildImageUrl,

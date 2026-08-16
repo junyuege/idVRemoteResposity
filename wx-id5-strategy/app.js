@@ -1,6 +1,7 @@
-// 云开发环境 ID：微信开发者工具 → 云开发控制台 → 设置 → 环境 ID
-// 未配置（保持空字符串）时反馈页自动降级为本地暂存，不阻塞其他功能
-const CLOUD_ENV = 'cloud1-d0gmgc29t00d235d8';
+// 云开发配置统一从 config/cloud.js 读取，避免与 tools/gen-cloud-assets.js 的 fileID 前缀漂移。
+// 未配置（envId 为空字符串）时反馈页自动降级为本地暂存，不阻塞其他功能。
+const cloudConfig = require('./config/cloud.js');
+const CLOUD_ENV = (cloudConfig && cloudConfig.envId) || '';
 
 App({
   globalData: {

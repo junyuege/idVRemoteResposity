@@ -28,7 +28,19 @@ maps/e_yun_zhi_nv/lianghapi/v0710/...
 maps/e_yun_zhi_nv/lianghapi/v0710/icons/...
 ```
 
+> 现状说明：凉哈皮版在索引中仍配置 `legacyCloudPackage: "pkg-v0710"` 和
+> `iconNamespace: "pkg-v0710/icon"`，即当前云端资源仍位于旧目录；待云端完成
+> 迁移后再切换到上面的 `maps/...` 新目录，并清除 `legacyCloudPackage`。
+
 不再使用 `pkg-hard/...` 作为新资源的云目录，因为不同作者和路线可能存在同名图片。
+
+## 路线素材格式约定
+
+- 路线攻略图统一输出为 `.jpg`：即使源盘文件是 `.png`，`sync-assets.ps1`
+  也会自动查找同名源文件、压缩为 JPEG，并按索引中的 `.jpg` 文件名写入分包。
+- 识别图标包 `pkg-lianghapi-icons` 保持 PNG，允许透明背景；图标文件名与攻略图
+  文件名只要求“同名不同扩展名”，例如路线图 `北-1门.jpg` 对应图标 `北-1门.png`。
+- 不要在索引中给路线攻略图继续登记 `.png` 文件名，否则会导致扩展名与文件头不一致。
 
 ## 凉哈皮版识别图标
 

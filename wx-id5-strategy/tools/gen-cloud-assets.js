@@ -5,7 +5,8 @@ const fs = require('fs');
 const path = require('path');
 
 // 示例：cloud://cloud1-d0gmgc29t00d235d8.636c-cloud1-d0gmgc29t00d235d8-1465150433/pkg-easy/assets/...
-const CLOUD_PREFIX = 'cloud://cloud1-d0gmgc29t00d235d8.636c-cloud1-d0gmgc29t00d235d8-1465150433/';
+const cloudConfig = require('../config/cloud.js');
+const CLOUD_PREFIX = cloudConfig.storagePrefix;
 
 function walk(dir) {
   const out = [];
