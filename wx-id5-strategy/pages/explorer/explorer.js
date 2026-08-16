@@ -30,7 +30,9 @@ Page({
     shapes: [],
     selectedShape: null,
     doors: [],
-    showDoorSheet: false
+    showDoorSheet: false,
+    previewIcon: '',
+    showIconPreview: false
   },
 
   onLoad(options) {
@@ -214,7 +216,8 @@ Page({
       return;
     }
 
-    this.setData({ selectedShape: item, doors, showDoorSheet: true });
+    const hasIcon = doors.some(door => !!door.icon);
+    this.setData({ selectedShape: item, doors, hasIcon, showDoorSheet: true });
   },
 
   onDoorTap(e) {
@@ -238,6 +241,18 @@ Page({
   },
 
   preventClose() {},
+
+  onIconLongPress(e) {
+    const icon = e.currentTarget.dataset.icon;
+    if (!icon) return;
+    this.setData({ previewIcon: icon, showIconPreview: true });
+  },
+
+  closeIconPreview() {
+    this.setData({ showIconPreview: false, previewIcon: '' });
+  },
+
+  preventPreviewClose() {},
 
   showError(message) {
     this.setData({ loading: false, error: message, shapes: [], showDoorSheet: false });

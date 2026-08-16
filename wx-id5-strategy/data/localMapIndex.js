@@ -911,7 +911,7 @@ module.exports = {
           "assetNamespace": "maps/e_yun_zhi_nv/lianghapi/v0710",
           "entryMode": "fileIcons",
           "iconPackageRoot": "pkg-lianghapi-icons",
-          "iconNamespace": "maps/e_yun_zhi_nv/lianghapi/v0710/icons",
+          "iconNamespace": "pkg-v0710/icon",
           "sourceAnchor": "F:/d5/加页手记地图（07.10更新）",
           "shapeDir": "",
           "shapes": [

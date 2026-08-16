@@ -7,6 +7,10 @@
         "value": "tools"
       },
       {
+        "type": "folder",
+        "value": "docs"
+      },
+      {
         "type": "file",
         "value": "PROJECT_PLAN.md"
       },

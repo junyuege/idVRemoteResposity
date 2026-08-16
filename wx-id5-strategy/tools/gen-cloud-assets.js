@@ -20,6 +20,21 @@ function walk(dir) {
 const ROOT = path.join(__dirname, '..');
 const index = require(path.join(ROOT, 'data', 'localMapIndex.js'));
 
+// 路线图片云路径解析：legacyCloudPackage 指向旧布局 pkg-*/assets/，
+// 否则使用 assetNamespace（新布局 maps/...）。
+// 与 data/api.js 的 cloudUrl 查找顺序保持一致，保证重生成不破坏现有云映射。
+function resolveAssetKey(route, rel) {
+  if (route.legacyCloudPackage) return route.legacyCloudPackage + '/' + rel;
+  return route.assetNamespace + '/' + rel;
+}
+
+function resolveAssetFid(key, route) {
+  if (route.legacyCloudPackage) {
+    return CLOUD_PREFIX + route.legacyCloudPackage + '/assets/' + key.slice(route.legacyCloudPackage.length + 1);
+  }
+  return CLOUD_PREFIX + key;
+}
+
 const items = [];
 for (const map of index.maps || []) {
   for (const route of map.routes || []) {
@@ -32,8 +47,8 @@ for (const map of index.maps || []) {
     }
     for (const file of walk(assetsDir)) {
       const rel = file.slice(assetsDir.length + 1).replace(/\\/g, '/');
-      const key = route.assetNamespace + '/' + rel;
-      items.push({ key, fid: CLOUD_PREFIX + key });
+      const key = resolveAssetKey(route, rel);
+      items.push({ key, fid: resolveAssetFid(key, route) });
     }
 
     if (route.iconPackageRoot && route.iconNamespace) {
