@@ -11,7 +11,8 @@ const TAG_CLASS = {
   hard_fast: 'tag-hard',
   normal: 'tag-normal',
   easy: 'tag-easy',
-  newbie: 'tag-nightmare'
+  newbie: 'tag-newbie',
+  nightmare: 'tag-nightmare'
 };
 
 Page({

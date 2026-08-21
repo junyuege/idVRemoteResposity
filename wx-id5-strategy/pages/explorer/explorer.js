@@ -1,7 +1,7 @@
 const api = require('../../data/api.js');
 const analytics = require('../../utils/analytics.js');
 
-const DIFF_RANK = { newbie: 0, easy: 1, normal: 2, hard: 3, special: 4 };
+const DIFF_RANK = { newbie: 0, easy: 1, normal: 2, hard: 3, nightmare: 4, special: 5 };
 
 function formatRouteLabel(name) {
   if (!name) return '';

@@ -7,7 +7,7 @@ const RECENT_LIST_LIMIT = 5; // 历史记录最多展示 5 条
 const RECENT_COLLAPSED_COUNT = 2; // 默认只展示 2 条，其余收起
 
 // 难度标签压缩 + 特殊版别名（与样式类的难度顺序一致）
-const DIFF_RANK = { newbie: 0, easy: 1, normal: 2, hard: 3, special: 4 };
+const DIFF_RANK = { newbie: 0, easy: 1, normal: 2, hard: 3, nightmare: 4, special: 5 };
 
 function fmtLabel(name) {
   if (!name) return '';

@@ -162,6 +162,7 @@ async function findBestVariant(entries) {
         const meta = await sharp(entry.src).metadata();
         const outWidth = meta.width > width ? width : meta.width;
         const outHeight = meta.width > width ? Math.round(meta.height * width / meta.width) : meta.height;
+        // 路线图统一 JPEG（截图场景体积可控；索引扩展名已归一为 .jpg）
         const buffer = await sharp(entry.src)
           .resize({ width, withoutEnlargement: true })
           .flatten({ background: '#ffffff' })

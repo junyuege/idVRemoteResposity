@@ -82,6 +82,7 @@ view, text, image, scroll-view, input, textarea, button {
 .tag-normal { background: #3b3524; color: #e5c56f; }
 .tag-hard { background: #412827; color: #ef8c7e; }
 .tag-nightmare { background: #33283d; color: #caa0df; }
+.tag-newbie { background: #33283d; color: #caa0df; }
 .tag-all { background: #3b2b3e; color: #d4a1d9; }
 .tag-blue { background: #22374b; color: #86b9df; }
 .tag-purple { background: #332841; color: #c3a0dc; }

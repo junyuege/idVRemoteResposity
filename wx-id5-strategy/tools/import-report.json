@@ -22,7 +22,7 @@
   {
     "Pkg": "pkg-zhanshi-hard-fast",
     "Count": 30,
-    "Bytes": 1646748,
+    "Bytes": 1644460,
     "Missing": [],
     "Extra": [],
     "MissingCount": 0,
@@ -31,8 +31,8 @@
   },
   {
     "Pkg": "pkg-zhanshi-hard-full",
-    "Count": 28,
-    "Bytes": 1500308,
+    "Count": 30,
+    "Bytes": 1634744,
     "Missing": [],
     "Extra": [],
     "MissingCount": 0,
@@ -43,6 +43,16 @@
     "Pkg": "pkg-zhanshi-newbie",
     "Count": 1,
     "Bytes": 107760,
+    "Missing": [],
+    "Extra": [],
+    "MissingCount": 0,
+    "ExtraCount": 0,
+    "Pruned": 0
+  },
+  {
+    "Pkg": "pkg-zhanshi-nightmare",
+    "Count": 6,
+    "Bytes": 595680,
     "Missing": [],
     "Extra": [],
     "MissingCount": 0,

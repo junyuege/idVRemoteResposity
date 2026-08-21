@@ -245,23 +245,23 @@ module.exports = {
     "w": 640,
     "h": 834
   },
-  "pkg-zhanshi-hard-fast/assets/▃▃/侧门在左/右路  右丨（上可能随机刷新宝藏房）.jpg": {
+  "pkg-zhanshi-hard-fast/assets/▃▃/侧门在左/右路  右丨   右下┣.jpg": {
     "w": 640,
     "h": 834
   },
-  "pkg-zhanshi-hard-fast/assets/▃▃/侧门在左/右路  右丨2.jpg": {
+  "pkg-zhanshi-hard-fast/assets/▃▃/侧门在左/右路  右丨   右下十▃▃.jpg": {
     "w": 640,
     "h": 834
   },
-  "pkg-zhanshi-hard-fast/assets/▃▃/侧门在左/右路 右▃▃.jpg": {
+  "pkg-zhanshi-hard-fast/assets/▃▃/侧门在左/右路 右丨   右下十丨.jpg": {
     "w": 640,
     "h": 834
   },
-  "pkg-zhanshi-hard-fast/assets/▃▃/侧门在左/右路 右丨3.jpg": {
+  "pkg-zhanshi-hard-fast/assets/▃▃/侧门在左/右路 右丨   右下楼梯.jpg": {
     "w": 640,
     "h": 491
   },
-  "pkg-zhanshi-hard-fast/assets/▃▃/侧门在左/右路 右丨4.jpg": {
+  "pkg-zhanshi-hard-fast/assets/▃▃/侧门在左/右路3 右▃▃.jpg": {
     "w": 640,
     "h": 834
   },
@@ -317,6 +317,14 @@ module.exports = {
     "w": 640,
     "h": 834
   },
+  "pkg-zhanshi-hard-full/assets/┗/侧门在右.jpg": {
+    "w": 640,
+    "h": 834
+  },
+  "pkg-zhanshi-hard-full/assets/┗/侧门在中.jpg": {
+    "w": 640,
+    "h": 834
+  },
   "pkg-zhanshi-hard-full/assets/┗/侧门在上/右路 右▍.jpg": {
     "w": 640,
     "h": 834
@@ -329,15 +337,15 @@ module.exports = {
     "w": 640,
     "h": 834
   },
-  "pkg-zhanshi-hard-full/assets/┣/侧门在下/侧门在下   左路右路.jpg": {
+  "pkg-zhanshi-hard-full/assets/┣/侧门在下   左路右路.jpg": {
     "w": 640,
     "h": 491
   },
-  "pkg-zhanshi-hard-full/assets/┳/侧门在上/侧门在上.jpg": {
+  "pkg-zhanshi-hard-full/assets/┳/侧门在上.jpg": {
     "w": 640,
     "h": 834
   },
-  "pkg-zhanshi-hard-full/assets/▁┃━/侧门在上/侧门在上   左路右路下路.jpg": {
+  "pkg-zhanshi-hard-full/assets/▁┃━/侧门在上   左路右路下路.jpg": {
     "w": 640,
     "h": 834
   },
@@ -353,31 +361,31 @@ module.exports = {
     "w": 640,
     "h": 834
   },
-  "pkg-zhanshi-hard-full/assets/▃▃/侧门在左/上路右路（下可能随机刷新宝藏房）.jpg": {
+  "pkg-zhanshi-hard-full/assets/▃▃/侧门在左/上路右路.jpg": {
     "w": 640,
     "h": 834
   },
-  "pkg-zhanshi-hard-full/assets/▃▃/侧门在左/右路  右丨2.jpg": {
+  "pkg-zhanshi-hard-full/assets/▃▃/侧门在左/右路  右丨   右下┣.jpg": {
     "w": 640,
     "h": 834
   },
-  "pkg-zhanshi-hard-full/assets/▃▃/侧门在左/右路  右丨（上可能随机刷新宝藏房）.jpg": {
+  "pkg-zhanshi-hard-full/assets/▃▃/侧门在左/右路  右丨   右下十▃▃.jpg": {
     "w": 640,
     "h": 834
   },
-  "pkg-zhanshi-hard-full/assets/▃▃/侧门在左/右路 右▃▃.jpg": {
+  "pkg-zhanshi-hard-full/assets/▃▃/侧门在左/右路 右丨   右下十丨.jpg": {
     "w": 640,
     "h": 834
   },
-  "pkg-zhanshi-hard-full/assets/▃▃/侧门在左/右路 右丨3.jpg": {
+  "pkg-zhanshi-hard-full/assets/▃▃/侧门在左/右路 右丨   右下楼梯.jpg": {
     "w": 640,
     "h": 491
   },
-  "pkg-zhanshi-hard-full/assets/▃▃/侧门在左/右路 右丨4.jpg": {
+  "pkg-zhanshi-hard-full/assets/▃▃/侧门在左/右路2 右▌（左下楼梯间，右红房间）.jpg": {
     "w": 640,
     "h": 834
   },
-  "pkg-zhanshi-hard-full/assets/▃▃/侧门在左/右路3 右▌（左下楼梯间，右红房间）.jpg": {
+  "pkg-zhanshi-hard-full/assets/▃▃/侧门在左/右路3 右▃▃.jpg": {
     "w": 640,
     "h": 834
   },
@@ -420,6 +428,30 @@ module.exports = {
   "pkg-zhanshi-newbie/assets/目前全部只有一张.jpg": {
     "w": 1280,
     "h": 1668
+  },
+  "pkg-zhanshi-nightmare/assets/速刷版看法图文教学.jpg": {
+    "w": 379,
+    "h": 454
+  },
+  "pkg-zhanshi-nightmare/assets/上右路/上右路   右▃▃.jpg": {
+    "w": 1280,
+    "h": 1279
+  },
+  "pkg-zhanshi-nightmare/assets/上左右路/上左右路   右s.jpg": {
+    "w": 1280,
+    "h": 1279
+  },
+  "pkg-zhanshi-nightmare/assets/上左右路/上左右路  右└┐.jpg": {
+    "w": 1280,
+    "h": 1279
+  },
+  "pkg-zhanshi-nightmare/assets/上左路/上左路   上红┫.jpg": {
+    "w": 1280,
+    "h": 1279
+  },
+  "pkg-zhanshi-nightmare/assets/左右路/左右路   右s.jpg": {
+    "w": 1280,
+    "h": 1279
   },
   "pkg-zhanshi-normal/assets/┏/侧门在下/右路.jpg": {
     "w": 1024,

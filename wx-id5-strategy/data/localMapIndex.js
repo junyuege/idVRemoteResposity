@@ -821,289 +821,277 @@ module.exports = {
     ],
     "routes": [
       {
-        "id": "zhanshi-hard-full",
-        "legacyIds": [
-          "hard"
-        ],
-        "difficulty": "hard",
-        "variant": "full",
-        "authorId": "zhanshi",
-        "name": "困难 · 全棺版12.8",
-        "author": "展十版",
-        "packageRoot": "pkg-zhanshi-hard-full",
-        "assetNamespace": "maps/e_yun_zhi_nv/zhanshi/hard-full",
-        "shapeDir": "厄运困难（超清4k，宝藏房，展十版）全棺版12.8",
-        "shapes": [
-          "┏",
-          "┗",
-          "┣",
-          "┳",
-          "▁┃━",
-          "▃▃",
-          "▌",
-          "横Y"
-        ],
-        "shapeDetails": {
-          "┏": {
-            "doors": [
-              {
-                "door": "侧门在下",
-                "files": [
-                  "右路.jpg"
-                ]
-              },
-              {
-                "door": "侧门在右",
-                "files": [
-                  "上路下路 下┓.jpg",
-                  "上路下路 下▃▃.jpg"
-                ]
-              }
-            ]
+          "id": "zhanshi-hard-full",
+          "legacyIds": [
+            "hard"
+          ],
+          "difficulty": "hard",
+          "variant": "full",
+          "authorId": "zhanshi",
+          "name": "困难 · 全棺版13.0",
+          "author": "展十版",
+          "packageRoot": "pkg-zhanshi-hard-full",
+          "assetNamespace": "maps/e_yun_zhi_nv/zhanshi/hard-full",
+          "shapeDir": "厄运困难（超清4k，展十版）/厄运困难（超清4k，全棺路线，展十版）全棺版13.0",
+          "shapes": [
+            "┏",
+            "┗",
+            "┣",
+            "┳",
+            "▁┃━",
+            "▃▃",
+            "▌",
+            "横Y"
+          ],
+          "shapeDetails": {
+            "┏": {
+              "doors": [
+                {
+                  "door": "侧门在下",
+                  "files": [
+                    "右路.jpg"
+                  ]
+                },
+                {
+                  "door": "侧门在右",
+                  "files": [
+                    "上路下路 下┓.jpg",
+                    "上路下路 下▃▃.jpg"
+                  ]
+                }
+              ]
+            },
+            "┗": {
+              "doors": [
+                {
+                  "door": "侧门在上",
+                  "files": [
+                    "右路 右▍.jpg",
+                    "右路.jpg",
+                    "左路右路.jpg"
+                  ]
+                }
+              ],
+              "rootFiles": [
+                "侧门在右.jpg",
+                "侧门在中.jpg"
+              ]
+            },
+            "┣": {
+              "rootFiles": [
+                "侧门在下   左路右路.jpg"
+              ]
+            },
+            "┳": {
+              "rootFiles": [
+                "侧门在上.jpg"
+              ]
+            },
+            "▁┃━": {
+              "rootFiles": [
+                "侧门在上   左路右路下路.jpg"
+              ]
+            },
+            "▃▃": {
+              "doors": [
+                {
+                  "door": "侧门在右",
+                  "files": [
+                    "上路下路.jpg",
+                    "下路左路.jpg",
+                    "左路.jpg"
+                  ]
+                },
+                {
+                  "door": "侧门在左",
+                  "files": [
+                    "上路右路.jpg",
+                    "右路  右丨   右下┣.jpg",
+                    "右路  右丨   右下十▃▃.jpg",
+                    "右路 右丨   右下十丨.jpg",
+                    "右路 右丨   右下楼梯.jpg",
+                    "右路2 右▌（左下楼梯间，右红房间）.jpg",
+                    "右路3 右▃▃.jpg",
+                    "右路4 右凹.jpg"
+                  ]
+                }
+              ]
+            },
+            "▌": {
+              "doors": [
+                {
+                  "door": "侧门在上",
+                  "files": [
+                    "下路.jpg",
+                    "下路2.jpg",
+                    "左路右路下路.jpg"
+                  ]
+                },
+                {
+                  "door": "侧门在下",
+                  "files": [
+                    "左路上路.jpg",
+                    "左路右路2.jpg",
+                    "左路右路上路.jpg"
+                  ]
+                }
+              ]
+            },
+            "横Y": {
+              "doors": [
+                {
+                  "door": "侧门在斜左上",
+                  "files": [
+                    "斜左下路右路 右┣.jpg",
+                    "斜左下路右路 右■.jpg"
+                  ]
+                }
+              ]
+            }
           },
-          "┗": {
-            "doors": [
-              {
-                "door": "侧门在上",
-                "files": [
-                  "右路 右▍.jpg",
-                  "右路.jpg",
-                  "左路右路.jpg"
-                ]
-              }
-            ]
-          },
-          "┣": {
-            "doors": [
-              {
-                "door": "侧门在下",
-                "files": [
-                  "侧门在下   左路右路.jpg"
-                ]
-              }
-            ]
-          },
-          "┳": {
-            "doors": [
-              {
-                "door": "侧门在上",
-                "files": [
-                  "侧门在上.jpg"
-                ]
-              }
-            ]
-          },
-          "▁┃━": {
-            "doors": [
-              {
-                "door": "侧门在上",
-                "files": [
-                  "侧门在上   左路右路下路.jpg"
-                ]
-              }
-            ]
-          },
-          "▃▃": {
-            "doors": [
-              {
-                "door": "侧门在右",
-                "files": [
-                  "上路下路.jpg",
-                  "下路左路.jpg",
-                  "左路.jpg"
-                ]
-              },
-              {
-                "door": "侧门在左",
-                "files": [
-                  "上路右路（下可能随机刷新宝藏房）.jpg",
-                  "右路  右丨2.jpg",
-                  "右路  右丨（上可能随机刷新宝藏房）.jpg",
-                  "右路 右▃▃.jpg",
-                  "右路 右丨3.jpg",
-                  "右路 右丨4.jpg",
-                  "右路3 右▌（左下楼梯间，右红房间）.jpg",
-                  "右路4 右凹.jpg"
-                ]
-              }
-            ]
-          },
-          "▌": {
-            "doors": [
-              {
-                "door": "侧门在上",
-                "files": [
-                  "下路.jpg",
-                  "下路2.jpg",
-                  "左路右路下路.jpg"
-                ]
-              },
-              {
-                "door": "侧门在下",
-                "files": [
-                  "左路上路.jpg",
-                  "左路右路2.jpg",
-                  "左路右路上路.jpg"
-                ]
-              }
-            ]
-          },
-          "横Y": {
-            "doors": [
-              {
-                "door": "侧门在斜左上",
-                "files": [
-                  "斜左下路右路 右┣.jpg",
-                  "斜左下路右路 右■.jpg"
-                ]
-              }
-            ]
-          }
+          "rootFiles": []
         },
-        "rootFiles": []
-      },
       {
-        "id": "zhanshi-hard-fast",
-        "legacyIds": [
-          "hard_fast"
-        ],
-        "difficulty": "hard",
-        "variant": "fast",
-        "authorId": "zhanshi",
-        "name": "困难 · 速刷版12.7",
-        "author": "展十版",
-        "packageRoot": "pkg-zhanshi-hard-fast",
-        "assetNamespace": "maps/e_yun_zhi_nv/zhanshi/hard-fast",
-        "shapeDir": "厄运困难（超清4k，宝藏房，展十版）速刷版12.7",
-        "shapes": [
-          "┏",
-          "┗",
-          "┣",
-          "┳",
-          "▁┃━",
-          "▃▃",
-          "▌",
-          "横Y"
-        ],
-        "shapeDetails": {
-          "┏": {
-            "doors": [
-              {
-                "door": "侧门在下",
-                "files": [
-                  "右路.jpg"
-                ]
-              },
-              {
-                "door": "侧门在右",
-                "files": [
-                  "上路下路 下┓.jpg",
-                  "上路下路 下▃▃.jpg"
-                ]
-              }
-            ]
+          "id": "zhanshi-hard-fast",
+          "legacyIds": [
+            "hard_fast"
+          ],
+          "difficulty": "hard",
+          "variant": "fast",
+          "authorId": "zhanshi",
+          "name": "困难 · 速刷版12.9",
+          "author": "展十版",
+          "packageRoot": "pkg-zhanshi-hard-fast",
+          "assetNamespace": "maps/e_yun_zhi_nv/zhanshi/hard-fast",
+          "shapeDir": "厄运困难（超清4k，展十版）/厄运困难（超清4k，速刷路线，展十版）速刷版12.9",
+          "shapes": [
+            "┏",
+            "┗",
+            "┣",
+            "┳",
+            "▁┃━",
+            "▃▃",
+            "▌",
+            "横Y"
+          ],
+          "shapeDetails": {
+            "┏": {
+              "doors": [
+                {
+                  "door": "侧门在下",
+                  "files": [
+                    "右路.jpg"
+                  ]
+                },
+                {
+                  "door": "侧门在右",
+                  "files": [
+                    "上路下路 下┓.jpg",
+                    "上路下路 下▃▃.jpg"
+                  ]
+                }
+              ]
+            },
+            "┗": {
+              "doors": [
+                {
+                  "door": "侧门在上",
+                  "files": [
+                    "右路 右▍.jpg",
+                    "右路.jpg",
+                    "左路右路.jpg"
+                  ]
+                }
+              ],
+              "rootFiles": [
+                "侧门在右.jpg",
+                "侧门在中.jpg"
+              ]
+            },
+            "┣": {
+              "doors": [
+                {
+                  "door": "侧门在下",
+                  "files": [
+                    "左路右路.jpg"
+                  ]
+                }
+              ]
+            },
+            "┳": {
+              "rootFiles": [
+                "侧门在上.jpg"
+              ]
+            },
+            "▁┃━": {
+              "doors": [
+                {
+                  "door": "侧门在上",
+                  "files": [
+                    "左路右路下路.jpg"
+                  ]
+                }
+              ]
+            },
+            "▃▃": {
+              "doors": [
+                {
+                  "door": "侧门在右",
+                  "files": [
+                    "上路下路.jpg",
+                    "下路左路.jpg",
+                    "左路.jpg"
+                  ]
+                },
+                {
+                  "door": "侧门在左",
+                  "files": [
+                    "上路右路（下可能随机刷新宝藏房）.jpg",
+                    "右路  右丨   右下┣.jpg",
+                    "右路  右丨   右下十▃▃.jpg",
+                    "右路 右丨   右下十丨.jpg",
+                    "右路 右丨   右下楼梯.jpg",
+                    "右路3 右▃▃.jpg",
+                    "右路3 右▌（右红房间）.jpg",
+                    "右路4 右凹.jpg"
+                  ]
+                }
+              ]
+            },
+            "▌": {
+              "doors": [
+                {
+                  "door": "侧门在上",
+                  "files": [
+                    "下路.jpg",
+                    "下路2.jpg",
+                    "左路右路下路.jpg"
+                  ]
+                },
+                {
+                  "door": "侧门在下",
+                  "files": [
+                    "左路上路.jpg",
+                    "左路右路2.jpg",
+                    "左路右路上路.jpg"
+                  ]
+                }
+              ]
+            },
+            "横Y": {
+              "doors": [
+                {
+                  "door": "侧门在斜左上",
+                  "files": [
+                    "斜左下路右路 右┣.jpg",
+                    "斜左下路右路 右■.jpg"
+                  ]
+                }
+              ]
+            }
           },
-          "┗": {
-            "doors": [
-              {
-                "door": "侧门在上",
-                "files": [
-                  "右路 右▍.jpg",
-                  "右路.jpg",
-                  "左路右路.jpg"
-                ]
-              }
-            ],
-            "rootFiles": [
-              "侧门在右.jpg",
-              "侧门在中.jpg"
-            ]
-          },
-          "┣": {
-            "doors": [
-              {
-                "door": "侧门在下",
-                "files": [
-                  "左路右路.jpg"
-                ]
-              }
-            ]
-          },
-          "┳": {
-            "doors": [],
-            "rootFiles": [
-              "侧门在上.jpg"
-            ]
-          },
-          "▁┃━": {
-            "doors": [
-              {
-                "door": "侧门在上",
-                "files": [
-                  "左路右路下路.jpg"
-                ]
-              }
-            ]
-          },
-          "▃▃": {
-            "doors": [
-              {
-                "door": "侧门在右",
-                "files": [
-                  "上路下路.jpg",
-                  "下路左路.jpg",
-                  "左路.jpg"
-                ]
-              },
-              {
-                "door": "侧门在左",
-                "files": [
-                  "上路右路（下可能随机刷新宝藏房）.jpg",
-                  "右路  右丨（上可能随机刷新宝藏房）.jpg",
-                  "右路  右丨2.jpg",
-                  "右路 右▃▃.jpg",
-                  "右路 右丨3.jpg",
-                  "右路 右丨4.jpg",
-                  "右路3 右▌（右红房间）.jpg",
-                  "右路4 右凹.jpg"
-                ]
-              }
-            ]
-          },
-          "▌": {
-            "doors": [
-              {
-                "door": "侧门在上",
-                "files": [
-                  "下路.jpg",
-                  "下路2.jpg",
-                  "左路右路下路.jpg"
-                ]
-              },
-              {
-                "door": "侧门在下",
-                "files": [
-                  "左路上路.jpg",
-                  "左路右路2.jpg",
-                  "左路右路上路.jpg"
-                ]
-              }
-            ]
-          },
-          "横Y": {
-            "doors": [
-              {
-                "door": "侧门在斜左上",
-                "files": [
-                  "斜左下路右路 右┣.jpg",
-                  "斜左下路右路 右■.jpg"
-                ]
-              }
-            ]
-          }
+          "rootFiles": []
         },
-        "rootFiles": []
-      },
       {
         "id": "zhanshi-normal",
         "legacyIds": [
@@ -1427,6 +1415,49 @@ module.exports = {
           "目前全部只有一张.jpg"
         ]
       },
+{
+          "id": "zhanshi-nightmare",
+          "legacyIds": [],
+          "difficulty": "nightmare",
+          "authorId": "zhanshi",
+          "name": "噩梦 · 速刷版13.2",
+          "author": "展十版",
+          "packageRoot": "pkg-zhanshi-nightmare",
+          "assetNamespace": "maps/e_yun_zhi_nv/zhanshi/nightmare",
+          "shapeDir": "厄运噩梦（超清4k，展十版）/厄运噩梦（超清4k，全棺路线，展十版）速刷版13.2",
+          "shapes": [
+            "上右路",
+            "上左右路",
+            "上左路",
+            "左右路"
+          ],
+          "shapeDetails": {
+            "上右路": {
+              "rootFiles": [
+                "上右路   右▃▃.jpg"
+              ]
+            },
+            "上左右路": {
+              "rootFiles": [
+                "上左右路   右s.jpg",
+                "上左右路  右└┐.jpg"
+              ]
+            },
+            "上左路": {
+              "rootFiles": [
+                "上左路   上红┫.jpg"
+              ]
+            },
+            "左右路": {
+              "rootFiles": [
+                "左右路   右s.jpg"
+              ]
+            }
+          },
+          "rootFiles": [
+            "速刷版看法图文教学.jpg"
+          ]
+        },
       {
         "id": "lianghapi-v0710",
         "legacyIds": [
