@@ -7,7 +7,7 @@ const CACHE_TTL = 60 * 60 * 1000; // 缓存 1 小时
 function isCloudReady() {
   try {
     const app = getApp();
-    return Boolean(app && app.globalData && app.globalData.cloudReady && wx.cloud && wx.cloud.database);
+    return Boolean(app && app.globalData && app.globalData.cloudReady && wx.cloud && wx.cloud.callFunction);
   } catch (e) {
     return false;
   }
@@ -23,7 +23,9 @@ function saveState(state) {
 
 function itemVersion(item) {
   if (!item) return 0;
-  const t = item.updatedAt ? new Date(item.updatedAt).getTime() : 0;
+  // 与 adminApi 写入字段对齐：updateTime / createTime（serverDate）
+  const raw = item.updateTime || item.createdAt || 0;
+  const t = raw ? new Date(raw).getTime() : 0;
   return isFinite(t) ? t : 0;
 }
 
@@ -69,6 +71,7 @@ function setCached(item) {
 
 /**
  * 获取当前上线中的公告（单条）。
+ * 读取走 adminApi.getAnnouncement 公开 action：无需集合读权限，服务端绕过权限模型。
  * 云不可用 -> 返回缓存兜底；查询失败 -> 返回缓存；无公告 -> null。绝不 reject。
  */
 function fetchActive() {
@@ -76,18 +79,15 @@ function fetchActive() {
     const cached = getCached();
     if (!isCloudReady()) { resolve(cached); return; }
     try {
-      wx.cloud.database().collection('announcements')
-        .where({ active: true })
-        .orderBy('updatedAt', 'desc')
-        .limit(1)
-        .get()
-        .then((res) => {
-          const list = (res && res.data) || [];
-          const item = list[0] || null;
-          if (item) setCached(item);
-          resolve(item);
-        })
-        .catch(() => resolve(cached));
+      wx.cloud.callFunction({
+        name: 'adminApi',
+        data: { action: 'getAnnouncement' }
+      }).then((res) => {
+        const result = (res && res.result) || {};
+        const item = (result.code === 0 && result.data && result.data.item) || null;
+        if (item) setCached(item);
+        resolve(item);
+      }).catch(() => resolve(cached));
     } catch (e) {
       resolve(cached);
     }

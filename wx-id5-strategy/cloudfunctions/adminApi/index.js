@@ -5,6 +5,7 @@
  * action:
  *   whoami            -> 返回当前 openid 与是否管理员
  *   bindAdmin         -> 使用绑定码把当前 openid 写入 admin_users
+ *   getAnnouncement   -> 【公开】返回当前上线中的公告（无需管理员身份）
  *   listFeedback      -> 分页返回反馈
  *   updateFeedback    -> 更新反馈状态，并记录处理人与处理时间
  *   analyticsSummary  -> 事件汇总、每日趋势、Top 路线、Top 失败图片
@@ -129,6 +130,17 @@ exports.main = async (event) => {
         });
       }
       return { code: 0, data: { openid: OPENID, isAdmin: true }, message: 'success' };
+    }
+
+    // 公告为公开数据：走云函数读取，客户端无需集合读权限
+    if (action === 'getAnnouncement') {
+      try {
+        const res = await db.collection('announcements').where({ active: true }).limit(1).get();
+        return { code: 0, data: { item: (res.data || [])[0] || null }, message: 'success' };
+      } catch (e) {
+        // 集合尚不存在等情形：视为无公告
+        return { code: 0, data: { item: null }, message: 'success' };
+      }
     }
 
     if (!(await isAdmin(OPENID))) {
