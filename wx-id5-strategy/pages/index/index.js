@@ -8,9 +8,19 @@ const RECENT_COLLAPSED_COUNT = 2; // 默认只展示 2 条，其余收起
 
 // 难度标签压缩 + 特殊版别名（与样式类的难度顺序一致）
 const DIFF_RANK = { newbie: 0, easy: 1, normal: 2, hard: 3, nightmare: 4, special: 5 };
+const DIFF_LABEL = { newbie: '新手', easy: '简单', normal: '普通', hard: '困难', nightmare: '噩梦' };
 
-function fmtLabel(name) {
+function fmtLabel(name, difficulty) {
   if (!name) return '';
+  // 难度字段优先：噩梦路线名可能含"速刷"，不能只按名称子串判断
+  if (difficulty && DIFF_LABEL[difficulty]) {
+    if (difficulty === 'hard') {
+      if (name.indexOf('速刷') > -1) return '困难·速刷';
+      if (name.indexOf('全棺') > -1) return '困难·全棺';
+      return '困难';
+    }
+    return DIFF_LABEL[difficulty];
+  }
   if (name.indexOf('速刷') > -1) return '困难·速刷';
   if (name.indexOf('全棺') > -1) return '困难·全棺';
   if (name.indexOf('新版') > -1) return '新版';
@@ -62,7 +72,7 @@ Page({
         const order = authorRoutes.map((r, i) => ({
           id: r.id,
           name: r.name,
-          label: fmtLabel(r.name),
+          label: fmtLabel(r.name, r.difficulty),
           difficulty: r.difficulty || r.id,
           __order: i
         })).sort((a, b) => a.label.length - b.label.length || (DIFF_RANK[a.difficulty] == null ? 99 : DIFF_RANK[a.difficulty]) - (DIFF_RANK[b.difficulty] == null ? 99 : DIFF_RANK[b.difficulty]) || a.__order - b.__order);

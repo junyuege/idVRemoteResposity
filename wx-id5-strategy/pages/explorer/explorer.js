@@ -2,9 +2,19 @@ const api = require('../../data/api.js');
 const analytics = require('../../utils/analytics.js');
 
 const DIFF_RANK = { newbie: 0, easy: 1, normal: 2, hard: 3, nightmare: 4, special: 5 };
+const DIFF_LABEL = { newbie: '新手', easy: '简单', normal: '普通', hard: '困难', nightmare: '噩梦' };
 
-function formatRouteLabel(name) {
+function formatRouteLabel(name, difficulty) {
   if (!name) return '';
+  // 难度字段优先：噩梦路线名可能含"速刷"，不能只按名称子串判断
+  if (difficulty && DIFF_LABEL[difficulty]) {
+    if (difficulty === 'hard') {
+      if (name.indexOf('速刷') > -1) return '困难·速刷';
+      if (name.indexOf('全棺') > -1) return '困难·全棺';
+      return '困难';
+    }
+    return DIFF_LABEL[difficulty];
+  }
   if (name.indexOf('速刷') > -1) return '困难·速刷';
   if (name.indexOf('全棺') > -1) return '困难·全棺';
   if (name.indexOf('新版') > -1) return '新版';
@@ -74,14 +84,24 @@ Page({
         return;
       }
 
+      // 难度倒序：玩家高频的噩梦/困难排前；同难度下速刷版先于全棺版
+      const VARIANT_RANK = { fast: 0, full: 1 };
       routes = routes
         .slice()
-        .sort((a, b) => (DIFF_RANK[a.difficulty] == null ? 99 : DIFF_RANK[a.difficulty]) - (DIFF_RANK[b.difficulty] == null ? 99 : DIFF_RANK[b.difficulty]))
+        .sort((a, b) => {
+          const ra = DIFF_RANK[a.difficulty] == null ? 99 : DIFF_RANK[a.difficulty];
+          const rb = DIFF_RANK[b.difficulty] == null ? 99 : DIFF_RANK[b.difficulty];
+          if (ra !== rb) return rb - ra;
+          const va = VARIANT_RANK[a.variant] == null ? 9 : VARIANT_RANK[a.variant];
+          const vb = VARIANT_RANK[b.variant] == null ? 9 : VARIANT_RANK[b.variant];
+          return va - vb;
+        })
         .map(route => ({
           id: route.id,
           name: route.name || '',
-          label: formatRouteLabel(route.name),
+          label: formatRouteLabel(route.name, route.difficulty),
           difficulty: route.difficulty || '',
+          variant: route.variant || '',
           authorId: route.authorId || '',
           author: route.author || '其他'
         }));
