@@ -124,7 +124,8 @@ function assert(condition, message) { if (!condition) throw new Error(message); 
     }
     const inventory = loadPage('pages/inventory/inventory.js');
     inventory.onLoad();
-    assert(inventory.data.allItems.length === 54, 'inventory entries mismatch');
+    const expectedInventory = api.getInventoryData().length + api.getChapterData().length;
+    assert(inventory.data.allItems.length === expectedInventory, 'inventory entries mismatch');
     const index = loadPage('pages/index/index.js');
     index.onLoad();
     assert(index.data.recentHistory.length > 0, 'recent history missing');
