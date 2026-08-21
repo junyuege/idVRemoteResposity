@@ -253,7 +253,15 @@ async function main() {
       }
       const buf = Buffer.from(await res.arrayBuffer());
       fs.writeFileSync(path.join(ROOT, entry.iconFile), buf);
-      console.log('[图标] ' + entry.iconFile + ' (' + Math.round(buf.length / 1024) + 'KB)');
+      let finalSize = buf.length;
+      // 新图标立即压缩归一，避免 BWIKI 原图撑爆主包
+      try {
+        const { compressOne } = require('./compress-inventory-icons.js');
+        finalSize = await compressOne(path.join(ROOT, entry.iconFile), 180);
+      } catch (e) {
+        console.warn('[图标] 压缩跳过:', e.message || e);
+      }
+      console.log('[图标] ' + entry.iconFile + ' (' + Math.round(finalSize / 1024) + 'KB)');
     }
   }
 

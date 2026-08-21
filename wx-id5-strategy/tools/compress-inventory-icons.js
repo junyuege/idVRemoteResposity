@@ -49,29 +49,39 @@ async function main() {
   let afterTotal = 0;
   for (const file of targets) {
     const before = fs.statSync(file).size;
-    const buffer = await sharp(file)
-      .resize({ width: maxWidth, height: maxWidth, fit: 'inside', withoutEnlargement: true })
-      .png({ palette: true, compressionLevel: 9 })
-      .toBuffer();
-    // 仅在确实变小或尺寸变化时写回；异常放大则保留原文件
-    if (buffer.length < before) {
-      fs.writeFileSync(file, buffer);
-    }
-    const after = Math.min(before, buffer.length);
+    const after = await compressOne(file, maxWidth);
     beforeTotal += before;
     afterTotal += after;
     const rel = path.relative(TARGET_DIR, file);
     console.log(
       rel.padEnd(40) +
       ' ' + (before / 1024).toFixed(1) + 'KB -> ' + (after / 1024).toFixed(1) + 'KB' +
-      (buffer.length >= before ? '（保留原文件）' : '')
+      (after >= before ? '（保留原文件）' : '')
     );
   }
   console.log('\n合计: ' + (beforeTotal / 1024).toFixed(0) + 'KB -> ' + (afterTotal / 1024).toFixed(0) + 'KB' +
     '（节省 ' + (100 - afterTotal * 100 / Math.max(1, beforeTotal)).toFixed(0) + '%）');
 }
 
-main().catch(err => {
-  console.error('压缩失败:', err.message || err);
-  process.exit(1);
-});
+// 压缩单个图标：调色板 PNG + 尺寸归一，仅在变小后写回。返回最终字节数。
+async function compressOne(file, maxWidth) {
+  const before = fs.statSync(file).size;
+  const buffer = await sharp(file)
+    .resize({ width: maxWidth, height: maxWidth, fit: 'inside', withoutEnlargement: true })
+    .png({ palette: true, compressionLevel: 9 })
+    .toBuffer();
+  if (buffer.length < before) {
+    fs.writeFileSync(file, buffer);
+    return buffer.length;
+  }
+  return before;
+}
+
+if (require.main === module) {
+  main().catch(err => {
+    console.error('压缩失败:', err.message || err);
+    process.exit(1);
+  });
+}
+
+module.exports = { compressOne };
