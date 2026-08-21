@@ -1,9 +1,0 @@
-{
-  "name": "adminApi",
-  "version": "1.0.0",
-  "description": "管理员接口：身份识别、反馈列表与状态更新、统计汇总",
-  "main": "index.js",
-  "dependencies": {
-    "wx-server-sdk": "4.0.2"
-  }
-}
