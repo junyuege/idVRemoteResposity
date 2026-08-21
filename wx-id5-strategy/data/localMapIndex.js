@@ -11,9 +11,7 @@ module.exports = {
     "icon": "/images/inventory/anomaly/negligent_guard_hard.png",
     "description": "兼具远程威胁和追击能力的难缠敌人。同时，面对玩家的攻击，它能够遁入黑暗以进行有效的规避。",
     "counter": "当看见他开始挥舞锁链时，要注意横向移动或者蹲下来规避攻击，否则将被拉到他面前承受更大的威胁，你可能需要一些耐心来面对这个可怜的家伙。",
-    "maps": [
-      "困难"
-    ]
+    "maps": ["困难", "噩梦"]
   },
   {
     "category": "anomaly",
@@ -22,12 +20,7 @@ module.exports = {
     "icon": "/images/inventory/anomaly/doom_stand_in.png",
     "description": "厄运替身的攻击势大力沉，而且还会在远处对玩家发起冲锋。且蓄力冲锋命中玩家时，还会将玩家击飞。",
     "counter": "厄运替身作战请一定和它保持好距离。打不过的话也可以选择逃走。",
-    "maps": [
-      "新手",
-      "简单",
-      "普通",
-      "困难"
-    ]
+    "maps": ["新手", "简单", "普通", "困难", "噩梦"]
   },
   {
     "category": "anomaly",
@@ -36,10 +29,7 @@ module.exports = {
     "icon": "/images/inventory/anomaly/greedy_bandit_hard.png",
     "description": "高高跃起，重击地面。对前方大范围地面区域造成范围伤害。蓄力时跃击还会将玩家击倒。",
     "counter": "尝试让自己的角色像异象那样高高跃起。或者尝试快速离开异象的攻击范围。",
-    "maps": [
-      "普通",
-      "困难"
-    ]
+    "maps": ["普通", "困难", "噩梦"]
   },
   {
     "category": "anomaly",
@@ -48,11 +38,7 @@ module.exports = {
     "icon": "/images/inventory/anomaly/silent_gentleman.png",
     "description": "你可以和变身前的绅士交换一件物品，但是记住别吵到他。变身后的绅士会疯狂的追击玩家，并尝试用武器将玩家撕开。",
     "counter": "轻手轻脚，别吵到他。如果异象已经被激怒，请尝试逃走，或者呼叫支援。",
-    "maps": [
-      "简单",
-      "普通",
-      "困难"
-    ]
+    "maps": ["简单", "普通", "困难", "噩梦"]
   },
   {
     "category": "anomaly",
@@ -61,10 +47,7 @@ module.exports = {
     "icon": "/images/inventory/anomaly/negligent_guard.png",
     "description": "兼具远程威胁和追击能力的难缠敌人。同时，面对玩家的攻击，它能够遁入黑暗以进行有效的规避。",
     "counter": "当看见他开始挥舞锁链时，要注意横向移动或者蹲下来规避攻击，否则将被拉到他面前承受更大的威胁，你可能需要一些耐心来面对这个可怜的家伙。",
-    "maps": [
-      "普通",
-      "困难"
-    ]
+    "maps": ["普通", "困难", "噩梦"]
   },
   {
     "category": "anomaly",
@@ -73,11 +56,7 @@ module.exports = {
     "icon": "/images/inventory/anomaly/mirror_memory.png",
     "description": "镜子会孵化伴生渡鸦追击玩家。只要镜子没有被消灭，被击倒的渡鸦会再次复活。",
     "counter": "观察伴生渡鸦落下的羽毛，尝试找到并摧毁镜子。",
-    "maps": [
-      "简单",
-      "普通",
-      "困难"
-    ]
+    "maps": ["简单", "普通", "困难", "噩梦"]
   },
   {
     "category": "anomaly",
@@ -86,11 +65,7 @@ module.exports = {
     "icon": "/images/inventory/anomaly/greedy_bandit.png",
     "description": "高高跃起，重击地面。对前方大范围地面区域造成范围伤害。",
     "counter": "尝试让自己的角色像异象那样高高跃起。或者尝试快速离开异象的攻击范围。",
-    "maps": [
-      "简单",
-      "普通",
-      "困难"
-    ]
+    "maps": ["简单", "普通", "困难", "噩梦"]
   },
   {
     "category": "anomaly",
@@ -99,12 +74,7 @@ module.exports = {
     "icon": "/images/inventory/anomaly/sigh_ball_hard.png",
     "description": "通过附身玩家来造成伤害，多只气球附身时将对玩家产生控制效果。要小心它死亡之前会自爆来造成伤害。",
     "counter": "优先清理，单只叹息球并没有威胁能力，但要小心其成群出现，需要留意身旁每一个叹息球的位置。",
-    "maps": [
-      "新手",
-      "简单",
-      "普通",
-      "困难"
-    ]
+    "maps": ["新手", "简单", "普通", "困难", "噩梦"]
   },
   {
     "category": "anomaly",
@@ -113,11 +83,7 @@ module.exports = {
     "icon": "/images/inventory/anomaly/paper_pile.png",
     "description": "故纸堆会指引玩家找到埋藏的辞章，但它会攻击不听从指引的玩家。",
     "counter": "当故纸堆在指引你时，注意不要离它太远。",
-    "maps": [
-      "简单",
-      "普通",
-      "困难"
-    ]
+    "maps": ["简单", "普通", "困难", "噩梦"]
   },
   {
     "category": "anomaly",
@@ -126,12 +92,7 @@ module.exports = {
     "icon": "/images/inventory/anomaly/sigh_ball.png",
     "description": "通过附身玩家来造成伤害，多只气球附身时将对玩家产生控制效果。要小心它死亡之前会自爆来造成伤害。",
     "counter": "优先清理，单只叹息球并没有威胁能力，但要小心其成群出现，需要留意身旁每一个叹息球的位置。",
-    "maps": [
-      "新手",
-      "简单",
-      "普通",
-      "困难"
-    ]
+    "maps": ["新手", "简单", "普通", "困难", "噩梦"]
   },
   {
     "category": "anomaly",
@@ -140,12 +101,7 @@ module.exports = {
     "icon": "/images/inventory/anomaly/clumsy_bandit.png",
     "description": "寻常的新手盗贼，会挥动简易的木板攻击玩家。",
     "counter": "记得带把武器防身，毕竟他手上有块木板。",
-    "maps": [
-      "新手",
-      "简单",
-      "普通",
-      "困难"
-    ]
+    "maps": ["新手", "简单", "普通", "困难", "噩梦"]
   },
   {
     "category": "anomaly",
@@ -154,12 +110,70 @@ module.exports = {
     "icon": "/images/inventory/anomaly/nameless_doll.png",
     "description": "无名布偶发现你后会尝试一直跟在你身边。无名布偶需要安抚，长时间被无视会变身成为厄运替身。",
     "counter": "安抚无名布偶。或者找一个机会提前解决这个潜在的隐患。",
-    "maps": [
-      "新手",
-      "简单",
-      "普通",
-      "困难"
-    ]
+    "maps": ["新手", "简单", "普通", "困难", "噩梦"]
+  },
+  {
+    "category": "anomaly",
+    "id": "doom_lady",
+    "name": "厄运之女（异象）",
+    "icon": "/images/inventory/anomaly/doom_lady.png",
+    "description": "轻盈且锋利，优雅而致命。厄运之女会灵巧地运用自己的羽翼来造成伤害，注意躲避。",
+    "counter": "合理利用场内建筑，躲避厄运之女的攻击。冷静判断形式，原路离开不失为一种选择。",
+    "maps": ["噩梦"]
+  },
+  {
+    "category": "anomaly",
+    "id": "readers_musing",
+    "name": "读者的揣摩",
+    "icon": "/images/inventory/anomaly/readers_musing.png",
+    "description": "读者的揣摩开始表演时，会强迫你观看演出。倘若你敬而远之或执意忽视，第一次会被施加减速，第二次则会彻底激怒它，引来攻击。",
+    "counter": "当读者的揣摩靠近时，至少观看一次表演。它知道自己该何时退场。",
+    "maps": ["噩梦"]
+  },
+  {
+    "category": "anomaly",
+    "id": "readers_review",
+    "name": "读者的审阅",
+    "icon": "/images/inventory/anomaly/readers_review.png",
+    "description": "读者的审阅将会标记有误的情节，并不停歇地审阅每个角落。倘若无法在它的审阅中做出正确选择，便会遭到无情的剔除。",
+    "counter": "根据读者的审阅的瞳孔收缩，及时做出选择。当它开始标记时，记得保持完全静止，避免被它发觉。",
+    "maps": ["噩梦"]
+  },
+  {
+    "category": "anomaly",
+    "id": "collector_puppet",
+    "name": "拾遗木偶",
+    "icon": "/images/inventory/anomaly/collector_puppet.png",
+    "description": "拾遗木偶会依据你给予物品的价值，将你传送到特定地点。善意的交换可以换取进入拾遗宝库的机会；若选择击败木偶，则会遭到惩罚。",
+    "counter": "对拾遗木偶友好些！尽量用高价值物品换取更好的传送机会。",
+    "maps": ["噩梦"]
+  },
+  {
+    "category": "anomaly",
+    "id": "collapsed_bookshelf",
+    "name": "倾颓书架",
+    "icon": "/images/inventory/anomaly/collapsed_bookshelf.png",
+    "description": "倾颓书架大部分的躯体都坚不可摧，擅长挥动修长的四肢发起攻击。",
+    "counter": "攻击躯体很难对倾颓书架造成足够的伤害，试试看直接命中那本翻开的书。",
+    "maps": ["噩梦"]
+  },
+  {
+    "category": "anomaly",
+    "id": "flagstaff_ghost",
+    "name": "旗杆阴兵",
+    "icon": "/images/inventory/anomaly/flagstaff_ghost.png",
+    "description": "旗杆阴兵难以察觉静止的对象，但对于移动的目标更加敏感。在被号角阴兵鼓舞后，还会使出更强力的招式。",
+    "counter": "在被旗杆阴兵发现之前原地静止，一旦进入战斗，注意躲避他的攻击。",
+    "maps": ["普通", "困难"]
+  },
+  {
+    "category": "anomaly",
+    "id": "horn_ghost",
+    "name": "号角阴兵",
+    "icon": "/images/inventory/anomaly/horn_ghost.png",
+    "description": "号角阴兵能够大范围感知移动中或发出声响的对象。当发现目标后，他便会吹响号角，让周围的所有异象朝向该位置巡逻。",
+    "counter": "缓慢移动或者原地静止以消除号角阴兵的警戒值。当发现号角阴兵的位置时，优先击败他。",
+    "maps": ["困难"]
   },
   {
     "category": "material",
@@ -304,6 +318,18 @@ module.exports = {
     "weight": "1kg",
     "durability": "无耐久",
     "description": "投掷出跃动的嘲弄后，可以在投掷点生成幻影。幻影将持续挑衅，吸引异象攻击，直至幻影被击败或持续时间结束。此时幻影将被引爆，减速范围内异象。"
+  },
+  {
+    "category": "material",
+    "id": "past_echo",
+    "name": "旧日回声",
+    "icon": "/images/inventory/material/past_echo.png",
+    "quality": "奇珍",
+    "type": "辅助",
+    "value": 12000,
+    "weight": "3kg",
+    "durability": "100/100",
+    "description": "携带旧日回声时，可以将其放置在任意地点并播放乐曲。乐曲生效范围内，异象无法进入，也无法对异象造成伤害。指明方向的同时，是否也在黑暗中揭露着你所处的位置？"
   }
 ],
   "chapterData": [
@@ -666,6 +692,114 @@ module.exports = {
     "price": 250000,
     "map": "厄运之女",
     "description": "三条造型各异的蛇眉铜鱼，构成了一只首尾相连的环。"
+  },
+  {
+    "category": "chapter",
+    "id": "pingzhuang_youhuo",
+    "name": "瓶装幽火",
+    "quality": "稀世",
+    "group": "联动辞章",
+    "icon": "/images/inventory/chapter/pingzhuang_youhuo.png",
+    "weight": "5",
+    "price": 500000,
+    "map": "厄运之女",
+    "description": "火焰塑造出便于隐匿的样貌，想要照照镜子吗？"
+  },
+  {
+    "category": "chapter",
+    "id": "wuhui_mianju",
+    "name": "舞会面具",
+    "quality": "稀世",
+    "group": "联动辞章",
+    "icon": "/images/inventory/chapter/wuhui_mianju.png",
+    "weight": "10",
+    "price": 300000,
+    "map": "厄运之女",
+    "description": "纯金铸成的面具，镀上柔白的色彩。它更适合出现在灯火、舞步、乐曲与衣香鬓影间，被覆盖的面孔下，藏着另一重不愿被认出的身份。"
+  },
+  {
+    "category": "chapter",
+    "id": "chahu",
+    "name": "茶壶",
+    "quality": "稀世",
+    "group": "联动辞章",
+    "icon": "/images/inventory/chapter/chahu.png",
+    "weight": "15",
+    "price": 80000,
+    "map": "厄运之女",
+    "description": "融合了东方韵味与维多利亚风情的茶壶。青色的花草被细致的镶金包裹，来自两种文化的技艺在它身上交汇，浑然一体，相得益彰。"
+  },
+  {
+    "category": "chapter",
+    "id": "dantong_wangyuanjing",
+    "name": "单筒望远镜",
+    "quality": "奇珍",
+    "group": "联动辞章",
+    "icon": "/images/inventory/chapter/dantong_wangyuanjing.png",
+    "weight": "12",
+    "price": 10000,
+    "map": "厄运之女",
+    "description": "镜片中仍清楚映着那些遥远的事物。只是那些遥远的地方，它已经很久没去过了。"
+  },
+  {
+    "category": "chapter",
+    "id": "eyun_de_kuizeng",
+    "name": "厄运的馈赠",
+    "quality": "奇珍",
+    "group": "联动辞章",
+    "icon": "/images/inventory/chapter/eyun_de_kuizeng.png",
+    "weight": "1",
+    "price": 10000,
+    "map": "厄运之女",
+    "description": "夜莺留在原地的一份小小礼物。如今，她仍旧拥有的已经所剩无几，其中有意愿又能够分享的，也多半无法离开这座庄园。"
+  },
+  {
+    "category": "chapter",
+    "id": "cangbaotu",
+    "name": "藏宝图",
+    "quality": "奇珍",
+    "group": "联动辞章",
+    "icon": "/images/inventory/chapter/cangbaotu.png",
+    "weight": "8",
+    "price": 9000,
+    "map": "厄运之女",
+    "description": "卷起的藏宝图是一条不肯开口的秘密，有人想找到终点，有人更在意它沉默的原因。"
+  },
+  {
+    "category": "chapter",
+    "id": "yinshu",
+    "name": "银梳",
+    "quality": "奇珍",
+    "group": "联动辞章",
+    "icon": "/images/inventory/chapter/yinshu.png",
+    "weight": "4",
+    "price": 8000,
+    "map": "厄运之女",
+    "description": "无论头发多少、长短、是什么颜色、有什么形状、甚至是不是头发，都应该有一柄自己的梳子。"
+  },
+  {
+    "category": "chapter",
+    "id": "shuihu",
+    "name": "水壶",
+    "quality": "独特",
+    "group": "联动辞章",
+    "icon": "/images/inventory/chapter/shuihu.png",
+    "weight": "8",
+    "price": 5000,
+    "map": "厄运之女",
+    "description": "污垢只存在于玻璃的外层，这真的是一壶可以饮用的清水！"
+  },
+  {
+    "category": "chapter",
+    "id": "posun_de_wanou",
+    "name": "破损的玩偶",
+    "quality": "独特",
+    "group": "联动辞章",
+    "icon": "/images/inventory/chapter/posun_de_wanou.png",
+    "weight": "4",
+    "price": 2000,
+    "map": "厄运之女",
+    "description": "玩偶失去了一条胳膊，它永远不想你也落入同样的境地。"
   }
 ],
   "maps": [
