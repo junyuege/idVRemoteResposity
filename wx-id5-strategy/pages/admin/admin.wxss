@@ -34,3 +34,13 @@
 .top-name { color: #e2dfda; font-size: 12px; }
 .top-name-small { max-width: 75%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .top-count { color: #d8a04a; font-size: 13px; font-weight: 700; }
+
+/* ===== 公告管理 ===== */
+.ann-form { padding: 12px; background: #22242a; border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 8px; }
+.ann-form-title { margin-bottom: 10px; color: #d8a04a; font-size: 12px; font-weight: 700; }
+.ann-input { height: 38px; padding: 0 10px; background: #2a2c33; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 6px; color: #f3f1ed; font-size: 13px; }
+.ann-textarea { width: 100%; height: 110px; box-sizing: border-box; margin-top: 9px; padding: 9px 10px; background: #2a2c33; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 6px; color: #f3f1ed; font-size: 13px; line-height: 1.6; }
+.ann-form-actions { display: flex; margin-top: 10px; justify-content: flex-end; gap: 8px; }
+.ann-save-btn { min-width: 96px; height: 32px; padding: 0 14px; background: #3a3021; border: 1px solid rgba(216, 155, 60, 0.5); border-radius: 5px; color: #edb65f; font-size: 12px; line-height: 30px; }
+.ann-list-content { display: -webkit-box; margin-top: 6px; overflow: hidden; color: #858790; font-size: 12px; line-height: 1.6; -webkit-box-orient: vertical; -webkit-line-clamp: 2; word-break: break-all; }
+.ann-danger { color: #ef8c7e; }

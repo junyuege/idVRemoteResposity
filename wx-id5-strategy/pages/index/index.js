@@ -1,5 +1,6 @@
 const api = require('../../data/api.js');
 const analytics = require('../../utils/analytics.js');
+const announcement = require('../../utils/announcement.js');
 
 const RECENT_VIEW_KEY = 'id5_recent_view_v1'; // 兼容旧单条记录
 const RECENT_HISTORY_KEY = 'id5_recent_history_v1';
@@ -37,11 +38,15 @@ Page({
     recentHistory: [],
     recentHistoryVisible: [],
     recentExpanded: false,
-    showHistory: false
+    showHistory: false,
+    announcement: null,
+    announcementDismissed: true,
+    showAnnouncement: false
   },
 
   onLoad() {
     this.loadStrategies();
+    this.loadAnnouncement();
     analytics.track('page_view', 'pages/index/index');
   },
 
@@ -49,6 +54,40 @@ Page({
   onShow() {
     this.setData({ currentMode: '' });
     this.loadStrategies();
+  },
+
+  // 公告：异步加载不阻塞首页；云不可用/无公告时静默。
+  loadAnnouncement() {
+    announcement.fetchActive().then(item => {
+      if (!item || !item._id) {
+        this.setData({ announcement: null, showAnnouncement: false });
+        return;
+      }
+      const dismissed = announcement.isDismissed(item);
+      const patch = { announcement: item, announcementDismissed: dismissed };
+      // 首次可见时自动弹一次详情（内容更新后会重新弹出）
+      if (!dismissed && !announcement.isRead(item)) {
+        patch.showAnnouncement = true;
+        announcement.markRead(item._id);
+      }
+      this.setData(patch);
+    });
+  },
+
+  openAnnouncement() {
+    if (!this.data.announcement) return;
+    this.setData({ showAnnouncement: true });
+    announcement.markRead(this.data.announcement._id);
+  },
+
+  closeAnnouncement() {
+    this.setData({ showAnnouncement: false });
+  },
+
+  dismissAnnouncement() {
+    if (!this.data.announcement) return;
+    announcement.dismiss(this.data.announcement._id);
+    this.setData({ announcementDismissed: true, showAnnouncement: false });
   },
 
   loadStrategies() {

@@ -35,6 +35,7 @@
     <view class="admin-tabs">
       <view class="admin-tab {{activeTab === 'feedback' ? 'admin-tab-active' : ''}}" data-tab="feedback" bindtap="onTabTap">反馈</view>
       <view class="admin-tab {{activeTab === 'stats' ? 'admin-tab-active' : ''}}" data-tab="stats" bindtap="onTabTap">统计</view>
+      <view class="admin-tab {{activeTab === 'announcement' ? 'admin-tab-active' : ''}}" data-tab="announcement" bindtap="onTabTap">公告</view>
     </view>
 
     <view wx:if="{{activeTab === 'feedback'}}" class="admin-list">
@@ -60,7 +61,7 @@
       </view>
     </view>
 
-    <view wx:else class="admin-list">
+    <view wx:elif="{{activeTab === 'stats'}}" class="admin-list">
       <view wx:if="{{!stats.totals.length && !stats.dailyTrend.length}}" class="empty-wrap compact-empty"><text>暂无统计</text></view>
 
       <view class="admin-section-title">事件汇总</view>
@@ -88,6 +89,56 @@
       <view wx:for="{{stats.topFailedImages}}" wx:key="src" class="top-row">
         <text class="top-name top-name-small">{{item.src}}</text>
         <text class="top-count">{{item.count}}</text>
+      </view>
+    </view>
+
+    <view wx:elif="{{activeTab === 'announcement'}}" class="admin-list">
+      <view class="ann-form">
+        <view class="ann-form-title">{{annEditing ? '编辑公告' : '新建公告'}}</view>
+        <input
+          class="ann-input"
+          value="{{annTitle}}"
+          maxlength="30"
+          placeholder="公告标题（30 字以内）"
+          placeholder-class="bind-placeholder"
+          bindinput="onAnnTitleInput"
+        />
+        <textarea
+          class="ann-textarea"
+          value="{{annContent}}"
+          maxlength="500"
+          placeholder="公告内容（500 字以内，支持换行）"
+          placeholder-class="bind-placeholder"
+          bindinput="onAnnContentInput"
+        />
+        <view class="ann-form-actions">
+          <button wx:if="{{annEditing}}" class="admin-action" bindtap="onAnnCancel">取消编辑</button>
+          <button class="ann-save-btn" bindtap="saveAnnouncement" disabled="{{annSaving}}">{{annSaving ? '保存中...' : (annEditing ? '保存修改' : '发布公告')}}</button>
+        </view>
+      </view>
+
+      <view class="admin-section-title">公告列表（同一时间仅一条上线）</view>
+      <view wx:if="{{!announcements.length && !annLoading}}" class="empty-wrap compact-empty"><text>暂无公告</text></view>
+      <view wx:if="{{annLoading && !announcements.length}}" class="empty-wrap compact-empty"><text>加载中...</text></view>
+      <view wx:for="{{announcements}}" wx:key="id" class="admin-card">
+        <view class="admin-card-head">
+          <text class="tag {{item.active ? 'tag-easy' : 'tag-normal'}}">{{item.active ? '上线中' : '已下线'}}</text>
+          <text class="admin-time">{{item.time}}</text>
+        </view>
+        <text class="admin-content">{{item.title}}</text>
+        <text class="ann-list-content">{{item.content}}</text>
+        <view class="admin-meta-row">
+          <view class="admin-actions">
+            <button
+              class="admin-action"
+              data-id="{{item.id}}"
+              data-active="{{item.active ? '1' : '0'}}"
+              bindtap="toggleAnnouncement"
+            >{{item.active ? '下线' : '上线'}}</button>
+            <button class="admin-action" data-id="{{item.id}}" bindtap="onAnnEdit">编辑</button>
+            <button class="admin-action ann-danger" data-id="{{item.id}}" bindtap="deleteAnnouncement">删除</button>
+          </view>
+        </view>
       </view>
     </view>
   </block>

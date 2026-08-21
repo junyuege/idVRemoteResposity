@@ -1,0 +1,25 @@
+{
+  "$schema": "https://static.cloudbase.net/cli/cloudbaserc.schema.json",
+  "envId": "cloud1-d0gmgc29t00d235d8",
+  "functionRoot": "./cloudfunctions",
+  "functions": [
+    {
+      "name": "adminApi",
+      "timeout": 20,
+      "installDependency": true,
+      "handler": "index.main"
+    },
+    {
+      "name": "addFeedback",
+      "timeout": 10,
+      "installDependency": true,
+      "handler": "index.main"
+    },
+    {
+      "name": "addAnalytics",
+      "timeout": 10,
+      "installDependency": true,
+      "handler": "index.main"
+    }
+  ]
+}

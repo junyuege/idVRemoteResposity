@@ -38,7 +38,13 @@ Page({
       dailyTrend: [],
       topRoutes: [],
       topFailedImages: []
-    }
+    },
+    announcements: [],
+    annLoading: false,
+    annEditing: '',
+    annTitle: '',
+    annContent: '',
+    annSaving: false
   },
 
   onLoad() {
@@ -67,6 +73,7 @@ Page({
       if (isAdmin) {
         this.loadFeedback(true);
         this.loadStats();
+        this.loadAnnouncements();
       }
     }).catch(err => {
       this.setData({
@@ -182,7 +189,106 @@ Page({
   },
 
   onTabTap(e) {
-    this.setData({ activeTab: e.currentTarget.dataset.tab });
+    const tab = e.currentTarget.dataset.tab;
+    this.setData({ activeTab: tab });
+    if (tab === 'announcement' && !this.data.announcements.length) this.loadAnnouncements();
+  },
+
+  // ===== 公告管理 =====
+
+  loadAnnouncements() {
+    if (this.data.annLoading) return;
+    this.setData({ annLoading: true });
+    callAdmin('announcementList').then(result => {
+      const list = result.code === 0 ? (result.data && result.data.list || []) : [];
+      this.setData({
+        annLoading: false,
+        announcements: list.map(item => ({
+          id: item._id,
+          title: item.title || '',
+          content: item.content || '',
+          active: !!item.active,
+          time: formatTime(item.createTime)
+        }))
+      });
+    }).catch(() => {
+      this.setData({ annLoading: false });
+      wx.showToast({ title: '公告加载失败', icon: 'none' });
+    });
+  },
+
+  onAnnNew() {
+    this.setData({ annEditing: '', annTitle: '', annContent: '' });
+  },
+
+  onAnnEdit(e) {
+    const item = this.data.announcements.find(a => a.id === e.currentTarget.dataset.id);
+    if (!item) return;
+    this.setData({ annEditing: item.id, annTitle: item.title, annContent: item.content });
+  },
+
+  onAnnCancel() {
+    this.setData({ annEditing: '', annTitle: '', annContent: '' });
+  },
+
+  onAnnTitleInput(e) {
+    this.setData({ annTitle: e.detail.value || '' });
+  },
+
+  onAnnContentInput(e) {
+    this.setData({ annContent: e.detail.value || '' });
+  },
+
+  saveAnnouncement() {
+    const title = (this.data.annTitle || '').trim();
+    const content = (this.data.annContent || '').trim();
+    if (!title || !content) {
+      wx.showToast({ title: '标题和内容不能为空', icon: 'none' });
+      return;
+    }
+    this.setData({ annSaving: true });
+    const action = this.data.annEditing ? 'announcementUpdate' : 'announcementCreate';
+    const payload = { title: title, content: content };
+    if (this.data.annEditing) payload.id = this.data.annEditing;
+    callAdmin(action, payload).then(result => {
+      this.setData({ annSaving: false });
+      if (result.code === 0) {
+        wx.showToast({ title: this.data.annEditing ? '已保存' : '已发布', icon: 'success' });
+        this.onAnnCancel();
+        this.loadAnnouncements();
+      } else {
+        wx.showToast({ title: result.message || '保存失败', icon: 'none' });
+      }
+    }).catch(() => {
+      this.setData({ annSaving: false });
+      wx.showToast({ title: '保存失败', icon: 'none' });
+    });
+  },
+
+  toggleAnnouncement(e) {
+    const id = e.currentTarget.dataset.id;
+    const active = e.currentTarget.dataset.active === '1';
+    callAdmin('announcementToggle', { id: id, active: !active }).then(result => {
+      if (result.code === 0) this.loadAnnouncements();
+      else wx.showToast({ title: result.message || '操作失败', icon: 'none' });
+    }).catch(() => {});
+  },
+
+  deleteAnnouncement(e) {
+    const id = e.currentTarget.dataset.id;
+    if (!id) return;
+    wx.showModal({
+      title: '删除公告',
+      content: '删除后不可恢复，确认删除？',
+      confirmColor: '#d96a5b',
+      success: res => {
+        if (!res.confirm) return;
+        callAdmin('announcementDelete', { id: id }).then(result => {
+          if (result.code === 0) this.loadAnnouncements();
+          else wx.showToast({ title: result.message || '删除失败', icon: 'none' });
+        }).catch(() => {});
+      }
+    });
   },
 
   onFeedbackStatusTap(e) {

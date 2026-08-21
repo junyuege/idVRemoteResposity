@@ -218,3 +218,64 @@
   .mode-row { flex-wrap: wrap; }
   .mode-wide { flex: 1 1 120px; }
 }
+
+/* ===== 公告横幅与详情面板 ===== */
+.announce-banner {
+  display: flex;
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  align-items: center;
+  gap: 9px;
+  background: #2a2418;
+  border: 1px solid rgba(216, 155, 60, 0.35);
+  border-radius: 8px;
+}
+
+.announce-chip {
+  flex-shrink: 0;
+  padding: 2px 7px;
+  background: rgba(216, 155, 60, 0.16);
+  border-radius: 4px;
+  color: #efbd6d;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.announce-text {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  color: #e8dcc3;
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.announce-close {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  color: #8b8d94;
+  font-size: 18px;
+  line-height: 26px;
+  text-align: center;
+}
+
+.announce-content-wrap { max-height: 52vh; }
+
+.announce-content {
+  display: block;
+  margin-bottom: 14px;
+  color: #ddd9d3;
+  font-size: 14px;
+  line-height: 1.75;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.announce-time {
+  display: block;
+  color: #6f7280;
+  font-size: 11px;
+  text-align: center;
+}

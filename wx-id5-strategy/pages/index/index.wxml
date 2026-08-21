@@ -13,6 +13,12 @@
     </view>
   </view>
 
+  <view wx:if="{{announcement && !announcementDismissed}}" class="announce-banner" bindtap="openAnnouncement">
+    <text class="announce-chip">公告</text>
+    <text class="announce-text">{{announcement.title}}</text>
+    <text class="announce-close" catchtap="dismissAnnouncement" aria-label="关闭公告">×</text>
+  </view>
+
   <view class="section-title-row">
     <text class="section-title">路线攻略</text>
     <text class="section-meta">{{strategies.length}} 个攻略版本</text>
@@ -103,5 +109,21 @@
       </view>
     </view>
     <view wx:else class="empty-wrap compact-empty"><text>暂无历史记录</text></view>
+  </view>
+
+  <view wx:if="{{showAnnouncement}}" class="history-mask" bindtap="closeAnnouncement"></view>
+  <view wx:if="{{showAnnouncement}}" class="history-sheet" catchtap="preventClose">
+    <view class="sheet-handle"></view>
+    <view class="history-sheet-head">
+      <view>
+        <text class="history-sheet-kicker">NOTICE</text>
+        <text class="history-sheet-title">{{announcement.title}}</text>
+      </view>
+      <button class="sheet-close" bindtap="closeAnnouncement" aria-label="关闭">×</button>
+    </view>
+    <scroll-view scroll-y class="announce-content-wrap">
+      <text class="announce-content">{{announcement.content}}</text>
+    </scroll-view>
+    <text class="announce-time">轻触空白处关闭</text>
   </view>
 </view>
