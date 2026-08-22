@@ -45,15 +45,24 @@ Page({
   },
 
   onLoad() {
+    this._pendingRecentRefresh = false;
     this.loadStrategies();
     this.loadAnnouncement();
     analytics.track('page_view', 'pages/index/index');
   },
 
-  // 返回首页时清除上次点击的难度筛选，并刷新最近查看卡片。
+  // 返回首页时清除上次点击的难度筛选。
+  // 历史记录仅在从本页跳走过时才重读 storage（详情页会写入新记录），
+  // 其余 onShow（如下拉刷新、弹层关闭）复用内存数据，避免启动路径冗余同步读。
   onShow() {
-    this.setData({ currentMode: '' });
-    this.loadStrategies();
+    const needRefresh = this._pendingRecentRefresh === true;
+    this._pendingRecentRefresh = false;
+    if (needRefresh) {
+      this.setData({ currentMode: '' });
+      this.loadStrategies();
+    } else {
+      this.setData({ currentMode: '' });
+    }
   },
 
   // 公告：异步加载不阻塞首页；云不可用/无公告时静默。
@@ -176,6 +185,7 @@ Page({
 
   openRecent(raw) {
     if (!raw) return;
+    this._pendingRecentRefresh = true;
     const doorParam = raw.door ? '&door=' + encodeURIComponent(raw.door) : '';
     const fileParam = raw.file ? '&file=' + encodeURIComponent(raw.file) : '';
     wx.navigateTo({
@@ -245,6 +255,7 @@ Page({
   onStrategyTap(e) {
     const mapId = e.currentTarget.dataset.id;
     const authorId = e.currentTarget.dataset.authorid || '';
+    this._pendingRecentRefresh = true;
     wx.navigateTo({
       url: '/pages/explorer/explorer?mapId=' + encodeURIComponent(mapId) +
         '&author=' + encodeURIComponent(authorId)
@@ -256,6 +267,7 @@ Page({
     const mapId = e.currentTarget.dataset.mapid;
     const authorId = e.currentTarget.dataset.authorid || '';
     this.setData({ currentMode: mode });
+    this._pendingRecentRefresh = true;
     // 跳转动画期间就提前下载分包并预取临时链接，让查询页和详情页更快。
     api.loadRoutePackage(mode);
     api.prefetchRouteImageUrls(mapId, mode);

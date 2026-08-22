@@ -14,6 +14,12 @@
     "pages/admin/admin"
   ],
   "lazyCodeLoading": "requiredComponents",
+  "preloadRule": {
+    "pages/index/index": {
+      "network": "wifi",
+      "packages": ["pkg-zhanshi-hard-fast"]
+    }
+  },
   "subPackages": [
     {
       "root": "pkg-zhanshi-hard-full",
