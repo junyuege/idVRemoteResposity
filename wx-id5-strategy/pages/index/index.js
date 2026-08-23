@@ -32,17 +32,17 @@ function fmtLabel(name, difficulty, variant) {
   // 难度字段优先：噩梦路线名可能含"速刷"，不能只按名称子串判断
   if (difficulty && DIFF_LABEL[difficulty]) {
     if (difficulty === 'hard') {
-      if (name.indexOf('速刷') > -1) return '困难·速刷';
-      if (name.indexOf('全棺') > -1) return '困难·全棺';
+      if (name.indexOf('速刷') > -1) return '困难速刷版';
+      if (name.indexOf('全棺') > -1) return '困难全棺版';
       return '困难';
     }
     if (difficulty === 'nightmare') {
-      return variant === 'full' ? '噩梦·全棺' : '噩梦·速刷';
+      return variant === 'full' ? '噩梦全棺版' : '噩梦速刷版';
     }
     return DIFF_LABEL[difficulty];
   }
-  if (name.indexOf('速刷') > -1) return '困难·速刷';
-  if (name.indexOf('全棺') > -1) return '困难·全棺';
+  if (name.indexOf('速刷') > -1) return '困难速刷版';
+  if (name.indexOf('全棺') > -1) return '困难全棺版';
   if (name.indexOf('新版') > -1) return '新版';
   var parts = name.split('·');
   var base = parts[0];
