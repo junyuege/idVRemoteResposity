@@ -1416,15 +1416,84 @@ module.exports = {
         ]
       },
 {
+          "id": "zhanshi-nightmare-full",
+          "legacyIds": [],
+          "difficulty": "nightmare",
+          "variant": "full",
+          "authorId": "zhanshi",
+          "name": "噩梦 · 全棺版13.4",
+          "author": "展十版",
+          "packageRoot": "pkg-zhanshi-nightmare-full",
+          "assetNamespace": "maps/e_yun_zhi_nv/zhanshi/nightmare-full",
+          "shapeDir": "厄运噩梦（超清4k，展十版）/厄运噩梦（超清4k，全棺路线，展十版）全棺版13.4",
+          "shapes": [
+            "┏",
+            "┗",
+            "┫",
+            "┳",
+            "▃▃",
+            "▌",
+            "ㅢ一"
+          ],
+          "shapeDetails": {
+            "┏": {
+              "rootFiles": [
+                "下路   下Z.jpg",
+                "下路   下ㅢ一.jpg"
+              ]
+            },
+            "┗": {
+              "rootFiles": [
+                "上路.jpg",
+                "右路（二号路线）.jpg",
+                "右路（一号路线）.jpg",
+                "右路两张图解释.jpg"
+              ]
+            },
+            "┫": {
+              "rootFiles": [
+                "上路左路.jpg",
+                "上路左路右路.jpg"
+              ]
+            },
+            "┳": {
+              "rootFiles": [
+                "左路下路.jpg"
+              ]
+            },
+            "▃▃": {
+              "rootFiles": [
+                "左路.jpg"
+              ]
+            },
+            "▌": {
+              "rootFiles": [
+                "下路右路.jpg",
+                "下路左路.jpg",
+                "左路右路.jpg"
+              ]
+            },
+            "ㅢ一": {
+              "rootFiles": [
+                "左路上路下路.jpg",
+                "左路下路右路.jpg"
+              ]
+            }
+          },
+          "rootFiles": [
+            "噩梦全棺版看法图文教学.jpg"
+          ]
+        },
+{
           "id": "zhanshi-nightmare",
           "legacyIds": [],
           "difficulty": "nightmare",
           "authorId": "zhanshi",
-          "name": "噩梦 · 速刷版13.2",
+          "name": "噩梦 · 速刷版13.4",
           "author": "展十版",
           "packageRoot": "pkg-zhanshi-nightmare",
           "assetNamespace": "maps/e_yun_zhi_nv/zhanshi/nightmare",
-          "shapeDir": "厄运噩梦（超清4k，展十版）/厄运噩梦（超清4k，全棺路线，展十版）速刷版13.2",
+          "shapeDir": "厄运噩梦（超清4k，展十版）/厄运噩梦（超清4k，速刷路线，展十版）速刷版13.4",
           "shapes": [
             "上右路",
             "上左右路",
@@ -1434,29 +1503,38 @@ module.exports = {
           "shapeDetails": {
             "上右路": {
               "rootFiles": [
-                "上右路   右▃▃.jpg"
+                "上右路   右┻┳.jpg",
+                "上右路   右┻┳2.jpg",
+                "上右路   右▃▃.jpg",
+                "上右路   右一.jpg"
               ]
             },
             "上左右路": {
               "rootFiles": [
+                "上左右路   右I.jpg",
                 "上左右路   右s.jpg",
                 "上左右路  右└┐.jpg"
               ]
             },
             "上左路": {
               "rootFiles": [
-                "上左路   上红┫.jpg"
+                "上左路   上红┫.jpg",
+                "上左路   上红┫2.jpg",
+                "上左路   上I.jpg"
               ]
             },
             "左右路": {
               "rootFiles": [
+                "左右路   右┛.jpg",
+                "左右路   右┛2.jpg",
                 "左右路   右s.jpg"
               ]
             }
           },
           "rootFiles": [
             "速刷版看法图文教学.jpg"
-          ]
+          ],
+          "variant": "fast"
         },
       {
         "id": "lianghapi-v0710",

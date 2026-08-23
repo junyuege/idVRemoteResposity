@@ -51,8 +51,18 @@
   },
   {
     "Pkg": "pkg-zhanshi-nightmare",
-    "Count": 6,
-    "Bytes": 595680,
+    "Count": 14,
+    "Bytes": 1526617,
+    "Missing": [],
+    "Extra": [],
+    "MissingCount": 0,
+    "ExtraCount": 0,
+    "Pruned": 0
+  },
+  {
+    "Pkg": "pkg-zhanshi-nightmare-full",
+    "Count": 16,
+    "Bytes": 1749973,
     "Missing": [],
     "Extra": [],
     "MissingCount": 0,

@@ -58,6 +58,12 @@
       ]
     },
     {
+      "root": "pkg-zhanshi-nightmare-full",
+      "pages": [
+        "pages/redirect/redirect"
+      ]
+    },
+    {
       "root": "pkg-lianghapi-v0710",
       "pages": [
         "pages/redirect/redirect"

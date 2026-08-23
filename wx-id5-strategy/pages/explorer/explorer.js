@@ -4,7 +4,7 @@ const analytics = require('../../utils/analytics.js');
 const DIFF_RANK = { newbie: 0, easy: 1, normal: 2, hard: 3, nightmare: 4, special: 5 };
 const DIFF_LABEL = { newbie: '新手', easy: '简单', normal: '普通', hard: '困难', nightmare: '噩梦' };
 
-function formatRouteLabel(name, difficulty) {
+function formatRouteLabel(name, difficulty, variant) {
   if (!name) return '';
   // 难度字段优先：噩梦路线名可能含"速刷"，不能只按名称子串判断
   if (difficulty && DIFF_LABEL[difficulty]) {
@@ -12,6 +12,9 @@ function formatRouteLabel(name, difficulty) {
       if (name.indexOf('速刷') > -1) return '困难·速刷';
       if (name.indexOf('全棺') > -1) return '困难·全棺';
       return '困难';
+    }
+    if (difficulty === 'nightmare') {
+      return variant === 'full' ? '噩梦·全棺' : '噩梦·速刷';
     }
     return DIFF_LABEL[difficulty];
   }
@@ -99,7 +102,7 @@ Page({
         .map(route => ({
           id: route.id,
           name: route.name || '',
-          label: formatRouteLabel(route.name, route.difficulty),
+          label: formatRouteLabel(route.name, route.difficulty, route.variant),
           difficulty: route.difficulty || '',
           variant: route.variant || '',
           authorId: route.authorId || '',

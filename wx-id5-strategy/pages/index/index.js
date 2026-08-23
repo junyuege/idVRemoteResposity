@@ -7,11 +7,27 @@ const RECENT_HISTORY_KEY = 'id5_recent_history_v1';
 const RECENT_LIST_LIMIT = 5; // 历史记录最多展示 5 条
 const RECENT_COLLAPSED_COUNT = 2; // 默认只展示 2 条，其余收起
 
-// 难度标签压缩 + 特殊版别名（与样式类的难度顺序一致）
-const DIFF_RANK = { newbie: 0, easy: 1, normal: 2, hard: 3, nightmare: 4, special: 5 };
+// 难度标签：难度字段优先推导，噩梦/困难按变体细分（名称子串仅作无难度字段时的兜底）
 const DIFF_LABEL = { newbie: '新手', easy: '简单', normal: '普通', hard: '困难', nightmare: '噩梦' };
 
-function fmtLabel(name, difficulty) {
+// 首页行内展示序（与语义难度解耦）：
+// 长行噩梦组前置（玩家高频），组内速刷优先；短行保持新手->新版渐进
+const ROW_ORDER = {
+  'nightmare|fast': 0,
+  'nightmare|full': 1,
+  'hard|fast': 2,
+  'hard|full': 3,
+  'newbie': 10,
+  'easy': 11,
+  'normal': 12,
+  'special': 13
+};
+function rowOrderKey(route) {
+  const key = route.variant ? route.difficulty + '|' + route.variant : route.difficulty;
+  return ROW_ORDER[key] != null ? ROW_ORDER[key] : 60;
+}
+
+function fmtLabel(name, difficulty, variant) {
   if (!name) return '';
   // 难度字段优先：噩梦路线名可能含"速刷"，不能只按名称子串判断
   if (difficulty && DIFF_LABEL[difficulty]) {
@@ -19,6 +35,9 @@ function fmtLabel(name, difficulty) {
       if (name.indexOf('速刷') > -1) return '困难·速刷';
       if (name.indexOf('全棺') > -1) return '困难·全棺';
       return '困难';
+    }
+    if (difficulty === 'nightmare') {
+      return variant === 'full' ? '噩梦·全棺' : '噩梦·速刷';
     }
     return DIFF_LABEL[difficulty];
   }
@@ -115,15 +134,16 @@ Page({
       authorSeq.forEach(authorId => {
         const authorRoutes = byAuthor[authorId];
         const author = authorRoutes[0].author || '其他';
-        // 短标签（≤2字：新手/简单/普通）固定在上行，长标签（困难·全棺/困难·速刷）固定在下行；
-        // 每组内按难度进阶顺序排列，行内胶囊等宽铺满
+        // 短标签（≤2字：新手/简单/普通/新版）固定在上行，长标签（噩梦·xx/困难·xx）固定在下行；
+        // 行内顺序按 ROW_ORDER：短行渐进、长行噩梦组前置且速刷优先，行内胶囊等宽铺满
         const order = authorRoutes.map((r, i) => ({
           id: r.id,
           name: r.name,
-          label: fmtLabel(r.name, r.difficulty),
+          label: fmtLabel(r.name, r.difficulty, r.variant),
           difficulty: r.difficulty || r.id,
+          variant: r.variant || '',
           __order: i
-        })).sort((a, b) => a.label.length - b.label.length || (DIFF_RANK[a.difficulty] == null ? 99 : DIFF_RANK[a.difficulty]) - (DIFF_RANK[b.difficulty] == null ? 99 : DIFF_RANK[b.difficulty]) || a.__order - b.__order);
+        })).sort((a, b) => a.label.length - b.label.length || rowOrderKey(a) - rowOrderKey(b) || a.__order - b.__order);
         const shortRoutes = order.filter(r => r.label.length <= 2);
         const longRoutes = order.filter(r => r.label.length > 2);
         strategies.push({
