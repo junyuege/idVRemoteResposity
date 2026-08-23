@@ -144,8 +144,13 @@ Page({
           variant: r.variant || '',
           __order: i
         })).sort((a, b) => a.label.length - b.label.length || rowOrderKey(a) - rowOrderKey(b) || a.__order - b.__order);
-        const shortRoutes = order.filter(r => r.label.length <= 2);
-        const longRoutes = order.filter(r => r.label.length > 2);
+        // 展十卡片仅露出高频难度入口（噩梦/困难），其余难度点卡片进探索页仍可选择
+        const HOME_VISIBLE_DIFF = { nightmare: true, hard: true };
+        const displayOrder = authorId === 'zhanshi'
+          ? order.filter(r => HOME_VISIBLE_DIFF[r.difficulty])
+          : order;
+        const shortRoutes = displayOrder.filter(r => r.label.length <= 2);
+        const longRoutes = displayOrder.filter(r => r.label.length > 2);
         strategies.push({
           _id: m.id + '_' + authorId,
           title: m.displayName + ' · ' + author,
