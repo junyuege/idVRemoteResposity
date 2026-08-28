@@ -52,6 +52,8 @@ tcb fn deploy adminApi --force   # 已配置 cloudbaserc.json，云端装依赖�
 
 - **PowerShell 中文输出**：命令前加 `[Console]::OutputEncoding = [System.Text.Encoding]::UTF8`；复杂逻辑写临时 .js/.ps1 到 `$env:TEMP` 执行，避免内联转义地狱。
 - **git 推送**走本地代理 `127.0.0.1:7897`，代理客户端未开时会连接失败——重试或提示用户开代理。
+- **代理未开时可绕过代理直连 GitHub**（实测直连通、代理端口全不通）：`git -c http.proxy= -c https.proxy= push origin lin`。注意这只影响本次命令，不改动全局代理配置。
+- **推送需要 GitHub 凭证，且非交互环境无法弹窗输入**：本机未存储 GitHub 凭证（无 `~/.git-credentials`、凭据管理器无条目、无 SSH key），因此 AI 会话内无法完成 push，需用户在真实终端执行（会弹 GitHub 认证）或配置 PAT / SSH。只读操作（`ls-remote`、`fetch`）对公开仓库可匿名执行，不要据此误判凭证有效。
 - **tcb CLI**（@cloudbase/cli）已登录，可直接操作云开发（storage upload/rm、fn deploy/invoke、db）。
 - 主包体积纪律：图鉴图标必须压缩后入包；攻略大图只进分包与云存储；当前主包 ~0.9MB / 上限 2MB。
 - **git 根目录在父级 `D:/Documents/Project`**（含 blessing_video_generator 等子项目）。提交时**必须用路径限定**（如 `git add pages/x/x.js`），切勿 `git add -A`，否则会把其他子项目的未提交改动一起带上。
