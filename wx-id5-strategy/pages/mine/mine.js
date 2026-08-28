@@ -1,11 +1,11 @@
 Page({
   data: {
-    version: '1.0.0'
+    version: '1.2.2'
   },
 
   onLoad() {
     const app = getApp();
-    this.setData({ version: (app.globalData && app.globalData.appVersion) || '1.0.0' });
+    this.setData({ version: (app.globalData && app.globalData.appVersion) || '1.2.2' });
   },
 
   goToFeedback() {

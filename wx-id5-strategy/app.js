@@ -5,7 +5,7 @@ const CLOUD_ENV = (cloudConfig && cloudConfig.envId) || '';
 
 App({
   globalData: {
-    appVersion: '1.0.0',
+    appVersion: '1.2.2',
     cloudReady: false
   },
   onLaunch() {
