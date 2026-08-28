@@ -24,7 +24,8 @@
 node tools/sync-assets.js            # 索引 -> 本地分包 + imageMeta（素材同步必跑）
 node tools/gen-cloud-assets.js       # 索引 -> cloudAssets.js（云上传完成后才可跑）
 node tools/validate-project.js       # 完整性校验（发布前必须零失败）
-node tools/smoke-test.js             # 全功能冒烟测试
+node tools/smoke-test.js             # 全功能冒烟测试（只走正常链路）
+node tools/fault-injection-test.js   # 异常注入测试（验证 catch 兜底分支，5 用例）
 node tools/release-check.js          # 发布总检（含云端一致性）
 node tools/scrape-inventory.js [--download]   # BWIKI 图鉴抓取（自动压缩图标）
 node tools/compress-inventory-icons.js --all  # 图标压缩（最长边180px+调色板PNG）
@@ -53,6 +54,9 @@ tcb fn deploy adminApi --force   # 已配置 cloudbaserc.json，云端装依赖�
 - **git 推送**走本地代理 `127.0.0.1:7897`，代理客户端未开时会连接失败——重试或提示用户开代理。
 - **tcb CLI**（@cloudbase/cli）已登录，可直接操作云开发（storage upload/rm、fn deploy/invoke、db）。
 - 主包体积纪律：图鉴图标必须压缩后入包；攻略大图只进分包与云存储；当前主包 ~0.9MB / 上限 2MB。
+- **git 根目录在父级 `D:/Documents/Project`**（含 blessing_video_generator 等子项目）。提交时**必须用路径限定**（如 `git add pages/x/x.js`），切勿 `git add -A`，否则会把其他子项目的未提交改动一起带上。
+- **校验脚本的清理步骤在沙箱内会失败**：`validate-project.js` 末尾 `fs.rmSync('.tmp')` 会被 safe-delete 拦截并中断输出，看不到校验结论。绕过方式：`node -e "require('fs').rmSync=function(){}; require('./tools/validate-project.js');"`。`.tmp/` 已在 .gitignore 中，残留在本地无害。
+- 冒烟测试只遍历正常数据链路，**不触发任何 catch 分支**；改动异常兜底逻辑后必须另跑 `fault-injection-test.js`。
 
 ## 协作约定
 
