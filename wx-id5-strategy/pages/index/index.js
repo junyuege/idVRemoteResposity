@@ -65,7 +65,14 @@ Page({
 
   onLoad() {
     this._pendingRecentRefresh = false;
-    this.loadStrategies();
+    try {
+      this.loadStrategies();
+    } catch (err) {
+      // 首页是入口页，异常必须兜住：停在 loading 会让用户以为卡死，
+      // 这里直接落到空态，且不影响下方公告与埋点继续执行。
+      console.error('[index] 首页数据加载失败', err);
+      this.setData({ loading: false });
+    }
     this.loadAnnouncement();
     analytics.track('page_view', 'pages/index/index');
   },
@@ -191,8 +198,10 @@ Page({
     try { rawList = wx.getStorageSync(RECENT_HISTORY_KEY) || []; } catch (e) { rawList = []; }
     if (!Array.isArray(rawList)) rawList = [];
     if (!rawList.length) {
-      const legacy = wx.getStorageSync(RECENT_VIEW_KEY);
-      if (legacy && legacy.routeId) rawList = [legacy];
+      try {
+        const legacy = wx.getStorageSync(RECENT_VIEW_KEY);
+        if (legacy && legacy.routeId) rawList = [legacy];
+      } catch (e) { rawList = []; }
     }
     return rawList
       .filter(raw => raw && raw.mapId && raw.routeId)

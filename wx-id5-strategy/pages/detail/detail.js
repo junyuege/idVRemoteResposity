@@ -107,9 +107,17 @@ Page({
       // 先准备本地分包，再解析云链接；任一来源失败都不会中断页面。
       // 保留原始 fileID 列表，用于图片加载失败时自动切换本地分包。
       const requestedFileIds = images.slice();
-      api.loadRoutePackage(routeId).then(() => api.resolveImageUrls(images)).then(resolved => {
-        this.render(resolved, requestedFileIds, map, hasShape, shapeId, route, doors, shapeRootFiles, summaryParts);
-      });
+      api.loadRoutePackage(routeId)
+        .then(() => api.resolveImageUrls(images))
+        .then(resolved => {
+          this.render(resolved, requestedFileIds, map, hasShape, shapeId, route, doors, shapeRootFiles, summaryParts);
+        })
+        .catch(err => {
+          // 分包下载或临时链接解析任一环节失败时落错误态，
+          // 否则页面会永久停在"正在加载攻略图片..."，无提示也无重试入口。
+          console.error('[detail] 图片链接解析失败', err);
+          this.showError('数据加载失败，请稍后重试');
+        });
     } catch (err) {
       console.error('[detail] 加载失败', err);
       this.showError('数据加载失败，请稍后重试');
