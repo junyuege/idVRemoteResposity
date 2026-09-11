@@ -9,7 +9,7 @@
 3. 命中 `cloud://` fileID 后，通过 `wx.cloud.getTempFileURL` 转成临时 HTTPS 地址。
 4. 云映射不存在、云能力不可用或解析失败时，回退到 `packageRoot/assets`。
 
-`app.js` 中的 `CLOUD_ENV` 必须与微信云开发控制台中的环境 ID 一致。
+云环境 ID 的唯一配置源是 `config/cloud.js`：`app.js` 从中读取 `envId`（即 `CLOUD_ENV`），`tools/gen-cloud-assets.js`、`tools/verify-cloud.js`、`tools/upload-cloud.js` 共用同一份。修改云环境只改这里，并同步把文件上传到新环境的相同目录。
 
 ## 云端目录规则
 
@@ -64,6 +64,20 @@ maps/e_yun_zhi_nv/lianghapi/v0710/icons/...
 9. 运行 `node tools/validate-project.js`，然后在开发者工具和真机检查。
 
 视频不属于此流程，`sync-assets.js` 不处理视频。
+
+## 命令行上传（推荐）
+
+素材更新后可用 `tools/upload-cloud.js` 把本地分包同步到对应云目录，免去逐张手传：
+
+```powershell
+node tools/upload-cloud.js --route zhanshi-nightmare,zhanshi-nightmare-full              # dry-run，先看计划
+node tools/upload-cloud.js --route zhanshi-nightmare,zhanshi-nightmare-full --apply --prune --gen
+```
+
+- 默认 dry-run；`--apply` 才真正上传，`--prune` 删除云端「本地已不存在」的文件（图片改名/删除后必用），`--gen` 在全部上传成功后自动生成 `cloudAssets.js`。
+- 依赖 tcb 登录态（`tcb login`，或 `tcb login --apiKeyId <SecretId> --apiKey <SecretKey>`）。未登录时只打印计划并提示，不会误删。
+- 云路径由索引推导：`legacyCloudPackage/assets/...`（旧布局）或 `assetNamespace/...`（新布局）。
+- 注意 `tcb storage list` 是字符串前缀匹配，`nightmare` 会连带匹配 `nightmare-full`，脚本内已按目录边界过滤。
 
 ## 微信开发者工具上传方法
 
