@@ -17,6 +17,10 @@
 - 云存储布局：`maps/{mapId}/{authorId}/{routeSlug}/...`（当前 mapId 为 `e_yun_zhi_nv`）；凉哈皮识别图标在本地分包 `pkg-lianghapi-icons/assets/`，云目录 `maps/e_yun_zhi_nv/lianghapi/v0710/icons/`。
 - 云环境：`config/cloud.js` 是唯一配置源（envId + storagePrefix）。
 - 路线图统一 JPEG 输出、索引扩展名归一 `.jpg`；图标包保留 PNG 透明度。
+- `compatCloudFiles`（路由字段，可选）：**过渡期兼容文件**清单，值为相对 `assetNamespace` 的路径。
+  素材改名/删图后，已发布出去的旧版本仍会按旧文件名请求云图，这些文件删掉就是 404；
+  把它登记进清单即可：`verify-cloud.js` 会算进期望文件、`upload-cloud.js --prune` 不会删它，
+  云端真缺失时两者都会告警。等新版本全量上线、旧版本基本退出后，再从清单移除并清理。
 
 ## 工具链（全部在项目根目录运行）
 
@@ -42,9 +46,13 @@ node tools/compress-inventory-icons.js --all  # 图标压缩（最长边180px+�
 
 ### 新增/更新路线（新攻略素材）
 1. 素材放 F:\d5 对应目录 → localMapIndex 加/改 route（id/packageRoot/assetNamespace 唯一；版本升级改 `name` 与 `shapeDir`）
-2. `sync-assets.js` → app.json 注册分包 + redirect 四件套 → 图片上传云存储（`upload-cloud.js --route <id> --apply --prune`，或开发者工具手动上传）→ `gen-cloud-assets.js` → `verify-cloud.js`
-3. 新难度记得同步：explorer.js 与 index.js 的 `DIFF_RANK`、detail.js 的 `TAG_CLASS`
-4. 形状列表与源目录保持一致：`shapes` 取源素材目录下的子目录（**空目录不计**，如「全棺材版本看二楼阳台侧门」「红色路线速刷夜莺…」这类只作标注的目录要排除）；顺序沿用源目录顺序
+2. `sync-assets.js` → app.json 注册分包 + redirect 四件套 → 图片上传云存储（`upload-cloud.js --route <id> --apply`，或开发者工具手动上传）→ `gen-cloud-assets.js` → `verify-cloud.js`
+3. **改名/删图后不要立即 `--prune`**：旧版本客户端仍按旧文件名请求云图，删了就是「图片加载失败」。
+   把被淘汰的文件登记进该路由的 `compatCloudFiles` 并保留在云端，等新版本上线、旧版本基本退出后再清理。
+   过渡期云端 = 旧 ∪ 新，属正常状态。（漏删了要回补：用「上一版索引 vs 当前索引」求差集定位，
+   再用 `git show <旧提交>:<路径>` 取回原字节重传，保证与旧版分包里的那份逐字节一致。）
+4. 新难度记得同步：explorer.js 与 index.js 的 `DIFF_RANK`、detail.js 的 `TAG_CLASS`
+5. 形状列表与源目录保持一致：`shapes` 取源素材目录下的子目录（**空目录不计**，如「全棺材版本看二楼阳台侧门」「红色路线速刷夜莺…」这类只作标注的目录要排除）；顺序沿用源目录顺序
 
 ### 云函数部署
 ```powershell

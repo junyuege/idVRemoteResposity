@@ -79,6 +79,34 @@ node tools/upload-cloud.js --route zhanshi-nightmare,zhanshi-nightmare-full --ap
 - 云路径由索引推导：`legacyCloudPackage/assets/...`（旧布局）或 `assetNamespace/...`（新布局）。
 - 注意 `tcb storage list` 是字符串前缀匹配，`nightmare` 会连带匹配 `nightmare-full`，脚本内已按目录边界过滤。
 
+## 过渡期兼容文件（改名/删图必读）
+
+云存储是**所有已发布版本共用的一份**，而旧版本客户端把 `cloudAssets.js` 打包在自己身上，
+只会按当时的文件名请求图片。所以素材一旦改名或删除，**旧版本就会 404**（页面显示「图片加载失败」，
+本地分包兜底同样取不到，因为新旧索引下这些文件都已从分包剔除）。
+
+规则：**改名/删图后不要在同一次操作里 `--prune`**。正确顺序是
+
+```text
+上传新素材 → 发布新版本 → 等旧版本基本退出 → 再清理旧文件
+```
+
+过渡期把被淘汰的文件登记到该路由的 `compatCloudFiles`：
+
+```js
+"compatCloudFiles": [
+  "┗/上路.jpg",
+  "左右路/左右路   右s.jpg"
+]
+```
+
+- 路径相对 `assetNamespace`（使用 `legacyCloudPackage` 的路线则相对 `{pkg}/assets`）。
+- `verify-cloud.js` 把它们算进期望文件，因此过渡期仍能 `CLOUD_OK`；云端真缺了会报 `缺失`。
+- `upload-cloud.js --prune` 不会删除它们，并在云端缺失时告警。
+- 新版本全量上线、旧版本退出后，从清单移除再 `--prune` 清理。
+- 漏删要回补时：`git show <旧提交>:<packageRoot>/assets/<相对路径>` 取出原字节重传，
+  保证与旧版本分包里那份逐字节一致（临时链接可能被缓存 90 分钟，让用户重进小程序最稳）。
+
 ## 微信开发者工具上传方法
 
 1. 打开“云开发”，选择与 `CLOUD_ENV` 一致的环境。

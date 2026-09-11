@@ -18,6 +18,10 @@
  *   --prune            删除云端"本地已不存在"的文件（配合 --apply）
  *   --gen              全部上传成功后自动运行 gen-cloud-assets.js
  *
+ * 注意：路线上声明了 compatCloudFiles 的文件（旧版本仍引用、当前版本已淘汰）
+ * 会被排除在清理之外，并且在云端缺失时会告警——改名/删图后不要立刻清理，
+ * 要等新版本全量上线、旧版本基本退出再删。
+ *
  * 前置：tcb CLI 已登录（tcb login 或 tcb login --apiKeyId .. --apiKey ..）。
  */
 const fs = require('fs');
@@ -126,7 +130,9 @@ function main() {
     const remoteReadable = remoteKeys !== null;
     const remoteSet = new Set(remoteKeys || []);
     const expected = locals.map(f => prefix + '/' + f.rel);
-    const expectedSet = new Set(expected);
+    const compat = (route.compatCloudFiles || []).map(rel => prefix + '/' + String(rel).replace(/\\/g, '/'));
+    // 兼容文件不在本地分包里，但绝不能进清理名单（旧版本仍在请求）
+    const expectedSet = new Set(expected.concat(compat));
     // 上传：本地有、云端无 → 必传；其余为"可能变更"，--apply 时一并重传以保证一致
     const toUpload = locals.map(f => ({ abs: f.abs, key: prefix + '/' + f.rel, existsRemote: remoteSet.has(prefix + '/' + f.rel) }));
     const toDelete = remoteReadable ? (remoteKeys || []).filter(k => !expectedSet.has(k)) : [];
@@ -137,6 +143,11 @@ function main() {
     console.log('  上传 ' + toUpload.length + '（其中云端缺失 ' + toUpload.filter(x => !x.existsRemote).length + '）');
     if (!remoteReadable) console.log('  ⚠ 云端列表读取失败（多为未登录），本次不做清理判断');
     else console.log('  清理 ' + toDelete.length + (toDelete.length ? ': ' + toDelete.map(k => k.slice(prefix.length + 1)).join(' | ') : ''));
+    if (compat.length) {
+      const compatMissing = remoteReadable ? compat.filter(k => !remoteSet.has(k)) : [];
+      console.log('  兼容保留 ' + compat.length + '（旧版本仍引用，不参与清理）' +
+        (compatMissing.length ? ' ⚠ 云端缺失: ' + compatMissing.map(k => k.slice(prefix.length + 1)).join(' | ') : ''));
+    }
   }
 
   console.log('');

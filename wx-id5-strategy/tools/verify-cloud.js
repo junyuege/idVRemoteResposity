@@ -44,7 +44,24 @@ function cloudMappings() {
   return mappings;
 }
 
+/**
+ * 过渡期兼容文件：路由用 compatCloudFiles 声明的、当前版本已不引用但旧版本仍在请求的云文件。
+ * 它们必须留在云端（删了旧客户端就 404），因此算作"期望存在"；
+ * 但本地分包里没有对应副本，所以不参与"本地缺失/大小"比较。
+ */
+function compatCloudKeys() {
+  const keys = new Set();
+  (index.maps || []).forEach(map => (map.routes || []).forEach(route => {
+    (route.compatCloudFiles || []).forEach(rel => {
+      const prefix = route.legacyCloudPackage ? route.legacyCloudPackage + '/assets' : route.assetNamespace;
+      if (prefix) keys.add(prefix + '/' + String(rel).replace(/\\/g, '/'));
+    });
+  }));
+  return keys;
+}
+
 function main() {
+  const compatKeys = compatCloudKeys();
   const expected = Object.values(cloudAssets).map(fileId => fileId.slice(FILE_ID_ROOT.length));
   const prefixes = [...new Set(cloudMappings().map(item => item.cloudPrefix))];
   const actual = [];
@@ -59,14 +76,17 @@ function main() {
   }
 
   const actualKeys = new Set(actual.map(item => item.key));
-  const expectedKeys = new Set(expected);
-  const missing = expected.filter(key => !actualKeys.has(key));
+  // 兼容文件也要求存在；只是不参与本地比较
+  const allExpected = expected.concat([...compatKeys]);
+  const expectedKeys = new Set(allExpected);
+  const missing = allExpected.filter(key => !actualKeys.has(key));
   const extra = actual.map(item => item.key).filter(key => !expectedKeys.has(key));
 
   const mappings = cloudMappings().sort((a, b) => b.cloudPrefix.length - a.cloudPrefix.length);
   let sizeDiff = 0;
   const sizeDiffList = [];
   actual.forEach(item => {
+    if (compatKeys.has(item.key)) return; // 兼容文件本地无副本，跳过本地/大小比较
     const mapping = mappings.find(m => item.key.startsWith(m.cloudPrefix));
     if (!mapping) return;
     const localPath = path.join(ROOT, mapping.localPrefix, item.key.slice(mapping.cloudPrefix.length));
@@ -83,6 +103,7 @@ function main() {
 
   console.log('云环境:', ENV_ID);
   console.log('期望文件:', expected.length);
+  console.log('兼容保留:', compatKeys.size);
   console.log('云端文件:', actual.length);
   console.log('缺失:', missing.length);
   console.log('多余:', extra.length);

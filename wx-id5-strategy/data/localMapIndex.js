@@ -1425,6 +1425,9 @@ module.exports = {
           "author": "展十版",
           "packageRoot": "pkg-zhanshi-nightmare-full",
           "assetNamespace": "maps/e_yun_zhi_nv/zhanshi/nightmare-full",
+          "compatCloudFiles": [
+            "┗/上路.jpg"
+          ],
           "shapeDir": "厄运噩梦（超清4k，展十版）/厄运噩梦（超清4k，全棺路线，展十版）全棺版13.6",
           "shapes": [
             "Z",
@@ -1508,6 +1511,11 @@ module.exports = {
           "author": "展十版",
           "packageRoot": "pkg-zhanshi-nightmare",
           "assetNamespace": "maps/e_yun_zhi_nv/zhanshi/nightmare",
+          "compatCloudFiles": [
+            "上左右路/上左右路   右s.jpg",
+            "左右路/左右路   右┛2.jpg",
+            "左右路/左右路   右s.jpg"
+          ],
           "shapeDir": "厄运噩梦（超清4k，展十版）/厄运噩梦（超清4k，速刷路线，展十版）速刷版13.6",
           "shapes": [
             "上右路",
