@@ -3,8 +3,11 @@
  * 运行：node tools/smoke-test.js
  */
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
 const ROOT = path.resolve(__dirname, '..');
+// 临时目录放系统 temp：工程目录里的临时文件会被开发者工具扫描/打包，容易引发 ENOENT
+const TMP_ROOT = path.join(os.tmpdir(), 'id5-smoke');
 const storage = {};
 const loadedPackages = [];
 const navigationCalls = [];
@@ -12,7 +15,7 @@ let cloudCalls = 0;
 let cloudItems = 0;
 
 global.wx = {
-  env: { USER_DATA_PATH: path.join(ROOT, '.tmp', 'feedback-draft') },
+  env: { USER_DATA_PATH: path.join(TMP_ROOT, 'feedback-draft') },
   cloud: {
     getTempFileURL({ fileList }) {
       cloudCalls += 1; cloudItems += (fileList || []).length;
@@ -138,7 +141,7 @@ function assert(condition, message) { if (!condition) throw new Error(message); 
     console.log('loop', loop, 'OK | routes', routePassed, 'shapes', shapePassed, 'choices', choicePassed, 'details', detailPassed, 'cloudCalls', cloudCalls, 'cloudItems', cloudItems);
   }
   console.log('SMOKE_ALL_OK');
-  fs.rmSync(path.join(ROOT, '.tmp'), { recursive: true, force: true });
+  fs.rmSync(TMP_ROOT, { recursive: true, force: true });
 })().catch(err => {
   console.error('SMOKE_FAILED:', err && err.stack || err);
   process.exit(1);

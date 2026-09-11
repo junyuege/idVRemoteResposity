@@ -7,12 +7,15 @@
  *
  * 运行：node tools/fault-injection-test.js
  */
+const os = require('os');
 const path = require('path');
 const ROOT = path.resolve(__dirname, '..');
+// 临时目录放系统 temp：工程目录里的临时文件会被开发者工具扫描/打包，容易引发 ENOENT
+const TMP_ROOT = path.join(os.tmpdir(), 'id5-fault');
 const storage = {};
 
 global.wx = {
-  env: { USER_DATA_PATH: path.join(ROOT, '.tmp', 'fault-injection') },
+  env: { USER_DATA_PATH: path.join(TMP_ROOT, 'fault-injection') },
   cloud: {
     getTempFileURL: ({ fileList }) => Promise.resolve({
       fileList: (fileList || []).map(fileID => ({ fileID, status: 0, tempFileURL: 'https://mock.local/' + encodeURIComponent(fileID) }))

@@ -70,7 +70,12 @@ tcb fn deploy adminApi --force   # 已配置 cloudbaserc.json，云端装依赖�
   AI 会话内无法完成交互登录；凭证在 `~/.config/.cloudbase/auth.json`（登录后即可被同机同用户的 CLI 读到，不必手动搬文件）。
 - 主包体积纪律：图鉴图标必须压缩后入包；攻略大图只进分包与云存储；当前主包 ~0.9MB / 上限 2MB。
 - **git 根目录在父级 `D:/Documents/Project`**（含 blessing_video_generator 等子项目）。提交时**必须用路径限定**（如 `git add pages/x/x.js`），切勿 `git add -A`，否则会把其他子项目的未提交改动一起带上。
-- **校验脚本的清理步骤在沙箱内会失败**：`validate-project.js` 末尾 `fs.rmSync('.tmp')` 会被 safe-delete 拦截并中断输出，看不到校验结论。绕过方式：`node -e "require('fs').rmSync=function(){}; require('./tools/validate-project.js');"`。`.tmp/` 已在 .gitignore 中，残留在本地无害。
+- **测试脚本的临时目录一律放系统 temp**（`os.tmpdir()/id5-{validate,smoke,fault}`），**不要放进工程目录**：
+  开发者工具会把工程目录里的文件当工程资源扫描/打包，而测试脚本运行期间反复创建删除，
+  会出现「打包器读到一半文件没了」的 ENOENT（如 `.tmp/feedback-temp.jpg`），报错里还带着 appid/openid，
+  看起来像小程序运行时报错，其实是打包器在扫目录。`project.config.json` 的 `packOptions.ignore` 已额外忽略 `.tmp` 兜底。
+- 临时目录移出工程目录后，原先"沙箱拦截 `fs.rmSync` 导致 `validate-project.js` 清理失败、中断输出"的问题一并消失，
+  `node tools/validate-project.js` 可直接跑（实测沙箱开/关都通过）。旧的绕过写法 `require('fs').rmSync=function(){}` 已无必要。
 - 冒烟测试只遍历正常数据链路，**不触发任何 catch 分支**；改动异常兜底逻辑后必须另跑 `fault-injection-test.js`。
 
 ## 协作约定

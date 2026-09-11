@@ -1,7 +1,12 @@
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
 
 const ROOT = path.resolve(__dirname, '..');
+// 临时目录必须放在系统 temp，**不要放在工程目录里**：
+// 开发者工具会把它当工程文件扫描/打包，工具运行期间又反复创建删除，
+// 会出现「打包器读到一半文件没了」的 ENOENT（例如 .tmp/feedback-temp.jpg）。
+const TMP_ROOT = path.join(os.tmpdir(), 'id5-validate');
 const failures = [];
 let checks = 0;
 
@@ -34,7 +39,7 @@ const storage = {};
 const loadedPackages = [];
 const navigationCalls = [];
 global.wx = {
-  env: { USER_DATA_PATH: path.join(ROOT, '.tmp', 'feedback-draft') },
+  env: { USER_DATA_PATH: path.join(TMP_ROOT, 'feedback-draft') },
   cloud: {
     getTempFileURL({ fileList }) {
       return Promise.resolve({
@@ -547,7 +552,7 @@ async function validateDataFlow() {
 
   // 反馈草稿图片必须能持久化到 USER_DATA_PATH，且提交成功后清理本地文件。
   const feedbackPage = loadPage('pages/feedback/feedback.js');
-  const tempImage = path.join(ROOT, '.tmp', 'feedback-temp.jpg');
+  const tempImage = path.join(TMP_ROOT, 'feedback-temp.jpg');
   fs.mkdirSync(path.dirname(tempImage), { recursive: true });
   fs.writeFileSync(tempImage, 'mock-image');
   const persisted = feedbackPage.persistImages([tempImage]);
@@ -574,7 +579,7 @@ async function main() {
   try {
     totals = await validateDataFlow();
   } finally {
-    fs.rmSync(path.join(ROOT, '.tmp'), { recursive: true, force: true });
+    fs.rmSync(TMP_ROOT, { recursive: true, force: true });
   }
 
   if (failures.length) {
