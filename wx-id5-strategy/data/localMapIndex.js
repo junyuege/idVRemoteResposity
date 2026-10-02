@@ -1421,14 +1421,16 @@ module.exports = {
           "difficulty": "nightmare",
           "variant": "full",
           "authorId": "zhanshi",
-          "name": "噩梦 · 全棺版13.6",
+          "name": "噩梦 · 全棺版13.9",
           "author": "展十版",
           "packageRoot": "pkg-zhanshi-nightmare-full",
           "assetNamespace": "maps/e_yun_zhi_nv/zhanshi/nightmare-full",
           "compatCloudFiles": [
-            "┗/上路.jpg"
+            "┗/上路.jpg",
+            "▌/上路下路.jpg",
+            "▌/左路右路.jpg"
           ],
-          "shapeDir": "厄运噩梦（超清4k，展十版）/厄运噩梦（超清4k，全棺路线，展十版）全棺版13.6",
+          "shapeDir": "厄运噩梦（超清4k，全棺路线，展十版）全棺版13.9",
           "shapes": [
             "Z",
             "┏",
@@ -1438,7 +1440,9 @@ module.exports = {
             "┳",
             "▃▃",
             "▌",
-            "ㅢ一"
+            "▟▘",
+            "ㅢ一",
+            "冂"
           ],
           "shapeDetails": {
             "Z": {
@@ -1473,22 +1477,34 @@ module.exports = {
             },
             "┳": {
               "rootFiles": [
+                "上路下路右路.jpg",
                 "左路下路.jpg"
               ]
             },
             "▃▃": {
               "rootFiles": [
-                "左路.jpg",
-                "上路右路.jpg"
+                "上路下路.jpg",
+                "上路下路2.jpg",
+                "上路右路.jpg",
+                "左路.jpg"
               ]
             },
             "▌": {
               "rootFiles": [
+                "上路下路   下红▃▃.jpg",
+                "上路下路   下红▌.jpg",
+                "上路下路   下红■.jpg",
+                "上路下路右路.jpg",
+                "上路右路.jpg",
                 "下路右路.jpg",
                 "下路左路.jpg",
-                "左路右路.jpg",
-                "上路下路.jpg",
-                "上路下路右路.jpg"
+                "左路右路   右白▃▃.jpg",
+                "左路右路   右白▌.jpg"
+              ]
+            },
+            "▟▘": {
+              "rootFiles": [
+                "上路下路.jpg"
               ]
             },
             "ㅢ一": {
@@ -1496,27 +1512,41 @@ module.exports = {
                 "左路上路下路.jpg",
                 "左路下路右路.jpg"
               ]
+            },
+            "冂": {
+              "rootFiles": [
+                "上路下路.jpg"
+              ]
             }
           },
           "rootFiles": [
             "噩梦全棺版看法图文教学.jpg"
-          ]
-},
+          ],
+          "sourceAnchor": "F:/d5/"
+        },
 {
           "id": "zhanshi-nightmare",
           "legacyIds": [],
           "difficulty": "nightmare",
           "authorId": "zhanshi",
-          "name": "噩梦 · 速刷版13.6",
+          "name": "噩梦 · 速刷版13.9",
           "author": "展十版",
           "packageRoot": "pkg-zhanshi-nightmare",
           "assetNamespace": "maps/e_yun_zhi_nv/zhanshi/nightmare",
           "compatCloudFiles": [
             "上左右路/上左右路   右s.jpg",
             "左右路/左右路   右┛2.jpg",
-            "左右路/左右路   右s.jpg"
+            "左右路/左右路   右s.jpg",
+            "上右路/上右路   右┻┳.jpg",
+            "上右路/上右路   右┻┳2.jpg",
+            "上右路/上右路   右▃▃.jpg",
+            "上右路/上右路   右一.jpg",
+            "上左右路/上左右路   右┛.jpg",
+            "上左右路/上左右路   右▟▘.jpg",
+            "上左右路/上左右路   右▟▘2.jpg",
+            "上左右路/上左右路   右I.jpg"
           ],
-          "shapeDir": "厄运噩梦（超清4k，展十版）/厄运噩梦（超清4k，速刷路线，展十版）速刷版13.6",
+          "shapeDir": "厄运噩梦（超清4k，速刷路线，展十版）速刷版13.9",
           "shapes": [
             "上右路",
             "上左右路",
@@ -1526,27 +1556,53 @@ module.exports = {
           "shapeDetails": {
             "上右路": {
               "rootFiles": [
-                "上右路   右┻┳.jpg",
-                "上右路   右┻┳2.jpg",
-                "上右路   右▃▃.jpg",
-                "上右路   右一.jpg"
+                "上右路   上┗┓.jpg",
+                "上右路   上┳.jpg",
+                "上右路   上▃▃.jpg",
+                "上右路   上▌.jpg",
+                "上右路   上十.jpg",
+                "上右路   上十2.jpg"
               ]
             },
             "上左右路": {
+              "doors": [
+                {
+                  "door": "上左右路   右I",
+                  "files": [
+                    "上左右路   右I左┓┓.jpg",
+                    "上左右路   右I左▃▃.jpg"
+                  ]
+                },
+                {
+                  "door": "上左右路   右┛",
+                  "files": [
+                    "上左右路   右┛左▃▃.jpg",
+                    "上左右路   右┛左▟▘.jpg"
+                  ]
+                },
+                {
+                  "door": "上左右路   右▟▘",
+                  "files": [
+                    "上左右路   右▟▘左▃▃.jpg",
+                    "上左右路   右▟▘左▍.jpg",
+                    "上左右路   右▟▘左▍2.jpg"
+                  ]
+                }
+              ],
               "rootFiles": [
-                "上左右路   右I.jpg",
-                "上左右路  右└┐.jpg",
-                "上左右路   右┛.jpg",
-                "上左右路   右▟▘.jpg",
-                "上左右路   右▟▘2.jpg"
+                "上左右路   右＞—.jpg",
+                "上左右路   右▃▃.jpg",
+                "上左右路   右匚.jpg",
+                "上左右路  右└┐.jpg"
               ]
             },
             "上左路": {
               "rootFiles": [
+                "上左路   上┗┓.jpg",
+                "上左路   上┫3.jpg",
                 "上左路   上红┫.jpg",
                 "上左路   上红┫2.jpg",
-                "上左路   上I.jpg",
-                "上左路   上┗┓.jpg"
+                "上左路   上I.jpg"
               ]
             },
             "左右路": {
@@ -1562,8 +1618,9 @@ module.exports = {
           "rootFiles": [
             "速刷版看法图文教学.jpg"
           ],
-          "variant": "fast"
-},
+          "variant": "fast",
+          "sourceAnchor": "F:/d5/"
+        },
       {
         "id": "lianghapi-v0710",
         "legacyIds": [

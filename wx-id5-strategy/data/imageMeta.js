@@ -433,161 +433,233 @@ module.exports = {
     "w": 379,
     "h": 454
   },
-  "pkg-zhanshi-nightmare/assets/上右路/上右路   右┻┳.jpg": {
-    "w": 1024,
-    "h": 1024
+  "pkg-zhanshi-nightmare/assets/上右路/上右路   上┗┓.jpg": {
+    "w": 800,
+    "h": 800
   },
-  "pkg-zhanshi-nightmare/assets/上右路/上右路   右┻┳2.jpg": {
-    "w": 1024,
-    "h": 1024
+  "pkg-zhanshi-nightmare/assets/上右路/上右路   上┳.jpg": {
+    "w": 800,
+    "h": 800
   },
-  "pkg-zhanshi-nightmare/assets/上右路/上右路   右▃▃.jpg": {
-    "w": 1024,
-    "h": 1024
+  "pkg-zhanshi-nightmare/assets/上右路/上右路   上▃▃.jpg": {
+    "w": 800,
+    "h": 800
   },
-  "pkg-zhanshi-nightmare/assets/上右路/上右路   右一.jpg": {
-    "w": 1024,
-    "h": 1024
+  "pkg-zhanshi-nightmare/assets/上右路/上右路   上▌.jpg": {
+    "w": 800,
+    "h": 800
   },
-  "pkg-zhanshi-nightmare/assets/上左右路/上左右路   右I.jpg": {
-    "w": 1024,
-    "h": 1024
+  "pkg-zhanshi-nightmare/assets/上右路/上右路   上十.jpg": {
+    "w": 800,
+    "h": 800
+  },
+  "pkg-zhanshi-nightmare/assets/上右路/上右路   上十2.jpg": {
+    "w": 800,
+    "h": 800
+  },
+  "pkg-zhanshi-nightmare/assets/上左右路/上左右路   右＞—.jpg": {
+    "w": 800,
+    "h": 800
+  },
+  "pkg-zhanshi-nightmare/assets/上左右路/上左右路   右▃▃.jpg": {
+    "w": 800,
+    "h": 800
+  },
+  "pkg-zhanshi-nightmare/assets/上左右路/上左右路   右匚.jpg": {
+    "w": 800,
+    "h": 800
   },
   "pkg-zhanshi-nightmare/assets/上左右路/上左右路  右└┐.jpg": {
-    "w": 1024,
-    "h": 1024
+    "w": 800,
+    "h": 800
   },
-  "pkg-zhanshi-nightmare/assets/上左右路/上左右路   右┛.jpg": {
-    "w": 1024,
-    "h": 1024
+  "pkg-zhanshi-nightmare/assets/上左右路/上左右路   右I/上左右路   右I左┓┓.jpg": {
+    "w": 800,
+    "h": 800
   },
-  "pkg-zhanshi-nightmare/assets/上左右路/上左右路   右▟▘.jpg": {
-    "w": 1024,
-    "h": 1024
+  "pkg-zhanshi-nightmare/assets/上左右路/上左右路   右I/上左右路   右I左▃▃.jpg": {
+    "w": 800,
+    "h": 800
   },
-  "pkg-zhanshi-nightmare/assets/上左右路/上左右路   右▟▘2.jpg": {
-    "w": 1024,
-    "h": 1024
+  "pkg-zhanshi-nightmare/assets/上左右路/上左右路   右┛/上左右路   右┛左▃▃.jpg": {
+    "w": 800,
+    "h": 800
   },
-  "pkg-zhanshi-nightmare/assets/上左路/上左路   上红┫.jpg": {
-    "w": 1024,
-    "h": 1024
+  "pkg-zhanshi-nightmare/assets/上左右路/上左右路   右┛/上左右路   右┛左▟▘.jpg": {
+    "w": 800,
+    "h": 800
   },
-  "pkg-zhanshi-nightmare/assets/上左路/上左路   上红┫2.jpg": {
-    "w": 1024,
-    "h": 1024
+  "pkg-zhanshi-nightmare/assets/上左右路/上左右路   右▟▘/上左右路   右▟▘左▃▃.jpg": {
+    "w": 800,
+    "h": 800
   },
-  "pkg-zhanshi-nightmare/assets/上左路/上左路   上I.jpg": {
-    "w": 1024,
-    "h": 1024
+  "pkg-zhanshi-nightmare/assets/上左右路/上左右路   右▟▘/上左右路   右▟▘左▍.jpg": {
+    "w": 800,
+    "h": 800
+  },
+  "pkg-zhanshi-nightmare/assets/上左右路/上左右路   右▟▘/上左右路   右▟▘左▍2.jpg": {
+    "w": 800,
+    "h": 800
   },
   "pkg-zhanshi-nightmare/assets/上左路/上左路   上┗┓.jpg": {
-    "w": 1024,
-    "h": 1024
+    "w": 800,
+    "h": 800
+  },
+  "pkg-zhanshi-nightmare/assets/上左路/上左路   上┫3.jpg": {
+    "w": 800,
+    "h": 800
+  },
+  "pkg-zhanshi-nightmare/assets/上左路/上左路   上红┫.jpg": {
+    "w": 800,
+    "h": 800
+  },
+  "pkg-zhanshi-nightmare/assets/上左路/上左路   上红┫2.jpg": {
+    "w": 800,
+    "h": 800
+  },
+  "pkg-zhanshi-nightmare/assets/上左路/上左路   上I.jpg": {
+    "w": 800,
+    "h": 800
   },
   "pkg-zhanshi-nightmare/assets/左右路/左右路   右┛.jpg": {
-    "w": 1024,
-    "h": 1024
+    "w": 800,
+    "h": 800
   },
   "pkg-zhanshi-nightmare/assets/左右路/左右路   右┛（相似图2）.jpg": {
-    "w": 1024,
-    "h": 1024
+    "w": 800,
+    "h": 800
   },
   "pkg-zhanshi-nightmare/assets/左右路/左右路   右┛（相似图3）.jpg": {
-    "w": 1024,
-    "h": 1024
+    "w": 800,
+    "h": 800
   },
   "pkg-zhanshi-nightmare/assets/左右路/左右路   右┻┳.jpg": {
-    "w": 1024,
-    "h": 1024
+    "w": 800,
+    "h": 800
   },
   "pkg-zhanshi-nightmare/assets/左右路/左右路   右▟▘.jpg": {
-    "w": 1024,
-    "h": 1024
+    "w": 800,
+    "h": 800
   },
   "pkg-zhanshi-nightmare-full/assets/噩梦全棺版看法图文教学.jpg": {
     "w": 354,
     "h": 390
   },
   "pkg-zhanshi-nightmare-full/assets/Z/上路.jpg": {
-    "w": 1024,
-    "h": 1024
+    "w": 800,
+    "h": 800
   },
   "pkg-zhanshi-nightmare-full/assets/┏/下路   下Z.jpg": {
-    "w": 1024,
-    "h": 1024
+    "w": 800,
+    "h": 800
   },
   "pkg-zhanshi-nightmare-full/assets/┏/下路   下ㅢ一.jpg": {
-    "w": 1024,
-    "h": 1024
+    "w": 800,
+    "h": 800
   },
   "pkg-zhanshi-nightmare-full/assets/┓/左路右路.jpg": {
-    "w": 1024,
-    "h": 1024
+    "w": 800,
+    "h": 800
   },
   "pkg-zhanshi-nightmare-full/assets/┗/上路右路.jpg": {
-    "w": 1024,
-    "h": 1024
+    "w": 800,
+    "h": 800
   },
   "pkg-zhanshi-nightmare-full/assets/┗/右路（二号路线）.jpg": {
-    "w": 1024,
-    "h": 1024
+    "w": 800,
+    "h": 800
   },
   "pkg-zhanshi-nightmare-full/assets/┗/右路（一号路线）.jpg": {
-    "w": 1024,
-    "h": 1024
+    "w": 800,
+    "h": 800
   },
   "pkg-zhanshi-nightmare-full/assets/┗/右路两张图解释.jpg": {
     "w": 209,
     "h": 97
   },
   "pkg-zhanshi-nightmare-full/assets/┫/上路左路.jpg": {
-    "w": 1024,
-    "h": 1024
+    "w": 800,
+    "h": 800
   },
   "pkg-zhanshi-nightmare-full/assets/┫/上路左路右路.jpg": {
-    "w": 1024,
-    "h": 1024
+    "w": 800,
+    "h": 800
+  },
+  "pkg-zhanshi-nightmare-full/assets/┳/上路下路右路.jpg": {
+    "w": 800,
+    "h": 800
   },
   "pkg-zhanshi-nightmare-full/assets/┳/左路下路.jpg": {
-    "w": 1024,
-    "h": 1024
+    "w": 800,
+    "h": 800
   },
-  "pkg-zhanshi-nightmare-full/assets/▃▃/左路.jpg": {
-    "w": 1024,
-    "h": 1024
+  "pkg-zhanshi-nightmare-full/assets/▃▃/上路下路.jpg": {
+    "w": 800,
+    "h": 800
+  },
+  "pkg-zhanshi-nightmare-full/assets/▃▃/上路下路2.jpg": {
+    "w": 800,
+    "h": 800
   },
   "pkg-zhanshi-nightmare-full/assets/▃▃/上路右路.jpg": {
-    "w": 1024,
-    "h": 1024
+    "w": 800,
+    "h": 800
   },
-  "pkg-zhanshi-nightmare-full/assets/▌/下路右路.jpg": {
-    "w": 1024,
-    "h": 1024
+  "pkg-zhanshi-nightmare-full/assets/▃▃/左路.jpg": {
+    "w": 800,
+    "h": 800
   },
-  "pkg-zhanshi-nightmare-full/assets/▌/下路左路.jpg": {
-    "w": 1024,
-    "h": 1024
+  "pkg-zhanshi-nightmare-full/assets/▌/上路下路   下红▃▃.jpg": {
+    "w": 800,
+    "h": 800
   },
-  "pkg-zhanshi-nightmare-full/assets/▌/左路右路.jpg": {
-    "w": 1024,
-    "h": 1024
+  "pkg-zhanshi-nightmare-full/assets/▌/上路下路   下红▌.jpg": {
+    "w": 800,
+    "h": 800
   },
-  "pkg-zhanshi-nightmare-full/assets/▌/上路下路.jpg": {
-    "w": 1024,
-    "h": 1024
+  "pkg-zhanshi-nightmare-full/assets/▌/上路下路   下红■.jpg": {
+    "w": 800,
+    "h": 800
   },
   "pkg-zhanshi-nightmare-full/assets/▌/上路下路右路.jpg": {
-    "w": 1024,
-    "h": 1024
+    "w": 800,
+    "h": 800
+  },
+  "pkg-zhanshi-nightmare-full/assets/▌/上路右路.jpg": {
+    "w": 800,
+    "h": 800
+  },
+  "pkg-zhanshi-nightmare-full/assets/▌/下路右路.jpg": {
+    "w": 800,
+    "h": 800
+  },
+  "pkg-zhanshi-nightmare-full/assets/▌/下路左路.jpg": {
+    "w": 800,
+    "h": 800
+  },
+  "pkg-zhanshi-nightmare-full/assets/▌/左路右路   右白▃▃.jpg": {
+    "w": 800,
+    "h": 800
+  },
+  "pkg-zhanshi-nightmare-full/assets/▌/左路右路   右白▌.jpg": {
+    "w": 800,
+    "h": 800
+  },
+  "pkg-zhanshi-nightmare-full/assets/▟▘/上路下路.jpg": {
+    "w": 800,
+    "h": 800
   },
   "pkg-zhanshi-nightmare-full/assets/ㅢ一/左路上路下路.jpg": {
-    "w": 1024,
-    "h": 1024
+    "w": 800,
+    "h": 800
   },
   "pkg-zhanshi-nightmare-full/assets/ㅢ一/左路下路右路.jpg": {
-    "w": 1024,
-    "h": 1024
+    "w": 800,
+    "h": 800
+  },
+  "pkg-zhanshi-nightmare-full/assets/冂/上路下路.jpg": {
+    "w": 800,
+    "h": 800
   },
   "pkg-zhanshi-normal/assets/┏/侧门在下/右路.jpg": {
     "w": 1024,
